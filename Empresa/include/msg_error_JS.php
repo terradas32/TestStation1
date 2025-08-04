@@ -1,0 +1,12 @@
+	var STR_CAMPO_REQUERIDO = "<?php echo Constant("STR_CAMPO_REQUERIDO");?>";
+	var STR_ERROR_LONGITUD = "<?php echo Constant("STR_ERROR_LONGITUD");?>";
+	var STR_ERROR_CARACTERES = "<?php echo Constant("STR_ERROR_CARACTERES");?>";
+	var STR_EMAIL_INCORRECTO = "<?php echo Constant("STR_EMAIL_INCORRECTO");?>";
+	var STR_BANCO_CAMPO_REQUERIDO = "<?php echo Constant("STR_BANCO_CAMPO_REQUERIDO");?>";
+	var STR_OFICINA_CAMPO_REQUERIDO = "<?php echo Constant("STR_OFICINA_CAMPO_REQUERIDO");?>";
+	var STR_DC_CAMPO_REQUERIDO = "<?php echo Constant("STR_DC_CAMPO_REQUERIDO");?>";
+	var STR_CUENTA_CAMPO_REQUERIDO = "<?php echo Constant("STR_CUENTA_CAMPO_REQUERIDO");?>";
+	var STR_DATOS_BANCARIOS_INCORRECTOS = "<?php echo Constant("STR_DATOS_BANCARIOS_INCORRECTOS");?>";
+	var STR_FORMATO_ERRONEO = "<?php echo Constant("STR_FORMATO_ERRONEO");?>";
+	var STR_NIF_INCORRECTO = "<?php echo Constant("STR_NIF_INCORRECTO");?>";
+	var STR_CIF_INCORRECTO = "<?php echo Constant("STR_CIF_INCORRECTO");?>";

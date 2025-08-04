@@ -1,0 +1,10 @@
+10/04/2018 15:06:21 ->	-**->INIT Llamada desde cargaAudio Flash.
+10/04/2018 15:06:49 ->	-**->INIT Llamada desde cargaAudio Flash.
+10/04/2018 15:06:55 ->	-**->INIT Llamada desde grabaprueba Flash.
+10/04/2018 15:09:14 ->	-**->INIT Llamada desde cargaAudio Flash.
+10/04/2018 15:09:19 ->	-**->INIT Llamada desde grabaprueba Flash.
+10/04/2018 15:15:37 ->	-**->INIT Llamada desde cargaAudio Flash.
+10/04/2018 15:15:49 ->	-**->INIT Llamada desde grabaprueba Flash.
+10/04/2018 15:22:39 ->	-**->INIT Llamada desde cargaAudio Flash.
+10/04/2018 15:22:44 ->	-**->INIT Llamada desde grabaprueba Flash.
+10/04/2018 15:27:43 ->	-**->INIT Llamada desde grabaprueba Flash.

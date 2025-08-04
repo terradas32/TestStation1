@@ -1,0 +1,51 @@
+/*** Estilos Candidato ***/
+#head.candidato {background:url(images/bg_head_candidato.jpg) no-repeat right top transparent;height:143px;margin-bottom:10px;padding:0;}
+#head.candidato h1 {margin:0;padding:97px 10px 0px 0px;float:right;font-size:3.2em;color:#FFF;}
+#head.candidato div.logo img {margin:34px 0px;float:left;}
+#head.candidato #menu_top ul {list-style-type:none;display:inline;}
+#banderas {margin:-273px 0 0 !important;*margin-top:0px !important;position: relative;width: 90px;display:inline;}
+#banderas ul.band_portada li {padding:0px 0px 0px 0px;margin:3px 0px;display:inline;}
+#accesos {float:left;margin:0;width:780px;}
+#accesos h2 {font-size:2.7em;}
+#accesos p {font-size:1.3em;float:left;width:45%}
+#accesos form {width:350px;float:right;}
+#accesos form label {font-size:1.3em;float:left;clear:both;margin:10px 0px;padding:2px 0px;}
+#accesos form label a.gcont{text-decoration:none;font-weight:bold;color:#b98100;width:350px;text-align:right !important;display:block;}
+#accesos form input {float:right;clear:right;margin:3px 0px;padding:1px 5px;*padding:7px !important;height:30px;border:0;width:250px;background:url(images/bg_input.gif) 0 0 no-repeat transparent;}
+#accesos form input.btn_acceder {cursor:pointer;font-size:1.3em;float:right;clear:both;color:#b98100;font-weight:bold;margin:10px 0 0 0;*margin-top:60px !important;padding:2px 5px;*padding:2px 5px !important;height:21px;width:69px;border:0;background:url(images/fondo-botones-login.gif) 0 0 no-repeat transparent;}
+#accesos #error {color:red;padding:30px 0px;}
+#aviso h2 {font-size:2.7em;}
+#aviso p {font-size:1.3em;}
+#aviso {width:780px;height:600px;padding:0;margin:0 }
+#error {color:red;}
+/*///////////////////////////////
+Para las barras de contraseñas
+///////////////////////////////*/
+.password {
+	font-size: 12px;
+	width: 200px;
+	font-family: arial, sans-serif;
+}
+
+.pstrength-minchar {
+	font-size: 10px;
+}
+
+.pstrength-bar {
+	width: 61% !important;
+	margin-left: 35%;
+	margin-top: 8%;
+}
+
+.pstrength-info {
+	margin-left: 35%;
+}
+
+.pstrength-minchar {
+	margin-left: 5px;
+	display: none;
+}
+
+/*///////////////////////////////
+Para las barras de contraseñas
+///////////////////////////////*/

@@ -1,0 +1,14 @@
+/* Estilos para IE */
+#banderas {float: right;margin: 20px 0 0;position: relative;right: 0;top: 0;width: 200px;}
+ul#lista_accesos {height:150px;}
+#accesos ul li {list-style-type:none;display:inline;margin:0px 15px;height:130px;}
+#accesos ul li a {width:80px;height:125px;}
+#lista_accesos li.candidatos {background:url(images/candidato.gif) no-repeat 0px 15px transparent;padding-top:0px;padding-right:0px;padding-bottom: 110px;padding-left:0px;}
+#lista_accesos li.candidatos a{color:#333;font-size:1.2em;border:0px solid red;text-decoration:none;height:125px !important;}
+#lista_accesos li.candidatos a:hover{text-decoration:underline;}
+#lista_accesos li.empresa {background:url(images/empresa.gif) no-repeat 0px 15px transparent;padding-top:0px;padding-right:0px;padding-bottom: 110px;padding-left:0px;}
+#lista_accesos li.empresa a{color:#333;font-size:1.2em;border:0px solid red;text-decoration:none;height:125px !important;}
+#lista_accesos li.empresa a:hover{text-decoration:underline;}
+#lista_accesos li.administracion {background:url(images/administracion.gif) no-repeat 0px 15px transparent;padding-top:0px;padding-right:0px;padding-bottom: 110px;padding-left:0px;}
+#lista_accesos li.administracion a{color:#333;font-size:1.2em;border:0px solid red;text-decoration:none;height:125px !important;}
+#lista_accesos li.administracion a:hover{text-decoration:underline;}

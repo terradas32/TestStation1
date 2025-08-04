@@ -1,0 +1,34 @@
+No se ha podido eliminar esta asignación del Candidato 'PEdro p ',\n el candidato ya ha sido informado. ->	
+17/10/2022 11:25:03 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='5959' AND idPerfil='0' 
+CREADA EMPRESA PROVEEDORA ->	 **PEOPLE EXPERTS**
+22/02/2023 17:33:57 Error SQL [405][ConsumosDB] ->	INSERT INTO consumos (idEmpresa,idProceso,idCandidato,codIdiomaIso2,idPrueba,codIdiomaInforme,idTipoInforme,idBaremo,nomEmpresa,nomProceso,nomCandidato,apellido1,apellido2,dni,mail,nomPrueba,nomInforme,nomBaremo,concepto,unidades,fecAlta,fecMod,usuAlta,usuMod) VALUES ('5001','948','1','es','12','es','-1','1','PE_TECNOLOGIA','Unidades','Carlos','Verdejo','','','cva@people-experts.com','CEL16','NA','Baremo Estándar',NULL,'20',NOW(),NOW(),'5001','5001')
+22/02/2023 17:33:57 Error SQL [405][ConsumosDB] ->	INSERT INTO consumos (idEmpresa,idProceso,idCandidato,codIdiomaIso2,idPrueba,codIdiomaInforme,idTipoInforme,idBaremo,nomEmpresa,nomProceso,nomCandidato,apellido1,apellido2,dni,mail,nomPrueba,nomInforme,nomBaremo,concepto,unidades,fecAlta,fecMod,usuAlta,usuMod) VALUES ('5001','948','1','es','13','es','-1','1','PE_TECNOLOGIA','Unidades','Carlos','Verdejo','','','cva@people-experts.com','CML','NA','Baremo Estandar',NULL,'20',NOW(),NOW(),'5001','5001')
+22/02/2023 17:33:57 Error SQL [405][ConsumosDB] ->	INSERT INTO consumos (idEmpresa,idProceso,idCandidato,codIdiomaIso2,idPrueba,codIdiomaInforme,idTipoInforme,idBaremo,nomEmpresa,nomProceso,nomCandidato,apellido1,apellido2,dni,mail,nomPrueba,nomInforme,nomBaremo,concepto,unidades,fecAlta,fecMod,usuAlta,usuMod) VALUES ('5001','948','1','es','24','es','-1','1','PE_TECNOLOGIA','Unidades','Carlos','Verdejo','','','cva@people-experts.com','PRISM@','NA','Baremo Estándar',NULL,'20',NOW(),NOW(),'5001','5001')
+22/02/2023 17:33:57 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='5001' AND idPerfil='0' 
+24/02/2023 12:22:22 Error SQL [405][ConsumosDB] ->	INSERT INTO consumos (idEmpresa,idProceso,idCandidato,codIdiomaIso2,idPrueba,codIdiomaInforme,idTipoInforme,idBaremo,nomEmpresa,nomProceso,nomCandidato,apellido1,apellido2,dni,mail,nomPrueba,nomInforme,nomBaremo,concepto,unidades,fecAlta,fecMod,usuAlta,usuMod) VALUES ('5001','949','1','es','13','es','-1','1','PE_TECNOLOGIA','prueba unidades EMpresa','','','','','','CML','NA','Baremo Estandar',NULL,'20',NOW(),NOW(),'5001','5001')
+24/02/2023 12:22:22 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='5001' AND idPerfil='0' 
+24/02/2023 12:22:22 Error SQL [405][ConsumosDB] ->	INSERT INTO consumos (idEmpresa,idProceso,idCandidato,codIdiomaIso2,idPrueba,codIdiomaInforme,idTipoInforme,idBaremo,nomEmpresa,nomProceso,nomCandidato,apellido1,apellido2,dni,mail,nomPrueba,nomInforme,nomBaremo,concepto,unidades,fecAlta,fecMod,usuAlta,usuMod) VALUES ('5001','949','2','es','13','es','-1','1','PE_TECNOLOGIA','prueba unidades EMpresa','','','','','','CML','NA','Baremo Estandar',NULL,'20',NOW(),NOW(),'5001','5001')
+24/02/2023 12:22:22 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='5001' AND idPerfil='0' 
+27/02/2023 15:27:34 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='5001' AND idPerfil='0' 
+27/02/2023 15:51:14 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='5001' AND idPerfil='0' 
+27/02/2023 16:34:47 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='5001' AND idPerfil='0' 
+30/03/2023 17:46:32 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='3788' AND idPerfil='0' 
+31/03/2023 12:22:13 Descontando unidades de la Matriz [5001] : UPDATE consumos SET descuentaMatriz=5001, nomDescuentaMatriz='PE_TECNOLOGIA' WHERE idEmpresa=5630 AND idProceso=16 AND idCandidato=1 AND codIdiomaIso2='es' AND idPrueba='24' AND codIdiomaInforme='es' AND idTipoInforme='-1' 
+31/03/2023 12:22:13 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='5001' AND idPerfil='0' 
+31/03/2023 12:22:13 Descontadas [10] unidades de la Matriz [5001] : UPDATE consumos SET descuentaMatriz=5001, nomDescuentaMatriz='PE_TECNOLOGIA' WHERE idEmpresa=5630 AND idProceso=16 AND idCandidato=1 AND codIdiomaIso2='es' AND idPrueba='24' AND codIdiomaInforme='es' AND idTipoInforme='-1' 
+31/03/2023 12:32:03 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='5001' AND idPerfil='0' 
+31/03/2023 12:32:21 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='5001' AND idPerfil='0' 
+31/03/2023 12:33:09 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='5001' AND idPerfil='0' 
+31/03/2023 12:47:25 Las unidades ya fueron descontadas el día : 2023-03-31 12:46:59 [Emp:5001 - Pro:952 - Can:1 - Pru. iso2:es - Pru:70 - inf. iso2:es - bar:1 - concepto:Administración]
+20/04/2023 13:24:00 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='5960' AND idPerfil='0' 
+No se ha podido asignar esta prueba al proceso 'Proceso DEMO XERIDIA',\n ya tiene candidatos informados. ->	
+20/04/2023 14:21:38 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='5960' AND idPerfil='0' 
+No se ha podido asignar esta prueba al proceso 'Prueba 4',\n ya tiene candidatos informados. ->	
+No se ha podido asignar esta prueba al proceso 'Prueba 4',\n ya tiene candidatos informados. ->	
+08/09/2023 10:10:38 Error SQL [405][Peticiones_donglesDB] ->	INSERT INTO peticiones_dongles (idPeticion,idEmpresa,idEmpresaReceptora,nDongles,estado,fecAlta,fecMod,usuAlta,usuMod) VALUES ('3950','3788','3788','500','',NOW(),NOW(),'3788','3788')
+<<<<<<< HEAD
+27/11/2023 12:26:59 Error SQL [405][Peticiones_donglesDB] ->	INSERT INTO peticiones_dongles (idPeticion,idEmpresa,idEmpresaReceptora,nDongles,estado,fecAlta,fecMod,usuAlta,usuMod) VALUES ('3950','5960','3788','1','',NOW(),NOW(),'5960','5960')
+15/01/2024 08:10:31 Error Registro Existe [405][Empresas_perfilesDB] ->	SELECT COUNT(idEmpresa) AS Max FROM empresas_perfiles WHERE idEmpresa='5961' AND idPerfil='1' 
+CREADA EMPRESA PROVEEDORA ->	 **XERIDIA**
+=======
+>>>>>>> ef67b2adad35376e7004f53c2ad7cef5f1096846

@@ -1,0 +1,34 @@
+/**** Estilos para Login Admin ****/
+body {font-family:Verdana, serif;font-size:66.7%;background:url(../graf/Homefondo.jpg) right -195px #fff no-repeat;margin:0 auto;}
+* {margin:0;padding:0;}
+p a {border:0;color:#999;font-size:0.8em;font-weight:bold;text-decoration:none;}
+img {border:0}
+span.rojo {color:red;}
+#pagina_login {width:780px;margin:0 20%;text-align:center;position:relative;}
+#cab_login {background:url(../graf/cabecera_entrada.jpg) center top no-repeat transparent;height:95px;}
+#cab_login h1 {text-indent:-9999px;}
+#form_login {height:178px;float:left;*padding-bottom:6px;padding:10px 0px;border-bottom:3px solid #000;border-top:3px solid #000;margin:0 auto;width:84%;}
+#form_login h2 {background:url(images/bg_h2_login.png) center top no-repeat transparent;text-indent:-9999px;margin:0;}
+div.bg_izq {background:url(images/bg_izq_login.png) left top no-repeat transparent;height:204px;float:left;width:15px;}
+div.bg_der {background:url(images/bg_der_login.png) left top no-repeat transparent;height:204px;float:left;width:2.02em;padding:0px}
+#form_login form {width:100%}
+#form_login span.flecha {background:url(images/bg_span_login.png) 0 0 no-repeat transparent;width:38px;height:18px;float:right;margin:-15px 10px 0px 0px;}
+#form_login label {float:left;clear:left;padding:5px 0px;font-weight:bold;margin:7px 0px 0px 10%;}
+#form_login input {float:right;width:120px;margin:7px 10% 0px 0px;border:1px solid #ffa84c;height:18px;background:#eee;}
+#form_login input.botones {float:none;clear:both;border:none;background:url(images/btn_bg.gif) 0 0 no-repeat transparent;padding:0px 0px 3px 0px;width:91px;height:21px;cursor:pointer;margin:35px 38% 20px 38%;}
+#form_login p {clear:both;text-align:center;padding:0px 0px 0px 0px}
+#form_cont {min-width:350px;width:60%;max-width:100%;height:220px;margin:20px auto;}
+#cont_login p {text-align:center;font-size:1.3em;color:#ccc;}
+div.err-login {border:2px solid red;background:#fff7a2;padding:10px;margin:10px;}
+div.err-login p {font-weight:bold;color:red !important;text-align:center;}
+div.idiomas_login {margin:20px auto;width:390px;}
+div.img_negocia {text-align:center;}
+
+#form_msg {height:178px;float:left;*padding-bottom:6px;padding:10px 0px;border-bottom:3px solid #000;border-top:3px solid #000;margin:0 auto;width:84%;}
+#form_msg h2 {background:url(images/bg_h2_login.png) center top no-repeat transparent;text-indent:-9999px;margin:0;}
+#form_msg form {width:100%}
+#form_msg span.flecha {background:url(images/bg_span_login.png) 0 0 no-repeat transparent;width:38px;height:18px;float:right;margin:-15px 10px 0px 0px;}
+#form_msg label {float:left;clear:left;padding:5px 0px;font-weight:bold;margin:7px 0px 0px 10%;}
+#form_msg input {float:right;width:120px;margin:7px 10% 0px 0px;border:1px solid #ffa84c;height:18px;background:#eee;}
+#form_msg input.botones {float:none;clear:both;border:none;background:url(images/btn_bg.gif) 0 0 no-repeat transparent;padding:0px 0px 3px 0px;width:91px;height:21px;cursor:pointer;margin:35px 38% 20px 38%;}
+#form_msg p {clear:both;text-align:center;padding:0px 0px 0px 0px}

@@ -1,0 +1,88 @@
+@charset "utf-8";
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, , label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+a {text-decoration:none; outline:0px;}
+/*////////////////////////////////////
+Contenidos Proceso
+/////////////////////////////////////*/
+fieldset{border:none !important;padding: 0;margin: 0;}
+#pagina12{width:auto !important; margin:auto; height:auto; overflow:hidden; padding:7px;}
+#pagina12 {width:100%; height:auto; overflow:hidden;}
+#pagina12  .par12{margin: 5px 0; overflow: hidden; float: left;}
+#pagina12  label{width:179px; height:auto;display:block; cursor:pointer; color:#eaa13a}
+#pagina12  input, #pagina12  select, #pagina12  textarea {width:165px; margin:5px 0px; border:1px solid #eaa13a; color: #000; overflow:hidden;display:block; }
+#pagina12  .horas {margin-left:5px !important; margin-right:0px !important;}
+#pagina12  .horas label{width:85px !important;}
+#pagina12  input[type='text']:focus, #pagina12  select:focus{background:#fddbab}
+#recargaProceso12{ border-top:1px solid #fddbab;}
+
+/*Datos personales*/
+#pagina12  #datosPersonales .par12, #pagina12  #date .par12{ width:auto; height:auto; overflow:hidden; float:left;}
+#pagina12  #datosPersonales .par12 input[type='text'],#pagina12  #datosPersonales .par12 select,
+#pagina12  #date .par12 input[type='text'],#pagina12  #date .par12 select{margin-right: 10px;}
+#pagina12  #date .par12 input[type='text']#horaInicio, #pagina12  #date .par12 input[type='text']#minutosInicio,
+#pagina12  #date .par12 input[type='text']#horaFin, #pagina12  #date .par12 input[type='text']#minutosFin
+{width:40px; float:left; margin-right:5px;}
+#pagina12  #date .par12 span.time{display:block; float:left; width:auto; line-height:30px; margin-right:5px;}
+
+/*Resultados*/
+#pagina12  #respuestas12{width:100%; height:auto; overflow:hidden; color:#EAA13A; margin: auto;}
+#pagina12  #respuestas12 .columna{width:140; height:auto; overflow:hidden; float:left;}
+#pagina12  #respuestas12 .result{width:137px; height:47px; border:1px solid #fddbab; overflow:hidden;}
+#pagina12  #respuestas12 .result span.inputCheck{display:block; float:left;}
+#pagina12  #respuestas12 .result span.numPreg{padding:0 5px; line-height:45px; display:block; float:left;width: 10px;}
+#pagina12  #respuestas12 .result span.mp{padding:0 5px; line-height:22px; float:left; display:block;}
+#pagina12  #respuestas12 .result span.mp font{display:block; line-height:22px;}
+#pagina12  #respuestas12 .result input[type='radio']{width:auto !important; float:left; height:auto !important; padding:0px; margin: 0 5px;}
+#pagina12  #respuestas12 .result span.radios{padding-top:0px; line-height:12px; display:block; float:left; width:90px;}
+#pagina12  #respuestas12 .result span.radios span.inputCheck{padding:0 5px; width:17px; height:auto; overflow: hidden;}
+#pagina12  #respuestas12 .result span.radios font{ overflow:hidden; text-align:center; font-size:10px; display:block;}
+.flota{ float:left;}
+
+

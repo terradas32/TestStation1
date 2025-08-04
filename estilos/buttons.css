@@ -1,0 +1,50 @@
+#bid-ok{
+	background-image: url(images/btn_ok_bg.gif);
+	padding-left: 8px;
+}
+#bid-ok-big{
+	background-image: url(images/btn_ok_big_bg.gif);
+	padding-left: 8px;
+}
+#bid-cancel{
+	background-image: url(images/btn_cancel_bg.gif);
+	padding-left: 10px;
+}
+#bid-volver{
+	background-image: url(images/btn_volver_bg.gif);
+	padding-left: 10px;
+}
+#bid-inicio{
+	background-image: url(images/btn_inicio_bg.gif);
+	padding-left: 10px;
+}
+#bid-alta{
+	background-image: url(images/btn_alta_bg.gif);
+	padding-left: 10px;
+}
+#bid-buscador{
+	background-image: url(images/btn_buscador_bg.gif);
+	padding-left: 10px;
+}
+#bid-buscar{
+	background-image: url(images/btn_buscar_bg.gif);
+	padding-left: 10px;
+}
+#bid-restaurar{
+	background-image: url(images/btn_restaurar_bg.gif);
+	padding-left: 10px;
+}
+#tid-obliga{
+	border: #ffa84c 1px solid;
+	/*Para N4 o superior*/
+	border-color : #ffa84c;
+	background-color: #ececec;
+}
+#bid-okC{
+	background-image: url(images/btn_custom-button-new_bg.gif);
+	padding-left: 8px;
+}
+#bid-mail{
+	background-image: url(images/btn_mail_bg.gif);
+	padding-left: 8px;
+}

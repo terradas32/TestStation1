@@ -1,0 +1,87 @@
+/****** CSS TestStation ********/
+body {font-family: Arial,Verdana,serif;font-size:66.7%;text-align:center;}
+a {border:0}
+img {border:0}
+input, select, textarea {min-height: 21px;width:98%; height:auto; margin:0 5px; color: #000; overflow:hidden;
+
+	transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+	-moz-transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;/* Firefox 4 */
+	-webkit-transition:border 0.2s linear 0s, box-shadow 0.2s linear 0s; /* Safari and Chrome */
+	-o-transition:border 0.2s linear 0s, box-shadow 0.2s linear 0s; /* Opera */
+    background-color: #FFFFFF;
+    border: 1px solid #CCCCCC;
+    border-radius: 3px 3px 3px 3px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+/** Estilos de Pagina **/
+#pagina {width:780px;padding:0;margin:0 auto 10px auto !important;}
+/** Cabecera **/
+#head.portada {/*background:url(images/bg_head.jpg) no-repeat right top transparent;height:143px;*/height:140px;margin:0;padding:0;}
+#head.portada h1 {margin:0;padding:80px 0 0px 0px;float:right;font-size:2em;color:grey;}
+#head.portada div.logo img {margin:35px 0px;float:left;}
+#head.portada #menu_top ul {list-style-type:none;display:inline;}
+.logo{float:left;margin: 0 10px 0;position: relative;right: 0;top: 0;}
+/** Idiomas **/
+#banderas {float: right;margin: 10px 0 0;position: relative;right: 0;top: 0;width: 130px;text-align: right;}
+#banderas ul.band_portada {list-style-type:none;}
+#banderas ul.band_portada li {padding:0px 0px 0px 0px;margin:3px 0px;}
+#banderas ul.band_portada li a{color:#333;text-decoration:none;padding:0px 0px 0px 35px;}
+#banderas ul.band_portada li.es {background:url(../Admin/imgIdiomas/spain.gif) no-repeat 0 0 transparent;}
+#banderas ul.band_portada li.ca {background:url(../Admin/imgIdiomas/catalonia.gif) no-repeat 0 0 transparent;}
+#banderas ul.band_portada li.gl {background:url(../Admin/imgIdiomas/galicia.gif) no-repeat 0 0 transparent;}
+#banderas ul.band_portada li.pt {background:url(../Admin/imgIdiomas/mportugal.gif) no-repeat 0 0 transparent;}
+#banderas ul.band_portada li.en {background:url(../Admin/imgIdiomas/unitedkingdom.gif) no-repeat 0 0 transparent;}
+#banderas ul.band_portada li.de {background:url(../Admin/imgIdiomas/germany.gif) no-repeat 0 0 transparent;}
+#banderas ul.band_portada li.fr {background:url(../Admin/imgIdiomas/france.gif) no-repeat 0 0 transparent;}
+#banderas ul.band_portada li.it {background:url(../Admin/imgIdiomas/italy.gif) no-repeat 0 0 transparent;}
+
+/** Cuerpo Web **/
+#cuerpo {/*height:233px;*/margin:0;padding:0;text-align:left;}
+/** Accesos **/
+#accesos {width:205px;/*margin:70px auto;*/margin:60px auto 0 auto;}
+#accesos ul#lista_accesos {margin:0;padding:0;height:150px;}
+#accesos ul li {list-style-type:none;display:inline-block;margin:0px 10px;}
+#lista_accesos li.candidatos {background:url(images/candidato.gif) no-repeat 0px 15px transparent;width:80px;height:125px;text-align: center;}
+#lista_accesos li.candidatos a{color:#333;font-size:1.2em;text-decoration:none;padding:0px 0px 110px 0px;}
+#lista_accesos li.candidatos a:hover{text-decoration:underline;}
+#lista_accesos li.empresa {background:url(images/empresa.gif) no-repeat 0px 15px transparent;width:80px;height:125px;text-align: center;}
+#lista_accesos li.empresa a{color:#333;font-size:1.2em;text-decoration:none;padding:0px 0px 110px 0px;}
+#lista_accesos li.empresa a:hover{text-decoration:underline;}
+#lista_accesos li.administracion {background:url(images/administracion.gif) no-repeat 0px 15px transparent;width:80px;height:125px;}
+#lista_accesos li.administracion a{color:#333;font-size:1.2em;text-decoration:none;padding:0px 16px 110px 5px;}
+#lista_accesos li.administracion a:hover{text-decoration:underline;}
+/** Pie de pagina **/
+#pie {clear:both;height:20px;display:block;position:relative;margin:20px 0;margin:-20px 0 0 0 !important;padding:0;}
+#pie p.dweb {float:left;margin:24px 10px;padding:0;}
+#pie p.dweb a {color:#999;text-decoration:none;}
+#pie p.dweb a:hover {color:#333 !important;text-decoration:underline;}
+#pie p.dweb a:visited {color:#999;}
+#pie p.dweb a:link {color:#999;}
+#pie p.copy{color:#999;float:right;margin:24px 10px;padding:0;}
+
+/*Slider*/
+#sliderImgs{width: 99%; height: auto; margin: auto; display: none;}
+#sliderImgs ul{list-style: none; padding: 0; margin: 0;}
+#sliderImgs .bx-pager{display: none;}
+#sliderImgs .bx-controls-direction{display: none;}
+#sliderImgs:hover .bx-controls-direction{display: block;}
+.cargaSlider{
+	-moz-box-shadow: 0 0 5px #ccc;
+	-webkit-box-shadow: 0 0 5px #ccc;
+	box-shadow: 0 0 5px #ccc;
+	border:  5px solid #fff;
+	left: -5px;
+	background: #fff;
+}
+#sliderImgs ul.bxslider li img.opacity{
+	filter:alpha(opacity=0) !important; 
+	-moz-opacity:0 !important; 
+	-khtml-opacity: 0 !important; 
+	opacity: 0 !important;
+	transition: all 600ms ease 0s;
+ 	-webkit-transition: all 600ms ease 0s;
+	-moz-transition: all 600ms ease 0s;
+	-ms-transition: all 600ms ease 0s;
+	-o-transition: all 600ms ease 0s;
+}
+

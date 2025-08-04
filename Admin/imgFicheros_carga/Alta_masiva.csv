@@ -1,0 +1,11 @@
+NOMBRE;APELLIDO1;APELLIDO2;EMAIL;;;
+CANDIDATO;1;.;plm@psicologosempresariales.es;ok;;
+CANDIDATO;2;.;gsm@psicologosempresariales.es;ok;;
+CANDIDATO;3;.;patircc@hotmail.com;hotmail;;
+CANDIDATO;4;.;gema.gsm@gmail.com;gmail;;
+CANDIDATO;5;.;gsm@gsm.es;inventado;;
+CANDIDATO;6;.;lm@psicologosempresariales.es;falta letra;;NO ENV�A EL EMAIL
+CANDIDATO;7;.;gs�@psicologosempresariales.es;�;NO SUBIDO;
+CANDIDATO;8;.;gsm@psicologosempesariales.es;falta letra;;
+CANDIDATO;9;.;plm@psicologosempresariales..es;dos puntos;NO SUBIDO;
+CANDIDATO;10;.;candidato@1.es;;NO SUBIDO;
