@@ -171,6 +171,11 @@ else	$HELP="xx";
 			}else{
 				$sIdEmpresaReceptora = $cEmpresaLogada->getIdPadre();
 			}
+
+			/* Por Solicitud de PE se sustituye el campo seleccionado inicialmente a "Seleccione una Opcion", para revertir este cambio
+			   basta con elminar el cambio de valor de variable efectuado a continuación. Jairo López - Xeridia S.L. */
+
+			   $sIdEmpresaReceptora = null;
 ?>
 				<tr>
 					<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
@@ -196,6 +201,10 @@ else	$HELP="xx";
 			}else{
 				$sIdEmpresaSolicita = $cEmpresaLogada->getIdEmpresa();
 			}
+
+			/* Por Solicitud de PE se sustituye el campo seleccionado inicialmente a "Seleccione una Opcion", para revertir este cambio
+			   basta con elminar el cambio de valor de variable efectuado a continuación. Jairo López - Xeridia S.L. */
+			   $sIdEmpresaSolicita = null;
 ?>
 				<tr>
 					<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>

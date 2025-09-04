@@ -1,6 +1,583 @@
 <?php
-require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Items_inversos/Items_inversosDB.php");
-require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Items_inversos/Items_inversos.php");
+
+if(!isset($counter) || $counter==0){
+	
+	if(isset($_POST['esZip']) && $_POST['esZip'] == true){
+		$dirGestor = constant("DIR_WS_GESTOR_HTTPS");
+		$documentRoot = constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
+	}else{
+		$dirGestor = constant("DIR_WS_GESTOR");
+		$documentRoot = constant("DIR_FS_DOCUMENT_ROOT");
+	}
+
+	global $dirGestor;
+	global $documentRoot;
+
+	/******************************************************************
+	* Funciones para la generación del Informe
+	******************************************************************/
+
+	function baremo_C($pd)
+	{
+		global $dirGestor;
+		global $documentRoot;
+		
+		if ($pd<=132){ $baremo_C=1;}
+		if ($pd>=133 && $pd<=148){$baremo_C=2;}
+		if ($pd>=149 && $pd<=164){$baremo_C=3;}
+		if ($pd>=165 && $pd<=180){$baremo_C=4;}
+		if ($pd>=181 && $pd<=197){$baremo_C=5;}
+		if ($pd>=198 && $pd<=213){$baremo_C=6;}
+		if ($pd>=214 && $pd<=229){$baremo_C=7;}
+		if ($pd>=230 && $pd<=245){$baremo_C=8;}
+		if ($pd>=246 && $pd<=262){$baremo_C=9;}
+		if ($pd>=263){ $baremo_C=10;}
+		return $baremo_C;
+	}
+	//Funcion que devuelve un texto a la parte del informe de competencias de cml
+	function textoDefinicion($puntuacion){
+		
+		global $dirGestor;
+		global $documentRoot;
+
+		$str="";
+		if($puntuacion ==1 || $puntuacion==2){
+			$str=constant("STR_PRISMA_NUNCA");	//"NUNCA";
+		}
+		if($puntuacion ==3 || $puntuacion==4){
+			$str=constant("STR_PRISMA_CASI_NUNCA");	//"CASI NUNCA";
+		}
+		if($puntuacion ==5 || $puntuacion==6){
+			$str=constant("STR_PRISMA_A_VECES");	//"A VECES";
+		}
+		if($puntuacion ==7 || $puntuacion==8){
+			$str=constant("STR_PRISMA_CASI_SIEMPRE");	//"CASI SIEMPRE";
+		}
+		if($puntuacion ==9 || $puntuacion==10){
+			$str=constant("STR_PRISMA_SIEMPRE");	//"SIEMPRE";
+		}
+		return $str;
+	}
+	//Funcion que devuelve un texto a la parte del informe de competencias de cml
+	function textoPuntuacion($puntuacion){
+
+		global $dirGestor;
+		global $documentRoot;
+
+		$str="";
+		if($puntuacion ==1 || $puntuacion==2){
+			$str=constant("STR_PRISMA_AREA_CLAVE_DE_MEJORA");	//"ÁREA CLAVE DE MEJORA";
+		}
+		if($puntuacion ==3 || $puntuacion==4){
+			$str=constant("STR_PRISMA_AREA_POTENCIAL_DESARROLLO");	//"ÁREA POTENCIAL DESARROLLO";
+		}
+		if($puntuacion ==5 || $puntuacion==6){
+			$str=constant("STR_PRISMA_AREA_EN_DESARROLLO");	//"ÁREA EN DESARROLLO";
+		}
+		if($puntuacion ==7 || $puntuacion==8){
+			$str=constant("STR_PRISMA_AREA_POTENCIAL_FORTALEZA");	//"ÁREA POTENCIAL FORTALEZA";
+		}
+		if($puntuacion ==9 || $puntuacion==10){
+			$str=constant("STR_PRISMA_AREA_DE_FORTALEZA");	//"ÁREA DE FORTALEZA";
+		}
+		return $str;
+	}
+	// Si llega MEJOR devolver 0
+	// Si llega PEOR devolver 2
+	// Si llega BLANCO devolver 1
+	function getInversoCML($valor){
+
+		global $dirGestor;
+		global $documentRoot;
+
+		$inv=0;
+
+		//MEJOR => 2 PEOR => 0 VACIO => 1
+		switch ($valor)
+		{
+			case 'A':	// Mejor
+				$inv = 0;
+				break;
+			case 'B':	// Peor
+				$inv = 2;
+				break;
+			default:	// Sin contestar opcion 0 en respuestas
+				$inv = 1;
+				break;
+		}
+	//		if($valor==2){$inv=0;}
+	//		if($valor==1){$inv=1;}
+	//		if($valor==0){$inv=2;}
+	//		echo "<br />id::" . $valor .  " - valor::" . $inv;
+		return $inv;
+	}
+
+	/*
+	* INTERPRETACIÓN DE INFORME EXPERTO.
+	*/
+	function informeExperto($aPuntuaciones, $sHtmlCab, $idIdioma)
+	{
+
+		global $conn;
+		global $cBloquesDB;
+		global $cEscalasDB;
+		global $cEscalas_itemsDB;
+		global $cTextos_secciones;
+		global $cTextos_seccionesDB;
+
+		global $aSQLPuntuacionesPPL;
+		global $aSQLPuntuacionesC;
+
+		global $cPruebas;
+		global $cProceso;
+		global $cRespPruebas;
+
+		global $dirGestor;
+		global $documentRoot;
+
+		$sSQLExport ="";
+
+		$cTextos_secciones = new Textos_secciones();
+		$cTextos_secciones->setIdSeccion("39");
+		$cTextos_secciones->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
+		$cTextos_secciones->setIdPrueba($_POST['fIdPrueba']);
+		$cTextos_secciones->setIdTipoInforme($_POST['fIdTipoInforme']);
+		$cTextos_secciones = $cTextos_seccionesDB->readEntidad($cTextos_secciones);
+
+
+		$sHtml='
+			<div class="pagina">'. $sHtmlCab;
+		$sHtml.= '
+				<div class="desarrollo">
+					<h2 class="subtitulo">' . mb_strtoupper(constant("STR_INTRODUCCION"), 'UTF-8') . '</h2>
+					<div class="caja">
+						<p class="textos">' . $cTextos_secciones->getTexto() . '</p>
+					</div>
+				</div>
+				<!--FIN DIV DESARROLLO-->
+			</div>
+			<!--FIN DIV PAGINA-->
+		<hr>
+			';
+
+		$sHtml.='
+			<div class="pagina">'. $sHtmlCab;
+		// PÁGINA PERFIL PERSONALIDAD LABORAL
+		$sHtml.='
+				<div class="desarrollo">
+					<h2 class="subtitulo">' . constant("STR_CML_PERFIL_DE_MOTIVACIONES") . '</h2>
+					<br />
+					<table id="personalidad" border="1" >
+					';
+					$cRespuestas_pruebas_itemsBD = new Respuestas_pruebas_itemsDB($conn);
+					$cBaremos_resultadoDB = new Baremos_resultadosDB($conn);
+					$i=0;
+					$cEscalas_items=  new Escalas_items();
+					$cEscalas_itemsDB=  new Escalas_itemsDB($conn);
+					$cEscalas_items->setIdPrueba($_POST['fIdPrueba']);
+					$sqlEscalas_items= $cEscalas_itemsDB->readListaGroupBloque($cEscalas_items);
+	//					echo "<br />" . $sqlEscalas_items;
+					$rsEscalas_items = $conn->Execute($sqlEscalas_items);
+					$sBloques = "";
+					while(!$rsEscalas_items->EOF){
+						$sBloques .="," . $rsEscalas_items->fields['idBloque'];
+						$rsEscalas_items->MoveNext();
+					}
+					if (!empty($sBloques)){
+						$sBloques = substr($sBloques,1);
+					}
+					$cBloques = new Bloques();
+					$cBloques->setCodIdiomaIso2($idIdioma);
+					$cBloques->setIdBloque($sBloques);
+					$cBloques->setOrderBy("idBloque");
+					$cBloques->setOrder("ASC");
+					$sqlBloques = $cBloquesDB->readLista($cBloques);
+	//					echo "<br />" . $sqlBloques;
+					$listaBloques = $conn->Execute($sqlBloques);
+
+					$iPosiImg=0;
+					$iPGlobal = 0;
+					$nBloques= $listaBloques->recordCount();
+					if($nBloques>0){
+						while(!$listaBloques->EOF  && ($listaBloques->fields['idBloque'] < 43)){
+
+							$cEscalas = new Escalas();
+							$cEscalas->setCodIdiomaIso2($idIdioma);
+							$cEscalas->setIdBloque($listaBloques->fields['idBloque']);
+							$cEscalas->setIdBloqueHast($listaBloques->fields['idBloque']);
+							$cEscalas->setOrderBy("idEscala");
+							$cEscalas->setOrder("ASC");
+							$sqlEscalas = $cEscalasDB->readLista($cEscalas);
+							$listaEscalas = $conn->Execute($sqlEscalas);
+							$nEscalas=$listaEscalas->recordCount();
+							if($nEscalas > 0){
+								$bPrimeraVuelta = true;
+								while(!$listaEscalas->EOF){
+
+									if($bPrimeraVuelta){
+										$sHtml.='
+									<tr>
+										<td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
+									</tr>
+									<tr>
+										<td class="letra" valign="middle"><h2 class="letra">' . getLetra($listaBloques->fields['idBloque']) . '</h2></td>
+										<td class="azul" valign="middle"><h2>' . $listaBloques->fields['nombre'] . '</h2></td>
+										<td class="celI" height="25"><p>' . constant("STR_PRISMA_BAJO") . '</p></td>
+										<td class="celI" height="25"><p>' . constant("STR_PRISMA_ME_BA") . '</p></td>
+										<td class="celI" height="25"><p>' . constant("STR_PRISMA_MEDIO") . '</p></td>
+										<td class="celI" height="25"><p>' . constant("STR_PRISMA_ME_AL") . '</p></td>
+										<td class="celI last" height="25"><p>' . constant("STR_PRISMA_ALTO") . '</p></td>
+									</tr>';
+									}
+									$iPBaremada = $aPuntuaciones[$listaBloques->fields['idBloque'] . "-" . $listaEscalas->fields['idEscala']];
+									$sHtml.='<tr>';
+									$sHtml.='
+										<td class="number"><p>' . $iPBaremada . '</p></td>
+										<td class="tablaTitu" ><p class="tablaTitu" ><strong>' . $listaEscalas->fields['nombre'] . '</strong></p>
+										<p class="descripcion">' . nl2br($listaEscalas->fields['descripcion']) . '</p></td>
+										';
+
+
+									$sSQLExport = "INSERT INTO export_personalidad_laboral (idEmpresa, idProceso, descProceso, idCandidato, idPrueba, descPrueba, fecPrueba, idBaremo, idTipoInforme, codIdiomaIso2Informe, idBloque, nomBloque, idEscala, nomEscala, descEscala, puntuacion, fecAlta) VALUES ";
+									$sSQLExport .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST['fIdBaremo'], false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($_POST['fCodIdiomaIso2'], false) . "," . $conn->qstr($listaBloques->fields['idBloque'], false) . "," . $conn->qstr($listaBloques->fields['nombre'], false) . "," . $conn->qstr($listaEscalas->fields['idEscala'], false) . "," . $conn->qstr($listaEscalas->fields['nombre'], false) . "," . $conn->qstr($listaEscalas->fields['descripcion'], false) . "," . $conn->qstr($iPBaremada, false) . ",now());\n";
+									$aSQLPuntuacionesPPL[] = $sSQLExport;
+
+
+									if($iPBaremada==1 || $iPBaremada==2){
+										$sHtml.='
+										<td class="simbol"><p><img src="' . $dirGestor . 'graf/cml/graficasBajo.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
+										';
+									}else{
+										$sHtml.='
+										<td class="simbol"></td>
+										';
+									}
+									if($iPBaremada==3 || $iPBaremada==4){
+										$sHtml.='
+										<td class="simbol"><p><img src="' . $dirGestor.'graf/cml/graficasMB.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
+										';
+									}else{
+										$sHtml.='
+										<td class="simbol"></td>
+										';
+									}
+									if($iPBaremada==5 || $iPBaremada==6){
+										$sHtml.='
+										<td class="simbol"><p><img src="'.$dirGestor.'graf/cml/graficasMedio.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
+										';
+									}else{
+										$sHtml.='
+										<td class="simbol"></td>
+										';
+									}
+									if($iPBaremada==7 || $iPBaremada==8){
+										$sHtml.='
+										<td class="simbol"><p><img src="'.$dirGestor.'graf/cml/graficasMA.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
+										';
+									}else{
+										$sHtml.='
+										<td class="simbol"></td>
+										';
+									}
+									if($iPBaremada==9 || $iPBaremada==10){
+										$sHtml.='
+										<td class="simbol"><p><img src="'.$dirGestor.'graf/cml/graficasAlto.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
+										';
+									}else{
+										$sHtml.='
+										<td class="simbol"></td>
+										';
+									}
+									$sHtml.='
+									</tr>
+									';
+									$bPrimeraVuelta = false;
+									$iPGlobal += ($iPBaremada - 5.5) * ($iPBaremada - 5.5);
+									$listaEscalas->MoveNext();
+								}
+							}
+							$sHtml.='
+							<tr>
+								<td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
+							</tr>
+							<tr>
+								<td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
+							</tr>
+								<tr>
+									<td colspan="7" style="border:1px solid #ffffff;text-align:left;color: #000000;">' . constant("STR_CML_COMENTARIOS") . ':</td>
+								</tr>
+								<tr>
+									<td colspan="7" style="border:1px solid #ffffff;text-align:center;"><hr></td>
+								</tr>
+							<tr>
+								<td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
+							</tr>
+								<tr>
+									<td colspan="7" style="border:1px solid #ffffff;text-align:center;"><hr></td>
+								</tr>
+							<tr>
+								<td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
+							</tr>
+								';
+							$iPosiImg++;
+							$listaBloques->MoveNext();
+						}
+					}
+					$sHtml.='
+					<tr>
+						<td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
+					</tr>
+					</table>
+				</div>
+				<!--FIN DIV DESARROLLO-->
+			</div>
+			<!--FIN DIV PAGINA-->
+		<hr>
+			';
+
+		return $sHtml;
+	}
+
+		/*
+	* INTERPRETACIÓN DE INFORME EXPERTO.
+	*/
+	function informeExpertoPag2($aPuntuaciones, $sHtmlCab, $idIdioma)
+	{
+
+		global $conn;
+		global $cBloquesDB;
+		global $cEscalasDB;
+		global $cEscalas_itemsDB;
+		global $cTextos_secciones;
+		global $cTextos_seccionesDB;
+
+		global $aSQLPuntuacionesPPL;
+		global $aSQLPuntuacionesC;
+
+		$sSQLExport ="";
+		global $cPruebas;
+		global $cProceso;
+		global $cRespPruebas;
+
+		global $dirGestor;
+		global $documentRoot;
+
+		$cTextos_secciones = new Textos_secciones();
+		$cTextos_secciones->setIdSeccion("39");
+		$cTextos_secciones->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
+		$cTextos_secciones->setIdPrueba($_POST['fIdPrueba']);
+		$cTextos_secciones->setIdTipoInforme($_POST['fIdTipoInforme']);
+		$cTextos_secciones = $cTextos_seccionesDB->readEntidad($cTextos_secciones);
+
+
+		$sHtml='
+			<div class="pagina">'. $sHtmlCab;
+		// PÁGINA PERFIL PERSONALIDAD LABORAL
+		$sHtml.='
+				<div class="desarrollo">
+					<h2 class="subtitulo">' . constant("STR_CML_PERFIL_DE_MOTIVACIONES") . '</h2>
+					<br />
+					<table id="personalidad" border="1" >
+					';
+					$cRespuestas_pruebas_itemsBD = new Respuestas_pruebas_itemsDB($conn);
+					$cBaremos_resultadoDB = new Baremos_resultadosDB($conn);
+					$i=0;
+					$cEscalas_items=  new Escalas_items();
+					$cEscalas_itemsDB=  new Escalas_itemsDB($conn);
+					$cEscalas_items->setIdPrueba($_POST['fIdPrueba']);
+					$cEscalas_items->setIdBloque(43);
+					$sqlEscalas_items= $cEscalas_itemsDB->readListaGroupBloque($cEscalas_items);
+	//					echo "<br />" . $sqlEscalas_items;
+					$rsEscalas_items = $conn->Execute($sqlEscalas_items);
+					$sBloques = "";
+					while(!$rsEscalas_items->EOF){
+						$sBloques .="," . $rsEscalas_items->fields['idBloque'];
+						$rsEscalas_items->MoveNext();
+					}
+					if (!empty($sBloques)){
+						$sBloques = substr($sBloques,1);
+					}
+
+					$cBloques = new Bloques();
+					$cBloques->setCodIdiomaIso2($idIdioma);
+					$cBloques->setIdBloque($sBloques);
+					$cBloques->setOrderBy("idBloque");
+					$cBloques->setOrder("ASC");
+					$sqlBloques = $cBloquesDB->readLista($cBloques);
+	//					echo "<br />" . $sqlBloques;
+					$listaBloques = $conn->Execute($sqlBloques);
+
+					$iPosiImg=0;
+					$iPGlobal = 0;
+					$nBloques= $listaBloques->recordCount();
+					if($nBloques>0){
+						while(!$listaBloques->EOF){
+
+							$cEscalas = new Escalas();
+							$cEscalas->setCodIdiomaIso2($idIdioma);
+							$cEscalas->setIdBloque($listaBloques->fields['idBloque']);
+							$cEscalas->setIdBloqueHast($listaBloques->fields['idBloque']);
+							$cEscalas->setOrderBy("idEscala");
+							$cEscalas->setOrder("ASC");
+							$sqlEscalas = $cEscalasDB->readLista($cEscalas);
+							$listaEscalas = $conn->Execute($sqlEscalas);
+							$nEscalas=$listaEscalas->recordCount();
+							if($nEscalas > 0){
+								$bPrimeraVuelta = true;
+								while(!$listaEscalas->EOF){
+
+									if($bPrimeraVuelta){
+										$sHtml.='
+									<tr>
+										<td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
+									</tr>
+									<tr>
+										<td class="letra" valign="middle"><h2 class="letra">' . getLetra($listaBloques->fields['idBloque']) . '</h2></td>
+										<td class="azul" valign="middle"><h2>' . $listaBloques->fields['nombre'] . '</h2></td>
+										<td class="celI" height="25"><p>' . constant("STR_PRISMA_BAJO") . '</p></td>
+										<td class="celI" height="25"><p>' . constant("STR_PRISMA_ME_BA") . '</p></td>
+										<td class="celI" height="25"><p>' . constant("STR_PRISMA_MEDIO") . '</p></td>
+										<td class="celI" height="25"><p>' . constant("STR_PRISMA_ME_AL") . '</p></td>
+										<td class="celI last" height="25"><p>' . constant("STR_PRISMA_ALTO") . '</p></td>
+									</tr>';
+									}
+									$iPBaremada = $aPuntuaciones[$listaBloques->fields['idBloque'] . "-" . $listaEscalas->fields['idEscala']];
+									$sHtml.='<tr>';
+									$sHtml.='
+										<td class="number"><p>' . $iPBaremada . '</p></td>
+										<td class="tablaTitu" ><p class="tablaTitu" ><strong>' . $listaEscalas->fields['nombre'] . '</strong></p>
+										<p class="descripcion">' . nl2br($listaEscalas->fields['descripcion']) . '</p></td>
+										';
+
+									$sSQLExport = "INSERT INTO export_personalidad_laboral (idEmpresa, idProceso, descProceso, idCandidato, idPrueba, descPrueba, fecPrueba, idBaremo, idTipoInforme, codIdiomaIso2Informe, idBloque, nomBloque, idEscala, nomEscala, descEscala, puntuacion, fecAlta) VALUES ";
+									$sSQLExport .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST['fIdBaremo'], false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($_POST['fCodIdiomaIso2'], false) . "," . $conn->qstr($listaBloques->fields['idBloque'], false) . "," . $conn->qstr($listaBloques->fields['nombre'], false) . "," . $conn->qstr($listaEscalas->fields['idEscala'], false) . "," . $conn->qstr($listaEscalas->fields['nombre'], false) . "," . $conn->qstr($listaEscalas->fields['descripcion'], false) . "," . $conn->qstr($iPBaremada, false) . ",now());\n";
+									$aSQLPuntuacionesPPL[] = $sSQLExport;
+
+									if($iPBaremada==1 || $iPBaremada==2){
+										$sHtml.='
+										<td class="simbol"><p><img src="' . $dirGestor . 'graf/cml/graficasBajo.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
+										';
+									}else{
+										$sHtml.='
+										<td class="simbol"></td>
+										';
+									}
+									if($iPBaremada==3 || $iPBaremada==4){
+										$sHtml.='
+										<td class="simbol"><p><img src="' . $dirGestor.'graf/cml/graficasMB.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
+										';
+									}else{
+										$sHtml.='
+										<td class="simbol"></td>
+										';
+									}
+									if($iPBaremada==5 || $iPBaremada==6){
+										$sHtml.='
+										<td class="simbol"><p><img src="'.$dirGestor.'graf/cml/graficasMedio.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
+										';
+									}else{
+										$sHtml.='
+										<td class="simbol"></td>
+										';
+									}
+									if($iPBaremada==7 || $iPBaremada==8){
+										$sHtml.='
+										<td class="simbol"><p><img src="'.$dirGestor.'graf/cml/graficasMA.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
+										';
+									}else{
+										$sHtml.='
+										<td class="simbol"></td>
+										';
+									}
+									if($iPBaremada==9 || $iPBaremada==10){
+										$sHtml.='
+										<td class="simbol"><p><img src="'.$dirGestor.'graf/cml/graficasAlto.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
+										';
+									}else{
+										$sHtml.='
+										<td class="simbol"></td>
+										';
+									}
+									$sHtml.='
+									</tr>
+									';
+									$bPrimeraVuelta = false;
+									$iPGlobal += ($iPBaremada - 5.5) * ($iPBaremada - 5.5);
+									$listaEscalas->MoveNext();
+								}
+							}
+							$sHtml.='
+							<tr>
+								<td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
+							</tr>
+							<tr>
+								<td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
+							</tr>
+								<tr>
+									<td colspan="7" style="border:1px solid #ffffff;text-align:left;color: #000000;">' . constant("STR_CML_COMENTARIOS") . ':</td>
+								</tr>
+								<tr>
+									<td colspan="7" style="border:1px solid #ffffff;text-align:center;"><hr></td>
+								</tr>
+							<tr>
+								<td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
+							</tr>
+								<tr>
+									<td colspan="7" style="border:1px solid #ffffff;text-align:center;"><hr></td>
+								</tr>
+							<tr>
+								<td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
+							</tr>
+								';
+							$iPosiImg++;
+							$listaBloques->MoveNext();
+						}
+					}
+					$sHtml.='
+					<tr>
+						<td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
+					</tr>
+					</table>
+				</div>
+				<!--FIN DIV DESARROLLO-->
+			</div>
+			<!--FIN DIV PAGINA-->
+				<hr>
+			';
+
+		return $sHtml;
+	}
+
+	function getLetra($iBloque){
+
+		global $dirGestor;
+		global $documentRoot;
+
+		$sRetorno="";
+
+		switch ($iBloque)
+		{
+			case '41':
+				$sRetorno="E";
+				break;
+			case '42':
+				$sRetorno="S";
+				break;
+			case '43':
+				$sRetorno="A";
+				break;
+		}
+		return $sRetorno;
+	}
+	/******************************************************************
+	* FIN Funciones para la generación del Informe
+	******************************************************************/
+}
+
+
+require_once($documentRoot . constant("DIR_WS_COM") . "Items_inversos/Items_inversosDB.php");
+require_once($documentRoot . constant("DIR_WS_COM") . "Items_inversos/Items_inversos.php");
+
 $cItems_inversosDB = new Items_inversosDB($conn);
 $cItems_inversos = new Items_inversos();
 		$cItems_inversos->setIdPrueba($_POST['fIdPrueba']);
@@ -280,18 +857,18 @@ $cItems_inversos = new Items_inversos();
 		$sHtmlFin	= '';
 		//$aux			= $this->conn;
 
-		$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+		$spath = (substr($documentRoot, -1, 1) != '/') ? $documentRoot . '/' : $documentRoot;
 
 		$sHtmlInicio='
 			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 				<html xmlns="http://www.w3.org/1999/xhtml">
 				<head>
 					<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-					<link rel="stylesheet" type="text/css" href="'.constant("DIR_WS_GESTOR").'estilosInformes/cml/resetCSS.css"/>';
+					<link rel="stylesheet" type="text/css" href="'.$dirGestor.'estilosInformes/cml/resetCSS.css"/>';
 					if($_POST['fIdTipoInforme'] != 11){
-						$sHtmlInicio.= 		'<link rel="stylesheet" type="text/css" href="'.constant("DIR_WS_GESTOR").'estilosInformes/cml/style.css"/>';
+						$sHtmlInicio.= 		'<link rel="stylesheet" type="text/css" href="'.$dirGestor.'estilosInformes/cml/style.css"/>';
 					}else{
-						$sHtmlInicio.= 		'<link rel="stylesheet" type="text/css" href="'.constant("DIR_WS_GESTOR").'estilosInformes/cml/styleNarrativos.css"/>';
+						$sHtmlInicio.= 		'<link rel="stylesheet" type="text/css" href="'.$dirGestor.'estilosInformes/cml/styleNarrativos.css"/>';
 					}
 		$sHtmlInicio.='
 					<title>CML</title>
@@ -315,7 +892,7 @@ $sHtmlFin .='
 										<p class="textos">' . constant("STR_SR_A") . ' ' . $cCandidato->getNombre(). ' ' . $cCandidato->getApellido1(). ' ' .$cCandidato->getApellido2() .'</p>
 						    </td>
 						    <td class="logo">
-						    	<img src="'.constant("DIR_WS_GESTOR").'estilosInformes/cml/img/logo-pequenio.jpg" title="logo"/>
+						    	<img src="'.$dirGestor.'estilosInformes/cml/img/logo-pequenio.jpg" title="logo"/>
 						    </td>
 						    <td class="fecha">
 						        <p class="textos">' . date("d/m/Y") . '</p>
@@ -343,8 +920,8 @@ $sHtmlFin .='
 		//PORTADA
 		$sHtml.= '
 			<div class="pagina portada">
-		    	<img src="' . constant("DIR_WS_GESTOR") . 'graf/cml/portada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
-		    	<h1 class="titulo"><img src="' . constant("DIR_WS_GESTOR") . 'estilosInformes/cml/img/logo.jpg" /></h1>';
+		    	<img src="' . $dirGestor . 'graf/cml/portada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
+		    	<h1 class="titulo"><img src="' . $dirGestor . 'estilosInformes/cml/img/logo.jpg" /></h1>';
 			if($_POST['fIdTipoInforme']!=11){
 				$sHtml.= 		'<div id="txt_infome"><p>' . constant("STR_CML_INFORME_DE_MOTIVACIONES_LABORALES") . '</p></div>';
 			}else{
@@ -376,7 +953,7 @@ $sHtmlFin .='
 
 		$sHtml.= '
 			<div class="pagina portada" id="contraportada">
-    			<img id="imgContraportada" src="' . constant("DIR_WS_GESTOR") . 'graf/contraportada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
+    			<img id="imgContraportada" src="' . $dirGestor . 'graf/contraportada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
 			</div>
 			<!--FIN DIV PAGINA-->
 		';
@@ -388,7 +965,7 @@ if (!isset($NOGenerarFICHERO_INFORME))
 		$replace = array('@', '.');
 //		$sNombre = $cCandidato->getMail() . "_" . $_POST['fIdEmpresa']. "_" .$_POST['fIdProceso'] . "_" .$_POST['fIdTipoInforme'] . "_" . $cPruebas->getNombre();
 		$sDirImg="imgInformes/";
-		$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+		$spath = (substr($documentRoot, -1, 1) != '/') ? $documentRoot . '/' : $documentRoot;
 
 		$_fichero = $spath . $sDirImg . $sNombre . ".html";
 		//$cEntidad->chk_dir($spath . $sDirImg, 0777);
@@ -421,539 +998,5 @@ if (!isset($NOGenerarFICHERO_INFORME))
 
 	}
 }
-/******************************************************************
-* Funciones para la generación del Informe
-******************************************************************/
 
-	function baremo_C($pd)
-	{
-		if ($pd<=132){ $baremo_C=1;}
-		if ($pd>=133 && $pd<=148){$baremo_C=2;}
-		if ($pd>=149 && $pd<=164){$baremo_C=3;}
-		if ($pd>=165 && $pd<=180){$baremo_C=4;}
-		if ($pd>=181 && $pd<=197){$baremo_C=5;}
-		if ($pd>=198 && $pd<=213){$baremo_C=6;}
-		if ($pd>=214 && $pd<=229){$baremo_C=7;}
-		if ($pd>=230 && $pd<=245){$baremo_C=8;}
-		if ($pd>=246 && $pd<=262){$baremo_C=9;}
-		if ($pd>=263){ $baremo_C=10;}
-		return $baremo_C;
-	}
-	//Funcion que devuelve un texto a la parte del informe de competencias de cml
-	function textoDefinicion($puntuacion){
-		$str="";
-		if($puntuacion ==1 || $puntuacion==2){
-			$str=constant("STR_PRISMA_NUNCA");	//"NUNCA";
-		}
-		if($puntuacion ==3 || $puntuacion==4){
-			$str=constant("STR_PRISMA_CASI_NUNCA");	//"CASI NUNCA";
-		}
-		if($puntuacion ==5 || $puntuacion==6){
-			$str=constant("STR_PRISMA_A_VECES");	//"A VECES";
-		}
-		if($puntuacion ==7 || $puntuacion==8){
-			$str=constant("STR_PRISMA_CASI_SIEMPRE");	//"CASI SIEMPRE";
-		}
-		if($puntuacion ==9 || $puntuacion==10){
-			$str=constant("STR_PRISMA_SIEMPRE");	//"SIEMPRE";
-		}
-		return $str;
-	}
-	//Funcion que devuelve un texto a la parte del informe de competencias de cml
-	function textoPuntuacion($puntuacion){
-		$str="";
-		if($puntuacion ==1 || $puntuacion==2){
-			$str=constant("STR_PRISMA_AREA_CLAVE_DE_MEJORA");	//"ÁREA CLAVE DE MEJORA";
-		}
-		if($puntuacion ==3 || $puntuacion==4){
-			$str=constant("STR_PRISMA_AREA_POTENCIAL_DESARROLLO");	//"ÁREA POTENCIAL DESARROLLO";
-		}
-		if($puntuacion ==5 || $puntuacion==6){
-			$str=constant("STR_PRISMA_AREA_EN_DESARROLLO");	//"ÁREA EN DESARROLLO";
-		}
-		if($puntuacion ==7 || $puntuacion==8){
-			$str=constant("STR_PRISMA_AREA_POTENCIAL_FORTALEZA");	//"ÁREA POTENCIAL FORTALEZA";
-		}
-		if($puntuacion ==9 || $puntuacion==10){
-			$str=constant("STR_PRISMA_AREA_DE_FORTALEZA");	//"ÁREA DE FORTALEZA";
-		}
-		return $str;
-	}
-	// Si llega MEJOR devolver 0
-	// Si llega PEOR devolver 2
-	// Si llega BLANCO devolver 1
-	function getInversoCML($valor){
-		$inv=0;
-
-		//MEJOR => 2 PEOR => 0 VACIO => 1
-		switch ($valor)
-		{
-			case 'A':	// Mejor
-				$inv = 0;
-				break;
-			case 'B':	// Peor
-				$inv = 2;
-				break;
-			default:	// Sin contestar opcion 0 en respuestas
-				$inv = 1;
-				break;
-		}
-//		if($valor==2){$inv=0;}
-//		if($valor==1){$inv=1;}
-//		if($valor==0){$inv=2;}
-//		echo "<br />id::" . $valor .  " - valor::" . $inv;
-		return $inv;
-	}
-
-	/*
-	 * INTERPRETACIÓN DE INFORME EXPERTO.
-	 */
-	function informeExperto($aPuntuaciones, $sHtmlCab, $idIdioma)
-	{
-
-		global $conn;
-		global $cBloquesDB;
-		global $cEscalasDB;
-		global $cEscalas_itemsDB;
-		global $cTextos_secciones;
-		global $cTextos_seccionesDB;
-
-		global $aSQLPuntuacionesPPL;
-		global $aSQLPuntuacionesC;
-
-		global $cPruebas;
-		global $cProceso;
-		global $cRespPruebas;
-
-		$sSQLExport ="";
-
-		$cTextos_secciones = new Textos_secciones();
-		$cTextos_secciones->setIdSeccion("39");
-		$cTextos_secciones->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
-		$cTextos_secciones->setIdPrueba($_POST['fIdPrueba']);
-		$cTextos_secciones->setIdTipoInforme($_POST['fIdTipoInforme']);
-		$cTextos_secciones = $cTextos_seccionesDB->readEntidad($cTextos_secciones);
-
-
-		$sHtml='
-			<div class="pagina">'. $sHtmlCab;
-		$sHtml.= '
-				<div class="desarrollo">
-		        	<h2 class="subtitulo">' . mb_strtoupper(constant("STR_INTRODUCCION"), 'UTF-8') . '</h2>
-        		    <div class="caja">
-            			<p class="textos">' . $cTextos_secciones->getTexto() . '</p>
-		            </div>
-        		</div>
-        		<!--FIN DIV DESARROLLO-->
-        	</div>
-        	<!--FIN DIV PAGINA-->
-          <hr>
-        	';
-
-		$sHtml.='
-			<div class="pagina">'. $sHtmlCab;
-		// PÁGINA PERFIL PERSONALIDAD LABORAL
-		$sHtml.='
-				<div class="desarrollo">
-		       		<h2 class="subtitulo">' . constant("STR_CML_PERFIL_DE_MOTIVACIONES") . '</h2>
-					<br />
-			        <table id="personalidad" border="1" >
-			        ';
-					$cRespuestas_pruebas_itemsBD = new Respuestas_pruebas_itemsDB($conn);
-					$cBaremos_resultadoDB = new Baremos_resultadosDB($conn);
-					$i=0;
-					$cEscalas_items=  new Escalas_items();
-					$cEscalas_itemsDB=  new Escalas_itemsDB($conn);
-					$cEscalas_items->setIdPrueba($_POST['fIdPrueba']);
-					$sqlEscalas_items= $cEscalas_itemsDB->readListaGroupBloque($cEscalas_items);
-//					echo "<br />" . $sqlEscalas_items;
-					$rsEscalas_items = $conn->Execute($sqlEscalas_items);
-					$sBloques = "";
-					while(!$rsEscalas_items->EOF){
-						$sBloques .="," . $rsEscalas_items->fields['idBloque'];
-						$rsEscalas_items->MoveNext();
-					}
-					if (!empty($sBloques)){
-						$sBloques = substr($sBloques,1);
-					}
-					$cBloques = new Bloques();
-					$cBloques->setCodIdiomaIso2($idIdioma);
-					$cBloques->setIdBloque($sBloques);
-					$cBloques->setOrderBy("idBloque");
-					$cBloques->setOrder("ASC");
-					$sqlBloques = $cBloquesDB->readLista($cBloques);
-//					echo "<br />" . $sqlBloques;
-					$listaBloques = $conn->Execute($sqlBloques);
-
-					$iPosiImg=0;
-					$iPGlobal = 0;
-					$nBloques= $listaBloques->recordCount();
-					if($nBloques>0){
-						while(!$listaBloques->EOF  && ($listaBloques->fields['idBloque'] < 43)){
-
-							$cEscalas = new Escalas();
-						 	$cEscalas->setCodIdiomaIso2($idIdioma);
-						 	$cEscalas->setIdBloque($listaBloques->fields['idBloque']);
-						 	$cEscalas->setIdBloqueHast($listaBloques->fields['idBloque']);
-						 	$cEscalas->setOrderBy("idEscala");
-						 	$cEscalas->setOrder("ASC");
-						 	$sqlEscalas = $cEscalasDB->readLista($cEscalas);
-						 	$listaEscalas = $conn->Execute($sqlEscalas);
-						 	$nEscalas=$listaEscalas->recordCount();
-						 	if($nEscalas > 0){
-						 		$bPrimeraVuelta = true;
-						 		while(!$listaEscalas->EOF){
-
-							        if($bPrimeraVuelta){
-							        	$sHtml.='
-							          <tr>
-							            <td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
-							          </tr>
-							          <tr>
-							          	<td class="letra" valign="middle"><h2 class="letra">' . getLetra($listaBloques->fields['idBloque']) . '</h2></td>
-							            <td class="azul" valign="middle"><h2>' . $listaBloques->fields['nombre'] . '</h2></td>
-							            <td class="celI" height="25"><p>' . constant("STR_PRISMA_BAJO") . '</p></td>
-							            <td class="celI" height="25"><p>' . constant("STR_PRISMA_ME_BA") . '</p></td>
-							            <td class="celI" height="25"><p>' . constant("STR_PRISMA_MEDIO") . '</p></td>
-							            <td class="celI" height="25"><p>' . constant("STR_PRISMA_ME_AL") . '</p></td>
-							            <td class="celI last" height="25"><p>' . constant("STR_PRISMA_ALTO") . '</p></td>
-							          </tr>';
-							        }
-							        $iPBaremada = $aPuntuaciones[$listaBloques->fields['idBloque'] . "-" . $listaEscalas->fields['idEscala']];
-							        $sHtml.='<tr>';
-							        $sHtml.='
-							        	<td class="number"><p>' . $iPBaremada . '</p></td>
-							        	<td class="tablaTitu" ><p class="tablaTitu" ><strong>' . $listaEscalas->fields['nombre'] . '</strong></p>
-										<p class="descripcion">' . nl2br($listaEscalas->fields['descripcion']) . '</p></td>
-										';
-
-
-							        $sSQLExport = "INSERT INTO export_personalidad_laboral (idEmpresa, idProceso, descProceso, idCandidato, idPrueba, descPrueba, fecPrueba, idBaremo, idTipoInforme, codIdiomaIso2Informe, idBloque, nomBloque, idEscala, nomEscala, descEscala, puntuacion, fecAlta) VALUES ";
-							        $sSQLExport .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST['fIdBaremo'], false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($_POST['fCodIdiomaIso2'], false) . "," . $conn->qstr($listaBloques->fields['idBloque'], false) . "," . $conn->qstr($listaBloques->fields['nombre'], false) . "," . $conn->qstr($listaEscalas->fields['idEscala'], false) . "," . $conn->qstr($listaEscalas->fields['nombre'], false) . "," . $conn->qstr($listaEscalas->fields['descripcion'], false) . "," . $conn->qstr($iPBaremada, false) . ",now());\n";
-							        $aSQLPuntuacionesPPL[] = $sSQLExport;
-
-
-							       	if($iPBaremada==1 || $iPBaremada==2){
-										$sHtml.='
-										<td class="simbol"><p><img src="' . constant("DIR_WS_GESTOR") . 'graf/cml/graficasBajo.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
-										';
-							       	}else{
-							       		$sHtml.='
-							       		<td class="simbol"></td>
-							       		';
-							       	}
-							       	if($iPBaremada==3 || $iPBaremada==4){
-										$sHtml.='
-										<td class="simbol"><p><img src="' . constant("DIR_WS_GESTOR").'graf/cml/graficasMB.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
-										';
-							       	}else{
-							       		$sHtml.='
-							       		<td class="simbol"></td>
-							       		';
-							       	}
-							       	if($iPBaremada==5 || $iPBaremada==6){
-										$sHtml.='
-										<td class="simbol"><p><img src="'.constant("DIR_WS_GESTOR").'graf/cml/graficasMedio.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
-										';
-							       	}else{
-							       		$sHtml.='
-							       		<td class="simbol"></td>
-							       		';
-							       	}
-							       	if($iPBaremada==7 || $iPBaremada==8){
-										$sHtml.='
-										<td class="simbol"><p><img src="'.constant("DIR_WS_GESTOR").'graf/cml/graficasMA.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
-										';
-							       	}else{
-							       		$sHtml.='
-							       		<td class="simbol"></td>
-							       		';
-							       	}
-							       	if($iPBaremada==9 || $iPBaremada==10){
-										$sHtml.='
-										<td class="simbol"><p><img src="'.constant("DIR_WS_GESTOR").'graf/cml/graficasAlto.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
-										';
-							       	}else{
-							       		$sHtml.='
-							       		<td class="simbol"></td>
-							       		';
-							       	}
-							       	$sHtml.='
-							       	</tr>
-							       	';
-							       	$bPrimeraVuelta = false;
-							        $iPGlobal += ($iPBaremada - 5.5) * ($iPBaremada - 5.5);
-							        $listaEscalas->MoveNext();
-						 		}
-						 	}
-						 	$sHtml.='
-					           <tr>
-					             <td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
-					           </tr>
-					           <tr>
-					             <td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
-					           </tr>
-						 		<tr>
-							    	<td colspan="7" style="border:1px solid #ffffff;text-align:left;color: #000000;">' . constant("STR_CML_COMENTARIOS") . ':</td>
-								</tr>
-							    <tr>
-							    	<td colspan="7" style="border:1px solid #ffffff;text-align:center;"><hr></td>
-							    </tr>
-					           <tr>
-					             <td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
-					           </tr>
-							    <tr>
-							    	<td colspan="7" style="border:1px solid #ffffff;text-align:center;"><hr></td>
-							    </tr>
-					           <tr>
-					             <td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
-					           </tr>
-							    ';
-						 	$iPosiImg++;
-						 	$listaBloques->MoveNext();
-						 }
-					 }
-					$sHtml.='
-			          <tr>
-			            <td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
-			          </tr>
-					</table>
-				</div>
-				<!--FIN DIV DESARROLLO-->
-    		</div>
-    		<!--FIN DIV PAGINA-->
-        <hr>
-    		';
-
-		return $sHtml;
-	}
-
-		/*
-	 * INTERPRETACIÓN DE INFORME EXPERTO.
-	 */
-	function informeExpertoPag2($aPuntuaciones, $sHtmlCab, $idIdioma)
-	{
-
-		global $conn;
-		global $cBloquesDB;
-		global $cEscalasDB;
-		global $cEscalas_itemsDB;
-		global $cTextos_secciones;
-		global $cTextos_seccionesDB;
-
-		global $aSQLPuntuacionesPPL;
-		global $aSQLPuntuacionesC;
-
-		$sSQLExport ="";
-		global $cPruebas;
-		global $cProceso;
-		global $cRespPruebas;
-
-		$cTextos_secciones = new Textos_secciones();
-		$cTextos_secciones->setIdSeccion("39");
-		$cTextos_secciones->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
-		$cTextos_secciones->setIdPrueba($_POST['fIdPrueba']);
-		$cTextos_secciones->setIdTipoInforme($_POST['fIdTipoInforme']);
-		$cTextos_secciones = $cTextos_seccionesDB->readEntidad($cTextos_secciones);
-
-
-		$sHtml='
-			<div class="pagina">'. $sHtmlCab;
-		// PÁGINA PERFIL PERSONALIDAD LABORAL
-		$sHtml.='
-				<div class="desarrollo">
-					<h2 class="subtitulo">' . constant("STR_CML_PERFIL_DE_MOTIVACIONES") . '</h2>
-					<br />
-			        <table id="personalidad" border="1" >
-			        ';
-					$cRespuestas_pruebas_itemsBD = new Respuestas_pruebas_itemsDB($conn);
-					$cBaremos_resultadoDB = new Baremos_resultadosDB($conn);
-					$i=0;
-					$cEscalas_items=  new Escalas_items();
-					$cEscalas_itemsDB=  new Escalas_itemsDB($conn);
-					$cEscalas_items->setIdPrueba($_POST['fIdPrueba']);
-					$cEscalas_items->setIdBloque(43);
-					$sqlEscalas_items= $cEscalas_itemsDB->readListaGroupBloque($cEscalas_items);
-//					echo "<br />" . $sqlEscalas_items;
-					$rsEscalas_items = $conn->Execute($sqlEscalas_items);
-					$sBloques = "";
-					while(!$rsEscalas_items->EOF){
-						$sBloques .="," . $rsEscalas_items->fields['idBloque'];
-						$rsEscalas_items->MoveNext();
-					}
-					if (!empty($sBloques)){
-						$sBloques = substr($sBloques,1);
-					}
-
-					$cBloques = new Bloques();
-					$cBloques->setCodIdiomaIso2($idIdioma);
-					$cBloques->setIdBloque($sBloques);
-					$cBloques->setOrderBy("idBloque");
-					$cBloques->setOrder("ASC");
-					$sqlBloques = $cBloquesDB->readLista($cBloques);
-//					echo "<br />" . $sqlBloques;
-					$listaBloques = $conn->Execute($sqlBloques);
-
-					$iPosiImg=0;
-					$iPGlobal = 0;
-					$nBloques= $listaBloques->recordCount();
-					if($nBloques>0){
-						while(!$listaBloques->EOF){
-
-							$cEscalas = new Escalas();
-						 	$cEscalas->setCodIdiomaIso2($idIdioma);
-						 	$cEscalas->setIdBloque($listaBloques->fields['idBloque']);
-						 	$cEscalas->setIdBloqueHast($listaBloques->fields['idBloque']);
-						 	$cEscalas->setOrderBy("idEscala");
-						 	$cEscalas->setOrder("ASC");
-						 	$sqlEscalas = $cEscalasDB->readLista($cEscalas);
-						 	$listaEscalas = $conn->Execute($sqlEscalas);
-						 	$nEscalas=$listaEscalas->recordCount();
-						 	if($nEscalas > 0){
-						 		$bPrimeraVuelta = true;
-						 		while(!$listaEscalas->EOF){
-
-							        if($bPrimeraVuelta){
-							        	$sHtml.='
-							          <tr>
-							            <td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
-							          </tr>
-							          <tr>
-							          	<td class="letra" valign="middle"><h2 class="letra">' . getLetra($listaBloques->fields['idBloque']) . '</h2></td>
-							            <td class="azul" valign="middle"><h2>' . $listaBloques->fields['nombre'] . '</h2></td>
-							            <td class="celI" height="25"><p>' . constant("STR_PRISMA_BAJO") . '</p></td>
-							            <td class="celI" height="25"><p>' . constant("STR_PRISMA_ME_BA") . '</p></td>
-							            <td class="celI" height="25"><p>' . constant("STR_PRISMA_MEDIO") . '</p></td>
-							            <td class="celI" height="25"><p>' . constant("STR_PRISMA_ME_AL") . '</p></td>
-							            <td class="celI last" height="25"><p>' . constant("STR_PRISMA_ALTO") . '</p></td>
-							          </tr>';
-							        }
-							        $iPBaremada = $aPuntuaciones[$listaBloques->fields['idBloque'] . "-" . $listaEscalas->fields['idEscala']];
-							        $sHtml.='<tr>';
-							        $sHtml.='
-							        	<td class="number"><p>' . $iPBaremada . '</p></td>
-							        	<td class="tablaTitu" ><p class="tablaTitu" ><strong>' . $listaEscalas->fields['nombre'] . '</strong></p>
-										<p class="descripcion">' . nl2br($listaEscalas->fields['descripcion']) . '</p></td>
-										';
-
-							        $sSQLExport = "INSERT INTO export_personalidad_laboral (idEmpresa, idProceso, descProceso, idCandidato, idPrueba, descPrueba, fecPrueba, idBaremo, idTipoInforme, codIdiomaIso2Informe, idBloque, nomBloque, idEscala, nomEscala, descEscala, puntuacion, fecAlta) VALUES ";
-							        $sSQLExport .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST['fIdBaremo'], false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($_POST['fCodIdiomaIso2'], false) . "," . $conn->qstr($listaBloques->fields['idBloque'], false) . "," . $conn->qstr($listaBloques->fields['nombre'], false) . "," . $conn->qstr($listaEscalas->fields['idEscala'], false) . "," . $conn->qstr($listaEscalas->fields['nombre'], false) . "," . $conn->qstr($listaEscalas->fields['descripcion'], false) . "," . $conn->qstr($iPBaremada, false) . ",now());\n";
-							        $aSQLPuntuacionesPPL[] = $sSQLExport;
-
-							       	if($iPBaremada==1 || $iPBaremada==2){
-										$sHtml.='
-										<td class="simbol"><p><img src="' . constant("DIR_WS_GESTOR") . 'graf/cml/graficasBajo.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
-										';
-							       	}else{
-							       		$sHtml.='
-							       		<td class="simbol"></td>
-							       		';
-							       	}
-							       	if($iPBaremada==3 || $iPBaremada==4){
-										$sHtml.='
-										<td class="simbol"><p><img src="' . constant("DIR_WS_GESTOR").'graf/cml/graficasMB.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
-										';
-							       	}else{
-							       		$sHtml.='
-							       		<td class="simbol"></td>
-							       		';
-							       	}
-							       	if($iPBaremada==5 || $iPBaremada==6){
-										$sHtml.='
-										<td class="simbol"><p><img src="'.constant("DIR_WS_GESTOR").'graf/cml/graficasMedio.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
-										';
-							       	}else{
-							       		$sHtml.='
-							       		<td class="simbol"></td>
-							       		';
-							       	}
-							       	if($iPBaremada==7 || $iPBaremada==8){
-										$sHtml.='
-										<td class="simbol"><p><img src="'.constant("DIR_WS_GESTOR").'graf/cml/graficasMA.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
-										';
-							       	}else{
-							       		$sHtml.='
-							       		<td class="simbol"></td>
-							       		';
-							       	}
-							       	if($iPBaremada==9 || $iPBaremada==10){
-										$sHtml.='
-										<td class="simbol"><p><img src="'.constant("DIR_WS_GESTOR").'graf/cml/graficasAlto.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" /></p></td>
-										';
-							       	}else{
-							       		$sHtml.='
-							       		<td class="simbol"></td>
-							       		';
-							       	}
-							       	$sHtml.='
-							       	</tr>
-							       	';
-							       	$bPrimeraVuelta = false;
-							        $iPGlobal += ($iPBaremada - 5.5) * ($iPBaremada - 5.5);
-							        $listaEscalas->MoveNext();
-						 		}
-						 	}
-						 	$sHtml.='
-					           <tr>
-					             <td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
-					           </tr>
-					           <tr>
-					             <td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
-					           </tr>
-						 		<tr>
-							    	<td colspan="7" style="border:1px solid #ffffff;text-align:left;color: #000000;">' . constant("STR_CML_COMENTARIOS") . ':</td>
-								</tr>
-							    <tr>
-							    	<td colspan="7" style="border:1px solid #ffffff;text-align:center;"><hr></td>
-							    </tr>
-					           <tr>
-					             <td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
-					           </tr>
-							    <tr>
-							    	<td colspan="7" style="border:1px solid #ffffff;text-align:center;"><hr></td>
-							    </tr>
-					           <tr>
-					             <td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
-					           </tr>
-							    ';
-						 	$iPosiImg++;
-						 	$listaBloques->MoveNext();
-						 }
-					 }
-					$sHtml.='
-			          <tr>
-			            <td colspan="7" style="border:1px solid #ffffff;text-align:center;">&nbsp;</td>
-			          </tr>
-					</table>
-				</div>
-				<!--FIN DIV DESARROLLO-->
-    		</div>
-    		<!--FIN DIV PAGINA-->
-				<hr>
-    		';
-
-		return $sHtml;
-	}
-
-	function getLetra($iBloque){
-
-		$sRetorno="";
-
-		switch ($iBloque)
-		{
-			case '41':
-				$sRetorno="E";
-				break;
-			case '42':
-				$sRetorno="S";
-				break;
-			case '43':
-				$sRetorno="A";
-				break;
-		}
-		return $sRetorno;
-	}
-/******************************************************************
-* FIN Funciones para la generación del Informe
-******************************************************************/
 ?>

@@ -1,14 +1,14 @@
 <?php
 // Incluimos la librerias necesarias
-require_once(constant('DOMPDF_DIR') . 'autoload.inc.php');
+// require_once(constant('DOMPDF_DIR') . 'autoload.inc.php');
+// require_once(constant('DOMPDF_DIR') . 'lib/html5lib/Parser.php');
+// require_once(constant('DOMPDF_DIR') . 'lib/php-font-lib/src/FontLib/Autoloader.php');
+// require_once(constant('DOMPDF_DIR') . 'lib/php-svg-lib/src/autoload.php');
+// require_once(constant('DOMPDF_DIR') . 'src/Autoloader.php');
+// require_once(constant('DOMPDF_DIR') . 'src/FontMetrics.php');
+// Dompdf\Autoloader::register();
 
-
-require_once(constant('DOMPDF_DIR') . 'lib/html5lib/Parser.php');
-require_once(constant('DOMPDF_DIR') . 'lib/php-font-lib/src/FontLib/Autoloader.php');
-require_once(constant('DOMPDF_DIR') . 'lib/php-svg-lib/src/autoload.php');
-require_once(constant('DOMPDF_DIR') . 'src/Autoloader.php');
-require_once(constant('DOMPDF_DIR') . 'src/FontMetrics.php');
-Dompdf\Autoloader::register();
+require_once(constant('DOMPDF_VENDOR_DIR') . 'autoload.php');
 // Reference the Dompdf namespace
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -16,12 +16,17 @@ use Dompdf\FontMetrics;
 
 // Set options to enable embedded PHP
 $options = new Options();
-$options->set('isPhpEnabled', 'true');
-$options->set('enable_remote', 'true');
+$options->set('debugKeepTemp', false); 
+$options->set('isPhpEnabled', true);
+$options->set('enable_remote', true);
 $options->set('defaultFont', 'Arial');
+$options->set('isRemoteEnabled', true); 
 
 
 $dompdf = new Dompdf($options);
+
+header('Content-Type: text/html; charset=UTF-8');
+mb_internal_encoding('UTF-8');
 
 // Definimos el tamaño y orientación del papel que queremos.
 //$dompdf->set_paper("A4");
@@ -39,7 +44,15 @@ $dompdf = new Dompdf($options);
     //$dompdf->load_html($html_para_pdf);
 
     //$dompdf->load_html($sHtml);
-    $dompdf->load_html(utf8_encode(file_get_contents($_fichero)));
+    $_html_tratado = utf8_encode(file_get_contents($_fichero));
+    $mystring = HTTP_SERVER;
+    $findme   = '.test';    //DESARROLLO
+    $pos = strpos($mystring, $findme);
+    if ($pos === false) {
+        $servidor = str_replace('/Admin/', '', HTTP_SERVER);
+        $_html_tratado = str_replace($servidor, "http://localhost", utf8_encode(file_get_contents($_fichero)));
+    } 
+    $dompdf->load_html($_html_tratado);
 
 
     $dompdf->render(); //este comando renderiza el PDF

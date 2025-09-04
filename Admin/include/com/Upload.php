@@ -25,6 +25,7 @@ class Upload
 	var $image_src_y				= 0;
 
 	var $dst_name					= "";
+	var $dst_path                   = "";
 	var $dst_pathname				= "";
 	var $dst_pathname_mini			= "";
 	var $image_dst					= "";

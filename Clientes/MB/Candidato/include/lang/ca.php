@@ -91,6 +91,10 @@ define("MSG_AVISO_LEGAL_P1"					, "En compliment del que disposa la Llei Orgàni
 define("MSG_AVISO_LEGAL_P2"					, "Per a l'exercici dels drets d'accés, rectificació, cancel•lació i oposició podrà dirigir una comunicació per escrit a Psicólogos Empresariales y Asociados, S.A. - Responsable de Seguretat, C/Pintor Rosales, 44 1r D (28008-Madrid).");
 define("MSG_AVISO_LEGAL_P3"					, "En el cas que vostè no sigui un candidat propi de Psicólogos Empresariales y Asociados, S.A. i per tant la realització de l'avaluació psicològica hagi estat requerida per una empresa client de Psicólogos Empresariales y Asociados, S.A., com a part d'un procés de selecció i/o avaluació al qual vostè opti o participi amb ells, se li informa que, com a part d'aquest procés, els resultats de l'avaluació seran comunicats a aquesta empresa, amb l'exclusiva finalitat d'aquesta gestió.");
 define("MSG_ESTAS_SEGURO_DE_FINALIZAR_LA_PRUEBA"	, "Estàs segur de voler finalitzar la prova?");
+define("MSG_ESTAS_SEGURO_DE_COMENZAR_LA_PRUEBA_AUDIO"	, "¿Estás seguro de que quieres comenzar la prueba?\\nUna vez comenzada, no podrás volver a escuchar el audio.\\n\\nSi estás seguro pulsa 'Aceptar', de lo contrario pulsa 'Cancelar'.");
+define("MSG_DATOS_DE_ACCESO_ENVIADOS_ALTAS_CIEGAS"	, "Le hemos enviado un correo con sus datos de acceso.<br/>Revise su buzón de entrada y carpeta de Spam.");
+define("MSG_YA_REGISTRADO_ALTAS_CIEGAS_CONTINUAR"	, "Ya se encuentra registrado en el sistema, si quiere continuar desde donde lo dejo, pulse sobre el siguiente <a href=\"remember.php?fLang=%s&s=%s\">enlace</a>, recibirá un mensaje en su buzón de correo con los datos de acceso.");
+
 /*********** Mensajes de Error en los campos del formulario *************/
 //Formato: ERR_FORM_XXXXX
 define("ERR"								, "Error General, Intentelo més tard.");
@@ -518,6 +522,38 @@ define("STR_DEBE_SELECCIONAR_UNA_OPCION_DE_CADA_PREGUNTA", "Heu de seleccionar u
 define("STR_USTED_HA_FINALIZADO_TODAS_LAS_PRUEBAS_DE_ESTE_PROCESO", "Vostè ha finalitzat totes les proves d'aquest procés.");
 define("IR_A_PAGINA", "Anar a Pàgina");
 define("BUSCAR_PRIMERA_SIN_RESPONDER", "Cerca primera sense respondre");
+define("FINALIZAR", "Finalizar");
+define("TU_TIEMPO_SE_HA_AGOTADO", "Tu tiempo se ha agotado");
+define("STR_TPV_DATOS_TITULO", "Pasarela segura de pago");
+define("STR_TPV_DATOS_SUBTITULO", "Completar los Cuestionarios, tiene un coste total de %s (Impuestos incluidos)");
+define("STR_TPV_DATOS_TEXTO", "Antes de comenzar se te solicita que completes dicho pago a través de la siguiente pasarela segura de pago.<br /><br />Gracias,");
+define("STR_TPV_PAGAR", "PAGAR");
+define("STR_TPV_CUESTIONARIOS", "Cuestionarios");
+define("STR_TPV_PENDIENTE", "Pendiente");
 define("FINALIZAR", "finalitzar");
+define("STR_SUS_RESPONSABILIDADES"					, "Sus responsabilidades");
+define("STR_SU_COMPROMISO"					, "SU COMPROMISO");
+define("STR_SU_COMPROMISO_TEXTO"					, "Antes de continuar, debe aceptar una serie de responsabilidades y compromisos.<br /><br />Me comprometo a:<br /><br /><br />•	Realizar esta evaluación honestamente y sin ayuda de otras personas o recursos no autorizados.<br /><br />•	No copiar o distribuir información sobre esta evaluación, de ninguna manera.<br /><br />•	Realizar, si se me solicita, otra evaluación supervisada para verificar los resultados de esta evaluación.");
 define("TU_TIEMPO_SE_HA_AGOTADO", "Your time has finished");
+define("STR_SI_NO_ACEPTO_TEXTO"					, "Si no acepta, comuníquelo al administrador de la prueba y haga click en Desconectar, arriba a la derecha. <img src='graf/btn_salir_off.gif' border=0 />");
+define("STR_DEBE_ACEPTAR"			,"Debe aceptar para poder continuar.");
+define("STR_TIEMPO_REQUERIDO", "Tiempo requerido");
+define("STR_N_DE_PREGUNTAS", "Nº de preguntas");
+define("STR_SECTOR", "Sector");
+define("STR_CONCESION", "Concesión / Talleres Autorizados");
+define("STR_FECHA_NACIMIENTO", "Fecha de Nacimiento");
+define("STR_ESPECIALIDAD", "Especialidad");
+define("STR_NIVEL_CONOCIMIENTO_TECNICO", "Autoevaluación del nivel de conocimientos técnicos en función del sector señalado");
+define("STR_ALTAS_ANONIMAS", "Registro anónimo");
+define("STR_TEXTO_ACCESO_BLIND"						, "Para darse de alta en el proceso, rellene los siguientes campos con sus datos.");
+define("STR_NECESITA_AYUDA_SOPORTE_AL_USUARIO"						, "Necesita ayuda? Soporte al usuario");
+define("STR_AYUDA_AL_CANDIDATO"						, "Ayuda al Candidato");
+define("STR_SOPORTE_AL_USUARIO"						, "Soporte al Usuario");
+define("STR_CONTACTA_CON_NOSOTROS"						, "Contacta con nosotros");
+define("STR_EXPANDIR_TODO"						, "Expandir todo");
+define("STR_CONTRAER_TODO"						, "Contraer todo");
+define("STR_MENSAJE"						, "Mensaje");
+define("STR_ENVIAR"						, "Enviar");
+define("STR_LO_QUE_NECESITARA"						, "Lo que necesitará");
+define("STR_PAIS_DE_PROCEDENCIA"                         , "País de procedencia");
 ?>

@@ -4,6 +4,18 @@
     }else{
     	require_once("include/SeguridadTemplate.php");
     }
+
+	$clave = obtenerClavePlantilla();
+	$payload = [
+		'sql'   => $sql,
+		'nombre'=> $clave,
+		'ts'    => time(),
+		'nonce' => bin2hex(random_bytes(8)),
+	];
+
+	$token = excel_encrypt_payload($payload, EXCEL_ENC_KEY);
+	$sig   = excel_sign($token, EXCEL_HMAC_KEY);
+	$urlExcel = 'sqlToExcel.php?fSQLtoEXCEL='.base64_encode($token).'&signature='.base64_encode($sig);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $sLang;?>" xml:lang="<?php echo $sLang;?>">
@@ -219,23 +231,40 @@ function _body_onunload(){	lon();	}
 		while (!$lista->EOF)
 		{
 			$sTDStyle="tddatoslista";
-			if ($lista->fields['idPrueba'] == "87" || $lista->fields['idPrueba'] == "83" || $lista->fields['idPrueba'] == "121" || $lista->fields['idPrueba'] == "117" || $lista->fields['idPrueba'] == "123"){
+			if ($lista->fields['idPrueba'] == "87" 
+				|| $lista->fields['idPrueba'] == "83" 
+				|| $lista->fields['idPrueba'] == "121" 
+				|| $lista->fields['idPrueba'] == "117" 
+				|| $lista->fields['idPrueba'] == "123" 
+				|| $lista->fields['idPrueba'] == "179"){
 				$sTDStyle="tddatoslistaInforme";
+				// condicion para mostrar o no el enlace para generar el informe
+				// En el caso de MAZDA solo utilizan baterías así que la generación del informe conjunto
+				//se hará desde el enlace de la última prueba de la bateria 
+				$enlaceInforme = "javascript:setPK('" . addslashes($lista->fields['idEmpresa']) . "',
+				'" . addslashes($lista->fields['idProceso']) . "',
+				'" . addslashes($lista->fields['idCandidato']) . "',
+				'" . addslashes($lista->fields['codIdiomaIso2']) . "',
+				'" . addslashes($lista->fields['idPrueba']) . "');
+				enviar(" . constant('MNT_CONSULTAR') . ");";
+			}else{
+				$enlaceInforme = "";
 			}
-		?>
-		<tr onmouseover="this.bgColor='<?php echo constant("ONMOUSEOVER");?>'" onmouseout="this.bgColor='<?php echo constant("ONMOUSEOUT");?>'" bgcolor="<?php echo constant("ONMOUSEOUT");?>">
-			<td bgcolor="<?php echo constant("BG_COLOR");?>"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="1" border="0" alt="" /></td>
-			<td class="<?php echo $sTDStyle;?>" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idEmpresa']);?>','<?php echo addslashes($lista->fields['idProceso']);?>','<?php echo addslashes($lista->fields['idCandidato']);?>','<?php echo addslashes($lista->fields['codIdiomaIso2']);?>','<?php echo addslashes($lista->fields['idPrueba']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['descEmpresa']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['descEmpresa'], "<b><i><u><strong><br><br />")),0,255);?></td>
-			<td class="<?php echo $sTDStyle;?>" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idEmpresa']);?>','<?php echo addslashes($lista->fields['idProceso']);?>','<?php echo addslashes($lista->fields['idCandidato']);?>','<?php echo addslashes($lista->fields['codIdiomaIso2']);?>','<?php echo addslashes($lista->fields['idPrueba']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['descProceso']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['descProceso'], "<b><i><u><strong><br><br />")),0,255);?></td>
-			<td class="<?php echo $sTDStyle;?>" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idEmpresa']);?>','<?php echo addslashes($lista->fields['idProceso']);?>','<?php echo addslashes($lista->fields['idCandidato']);?>','<?php echo addslashes($lista->fields['codIdiomaIso2']);?>','<?php echo addslashes($lista->fields['idPrueba']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['descCandidato']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['descCandidato'], "<b><i><u><strong><br><br />")),0,255);?></td>
-			<td class="<?php echo $sTDStyle;?>" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idEmpresa']);?>','<?php echo addslashes($lista->fields['idProceso']);?>','<?php echo addslashes($lista->fields['idCandidato']);?>','<?php echo addslashes($lista->fields['codIdiomaIso2']);?>','<?php echo addslashes($lista->fields['idPrueba']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['descIdiomaIso2']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['descIdiomaIso2'], "<b><i><u><strong><br><br />")),0,255);?></td>
-			<td class="<?php echo $sTDStyle;?>" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idEmpresa']);?>','<?php echo addslashes($lista->fields['idProceso']);?>','<?php echo addslashes($lista->fields['idCandidato']);?>','<?php echo addslashes($lista->fields['codIdiomaIso2']);?>','<?php echo addslashes($lista->fields['idPrueba']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['descPrueba']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['descPrueba'], "<b><i><u><strong><br><br />")),0,255);?></td>
-			<td class="<?php echo $sTDStyle;?>" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idEmpresa']);?>','<?php echo addslashes($lista->fields['idProceso']);?>','<?php echo addslashes($lista->fields['idCandidato']);?>','<?php echo addslashes($lista->fields['codIdiomaIso2']);?>','<?php echo addslashes($lista->fields['idPrueba']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['finalizado']);?>"><?php echo ($lista->fields['finalizado'] > 0) ? constant("STR_SI") : constant("STR_NO");?></td>
-			<td class="<?php echo $sTDStyle;?>" valign="top" align="center" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idEmpresa']);?>','<?php echo addslashes($lista->fields['idProceso']);?>','<?php echo addslashes($lista->fields['idCandidato']);?>','<?php echo addslashes($lista->fields['codIdiomaIso2']);?>','<?php echo addslashes($lista->fields['idPrueba']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['fecAlta']);?>"><script language="javascript" type="text/javascript">document.write(formatThisDate('<?php echo $lista->fields['fecAlta'];?>'));</script></td>
-			<td class="<?php echo $sTDStyle;?>" valign="top" align="center" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idEmpresa']);?>','<?php echo addslashes($lista->fields['idProceso']);?>','<?php echo addslashes($lista->fields['idCandidato']);?>','<?php echo addslashes($lista->fields['codIdiomaIso2']);?>','<?php echo addslashes($lista->fields['idPrueba']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['fecMod']);?>"><script language="javascript" type="text/javascript">document.write(formatThisDate('<?php echo $lista->fields['fecMod'];?>'));</script></td>
-		</tr>
-		<?php $i++;
-		$lista->MoveNext();
+			
+			?>
+			<tr onmouseover="this.bgColor='<?php echo constant("ONMOUSEOVER");?>'" onmouseout="this.bgColor='<?php echo constant("ONMOUSEOUT");?>'" bgcolor="<?php echo constant("ONMOUSEOUT");?>">
+				<td bgcolor="<?php echo constant("BG_COLOR");?>"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="1" border="0" alt="" /></td>
+				<td class="<?php echo $sTDStyle;?>" valign="top" onclick="<?php echo $enlaceInforme ?>" title="<?php echo strip_tags($lista->fields['descEmpresa']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['descEmpresa'], "<b><i><u><strong><br><br />")),0,255);?></td>
+				<td class="<?php echo $sTDStyle;?>" valign="top" onclick="<?php echo $enlaceInforme ?>" title="<?php echo strip_tags($lista->fields['descProceso']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['descProceso'], "<b><i><u><strong><br><br />")),0,255);?></td>
+				<td class="<?php echo $sTDStyle;?>" valign="top" onclick="<?php echo $enlaceInforme ?>" title="<?php echo strip_tags($lista->fields['descCandidato']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['descCandidato'], "<b><i><u><strong><br><br />")),0,255);?></td>
+				<td class="<?php echo $sTDStyle;?>" valign="top" onclick="<?php echo $enlaceInforme ?>" title="<?php echo strip_tags($lista->fields['descIdiomaIso2']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['descIdiomaIso2'], "<b><i><u><strong><br><br />")),0,255);?></td>
+				<td class="<?php echo $sTDStyle;?>" valign="top" onclick="<?php echo $enlaceInforme ?>" title="<?php echo strip_tags($lista->fields['descPrueba']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['descPrueba'], "<b><i><u><strong><br><br />")),0,255);?></td>
+				<td class="<?php echo $sTDStyle;?>" valign="top" onclick="<?php echo $enlaceInforme ?>" title="<?php echo strip_tags($lista->fields['finalizado']);?>"><?php echo ($lista->fields['finalizado'] > 0) ? constant("STR_SI") : constant("STR_NO");?></td>
+				<td class="<?php echo $sTDStyle;?>" valign="top" align="center" onclick="<?php echo $enlaceInforme ?>" title="<?php echo strip_tags($lista->fields['fecAlta']);?>"><script language="javascript" type="text/javascript">document.write(formatThisDate('<?php echo $lista->fields['fecAlta'];?>'));</script></td>
+				<td class="<?php echo $sTDStyle;?>" valign="top" align="center" onclick="<?php echo $enlaceInforme ?>" title="<?php echo strip_tags($lista->fields['fecMod']);?>"><script language="javascript" type="text/javascript">document.write(formatThisDate('<?php echo $lista->fields['fecMod'];?>'));</script></td>
+			</tr>
+			<?php $i++;
+			$lista->MoveNext();
 		} ?>
 	</table>
 	<?php $s = ob_get_contents();
@@ -392,7 +421,9 @@ $aBuscador= $cEntidad->getBusqueda();
 	<input type="hidden" name="LSTOrder" value="<?php echo (isset($_POST['LSTOrder'])) ? $cUtilidades->validaXSS($_POST['LSTOrder']) : "";?>" />
 	<input type="hidden" name="LSTLineasPagina" value="<?php echo (isset($_POST['LSTLineasPagina'])) ? $cUtilidades->validaXSS($_POST['LSTLineasPagina']) : constant("CNF_LINEAS_PAGINA");?>" />
 	<input type="hidden" name="respuestas_pruebas_next_page" value="<?php echo (isset($_POST['respuestas_pruebas_next_page'])) ? $cUtilidades->validaXSS($_POST['respuestas_pruebas_next_page']) : "1";?>" />
-	<input type="hidden" name="fSQLtoEXCEL" value="<?php echo base64_encode($sql . constant("CHAR_SEPARA") . "respuestas_pruebas");?>" />
+	<input type="hidden" name="signature" value="<?php echo(base64_encode($sig)); ?>" />
+	<input type="hidden" name="fSQLtoEXCEL" value="<?php echo(base64_encode($token)); ?>" />
+
 </div>
 
 <?php include (constant("DIR_WS_INCLUDE") . 'menus.php');?>

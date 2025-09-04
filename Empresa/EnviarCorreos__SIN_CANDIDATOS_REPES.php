@@ -262,7 +262,7 @@ include_once ('include/conexionECases.php');
 					$cInformes_pruebas = $cInformes_pruebasDB->readEntidad($cInformes_pruebas);
     			}
 
-				$iDonglesADescontarUnitario += $cInformes_pruebas->getTarifa();
+				$iDonglesADescontarUnitario += (int)$cInformes_pruebas->getTarifa();
 				$rsProceso_informes->MoveNext();
 			}
 			$iDonglesADescontar	=	($iDonglesADescontarUnitario * $iTotalCandidatos);
@@ -986,7 +986,7 @@ include_once ('include/conexionECases.php');
 			$mail->SMTPAuth   = true;                               //Enable SMTP authentication
 			$mail->Username = constant("MAILUSERNAME");             //SMTP username
 			$mail->Password = constant("MAILPASSWORD");             //SMTP password
-			$mail->SMTPSecure = 'tls';							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+			$mail->SMTPSecure = constant("MAIL_ENCRYPTION");							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
 			$mail->Port      = constant("PORTMAIL");                                //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
 			
@@ -1011,18 +1011,23 @@ include_once ('include/conexionECases.php');
 			//Indicamos cual es nuestra dirección de correo y el nombre que
 			//queremos que vea el usuario que lee nuestro correo
 			//$mail->From = $cEmpresa->getMail();
-			$mail->From = constant("MAILUSERNAME");
+			$mail->From = constant("EMAIL_CONTACTO");
 			if ($cProcesos->getProcesoConfidencial() == "1"){
-				$mail->AddReplyTo(constant("MAILUSERNAME"), constant("NOMBRE_EMPRESA"));
+				//$mail->AddReplyTo(constant("EMAIL_CONTACTO"), constant("NOMBRE_EMPRESA"));
 				$mail->FromName = constant("NOMBRE_EMPRESA");
+				$nomEmpresa = constant("NOMBRE_EMPRESA");
 			}else{
-				$mail->AddReplyTo($cEmpresa->getMail(), $cEmpresa->getNombre());
+				//$mail->AddReplyTo($cEmpresa->getMail(), $cEmpresa->getNombre());
 				$mail->FromName = $cEmpresa->getNombre();
+				$nomEmpresa = $cEmpresa->getNombre();
 			}
+			//$mail->addReplyTo();
+
+
 			//Asignamos asunto y cuerpo del mensaje
 			//El cuerpo del mensaje lo ponemos en formato html, haciendo
 			//que se vea en negrita
-			$mail->Subject = $sSubject;
+			$mail->Subject = $nomEmpresa . " - " . $sSubject;
 			$mail->Body = $sBody;
 
 			//Definimos AltBody por si el destinatario del correo no admite

@@ -1,5 +1,5 @@
 {
     "require": {
-        "zendframework/zendframework": "^3.0"
+        "laminas/laminas-soap": "^2.9"
     }
 }

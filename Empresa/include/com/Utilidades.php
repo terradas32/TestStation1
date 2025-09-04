@@ -50,6 +50,7 @@ class Utilidades
     public function validaXSS($sCadena)
     {
         //$sCadena = htmlspecialchars($sCadena, ENT_QUOTES, "UTF-8");
+        $sCadena = $this->fixArrayToString($sCadena);
         $sCadena = htmlentities($sCadena, ENT_QUOTES, "UTF-8");
         return $sCadena;
     }
@@ -62,6 +63,7 @@ class Utilidades
     public function validaXSS_EDITOR($sCadena)
     {
         //$sCadena = htmlspecialchars($sCadena, ENT_QUOTES, "UTF-8");
+        $sCadena = $this->fixArrayToString($sCadena);
         $sCadena = htmlentities($sCadena, ENT_QUOTES, "UTF-8");
         return $sCadena;
     }
@@ -345,13 +347,17 @@ class Utilidades
     *  @param String cOpciones Entidad Opciones consultada
     *  @return String Valor calculado según la opción guardada en Respuestas_pruebas_items
     */
-    public function getValorCalculadoPRUEBAS($rsLine, $cOpciones, $conn)
+    public function getValorCalculadoPRUEBAS($rsLine, $cOpciones = null, $conn)
     {
+        //var_dump("listaRespItems");
+        //die;
         $sValor="";
 
         //Leemos el item para saber cual es la opción correcta
-        require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Items/ItemsDB.php");
-        require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Items/Items.php");
+        if(!isset($_POST['esZip']) && $_POST['esZip'] != true){
+            require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Items/ItemsDB.php");
+            require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Items/Items.php");
+        }
         $cItemsDB = new ItemsDB($conn);
         $cItem = new Items();
         $cItem->setIdItem($rsLine->fields['idItem']);
@@ -360,8 +366,10 @@ class Utilidades
         $cItem = $cItemsDB->readEntidad($cItem);
 
         //Leemos la opción para saber en código de la misma
-        require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Opciones/OpcionesDB.php");
-        require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Opciones/Opciones.php");
+        if(!isset($_POST['esZip']) && $_POST['esZip'] != true){
+            require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Opciones/OpcionesDB.php");
+            require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Opciones/Opciones.php");
+        }
         $cOpcionDB = new OpcionesDB($conn);
         $cOpcion = new Opciones();
         $cOpcion->setIdItem($rsLine->fields['idItem']);
@@ -734,4 +742,19 @@ class Utilidades
             return $original_plaintext;
         }
     }
+
+	
+	/*
+	 * Soluciona el tratamiento como fatal error del paso de Array a la funcion nativa htmlentities
+	 * a partir de PHP 8
+	 */
+
+	 function fixArrayToString(string | array $string) : string
+	 {
+		if (gettype($string)==='array'){
+
+			$string = (count($string) > 0) ? strval($string[0]) : "";
+		}
+		return $string;
+	 }
 }//Fin de la Clase Utilidades

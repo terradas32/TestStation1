@@ -77,6 +77,7 @@ define("TIT_PEDIDOS_TIENDA"						, "Comandes de la Botiga");
 //Formato: CONF_
 define("CONF_ALTA"					, "Registre donat d'alta correctes amb id ");
 define("CONF_SESSION"				, "La seva sessió ha caducat, les dades no han estat guardats.");
+define("CONF_ALTA_VARIOS"			, "Se han dado de alta correctamente %s registros de un Total de %s");
 /*********** Mensajes *************/
 //Formato: MSG_
 define("MSG_POR_FAVOR_ESPERE_CARGANDO"			, "Si us plau esperi.<br />Carregant ...");
@@ -657,7 +658,25 @@ define("STR_LEIDO_EJEMPLOS", "Llegit exemples");
 define("STR_MINUTOS_TEST", "Minuts test");
 define("STR_SEGUNDOS_TEST", "Segons test");
 
-define("STR_MENU_1",    ":: Seguretat");
+define("STR_ID_FICHERO_SABANA"                         , "Id Fichero Sabana");
+define("STR_ID_TEXTO"                         , "Id Texto");
+define("STR_PUNT_MIN"                         , "Punt Min");
+define("STR_PUNT_MAX"                         , "Punt Max");
+define("STR_IMPPRUEBASPAPEL"                         , "Imp_pruebas_papel");
+define("STR_RESULTADO"                         , "RESULTADO");
+define("STR_PRUEBASPAPEL"                         , "Pruebas_papel");
+define("STR_FORMACION_ACADEMICA"                         , "Nivel de formación académica");
+define("STR_AREA_PROFESIONAL"                         , "Área profesional");
+define("STR_DATOS_TITULO"                         , "DATOS PERSONALES");
+
+define("STR_DATOS_MB"                         , "Datos Concesión");
+define("STR_SECTOR", "Sector");
+define("STR_CONCESION", "Concesión / Talleres Autorizados");
+define("STR_FECHA_NACIMIENTO", "Fecha de Nacimiento");
+
+define("STR_UNIVERSIDAD"                         , "Universidad");
+
+define("STR_MENU_1",    ":: Seguridad");
 define("STR_MENU_2",    "Modif. Dades usuari");
 define("STR_MENU_3",    "funcionalitats");
 define("STR_MENU_4",    "Func del perfil");
@@ -727,7 +746,7 @@ define("STR_MENU_96",    "Rangos_ip.php");
 define("STR_MENU_97",    "Rangos_textos.php");
 define("STR_MENU_98",    "Barems per competència");
 define("STR_MENU_102",    "consums");
-define("STR_MENU_103",    "Encerts i errors");
+//define("STR_MENU_103",    "Encerts i errors");
 define("STR_MENU_107",    "Cerca empresa");
 define("STR_MENU_106",    "nova empresa");
 define("STR_MENU_105",    "Cerca procés");
@@ -741,6 +760,7 @@ define("STR_MENU_114",    "Cercar candidats");
 define("STR_MENU_115",    "Cerca Informes de candidats");
 define("STR_MENU_116",    "Cerca Enviament de correus");
 define("STR_MENU_117",    "Cerca plantilles de correus");
+define("STR_MENU_120",    "Export Aptitudinales");
 
 define("STR_DESC_MENU_1",    "Gestió de Seguretat");
 define("STR_DESC_MENU_2",    "Modificar les meves dades");
@@ -826,9 +846,50 @@ define("STR_DESC_MENU_114",    "Cercar candidats");
 define("STR_DESC_MENU_115",    "Cerca Informes de candidats");
 define("STR_DESC_MENU_116",    "Cerca Enviament de correus");
 define("STR_DESC_MENU_117",    "Cerca plantilles de correus");
+define("STR_DESC_MENU_120",    "Export Aptitudinalese");
+
 define("STR_DATOS_BANCARIOS",  "Data bank");
 define("STR_CONTRATO",  "Contract");
 define("STR_LOS_CAMPOS_MARCADOS_CON",  "Fields that are shaded in grey");
 define("STR_OBLIGATORIOS",  "are mandatory");
 
+define("STR_DATOS_PROCESO",  "Datos Proceso");
+define("STR_COMUNICACION",  "Comunicación");
+define("STR_SELECCIONA_EL_TIPO_DE_CARGA_DE_CANDIDATOS",  "Seleccione el tipo de carga de candidatos");
+define("STR_CARGA_MASIVA",  "Carga masiva");
+define("STR_ALTA_MANUAL",  "Alta manual");
+define("STR_IMPORTAR_CANDIDATOS",  "Importar candidatos");
+define("MSG_IMPORTAR_CANDIDATOS",  "Puede importar cualquier tipo de fichero <strong>CSV</strong> (Archivo de texto delimitado por comas), seleccione el fichero que desea utilizar y pulse <b>Añadir</b>. Le proporcionamos un ejemplo de fichero de carga pulse:");
+define("MSG_IMPORTAR_CANDIDATOS2",  "Cargue un máximo de <strong>500 candidatos</strong> por fichero.");
+define("MSG_IMPORTAR_CANDIDATOS3",  "Espere hasta que le aparezca el resumen de la carga.");
+define("MSG_VARIOS_MIN_NO_CIERRE",  "Este proceso puede tardar varios minutos.<br />No cierre la ventana del navegador.");
+define("STR_DE",  "de");
+define("STR_ENVIADOS_CORRECTAMENTE",  "se han enviado correctamente");
+define("STR_PUNTO_Y_COMA",  "Punto y coma (;)");
+define("STR_COMA",  "Coma (,)");
+define("STR_PAGINA",  "Página");
+define("STR_ENVIO_DE_CONTRASENAS",  "Envío de contraseñas");
+define("STR_INDIVIDUALES",  "Individuales");
+define("STR_JUNTAS_EN_UN_SOLO_CORREO",  "Juntas en un sólo correo");
+define("STR_PERÍODO_DE_TIEMPO",  "Período de tiempo");
+define("STR_SELECCIONE_UNA_EMPRESA_Y_PROCESO",  "Seleccione un Concesionario y Proceso");
+
+define("STR_REGISTROS_SE_EXPORTARAN",  "Registros se exportaran");
+define("STR_ESTA_OPERACION_PUEDE_DURAR_VARIOS_MINUTOS",  "Esta operación puede durar varios minutos");
+define("STR_PULSE_SOBRE_EL_ICONO_EXCEL_PARA_DESCARGAR_LAS_PUNTUACIONES",  "Pulse sobre el icono Excel para descargar las puntuaciones");
+define("STR_GENERAR",  "Generar");
+define("STR_RECHAZADA",  "Rechazada");
+define("STR_ACEPTADA",  "Aceptada");
+define("STR_PENDIENTE",  "Pendiente");
+define("STR_NO_DISPONE_DE_SUFICIENTES_UNIDADES_PARA_EFECTUAR_LA_OPERACION",  "No Dispone de suficientes Unidades para efectuar la operación");
+define("STR_UNIDADES_DISPONIBLES",  "Unidades Disponibles");
+define("STR_UNIDADES_A_CONSUMIR",  "Unidades a consumir");
+define("STR_POR_FAVOR_RECARGUE_UN_MINIMO_DE",  "Por favor recargue un mínimo de");
+define("STR_NO_HAY_RESULTADOS",  "No hay resultados");
+define("STR_AVISO_LEGAL"                         , "Aviso Legal");
+define("MSG_AVISO_LEGAL_P1"					, "En cumplimiento de lo dispuesto en el Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo de 27 de abril de 2016 relativo a la protección de las personas físicas en lo que respecta al tratamiento de datos personales y a la libre circulación de estos datos (RGPD), le informamos que sus datos, serán incorporados a los ficheros de los que es responsable Psicólogos Empresariales y Asociados, S.A. con dirección en C/ Pintor Rosales, 44 1º D (28008-Madrid) con el fin de obtener evaluación psicológica.");
+define("MSG_AVISO_LEGAL_P2"					, "Para el ejercicio de los derechos de acceso, rectificación, cancelación y oposición podrá dirigir una comunicación por escrito a Psicólogos Empresariales y Asociados, S.A. – Responsable de Seguridad , C/ Pintor Rosales, 44 1º D (28008 -Madrid).");
+define("MSG_AVISO_LEGAL_P3"					, "En el caso de que Ud no sea una candidato propio de Psicólogos Empresariales y Asociados, S.A. y por tanto  la realización de la evaluación psicológica haya sido requerida por una empresa cliente de Psicólogos Empresariales y Asociados, S.A, como parte de un proceso de selección y/o evaluación al que Ud. opte o participe con ellos, se le informa de que, como parte de dicho proceso, los resultados de la evaluación serán comunicados a dicha empresa, con la exclusiva finalidad de esta gestión.");
+define("STR_CONDICIONES_LEGALES"			, "He leído y acepto las condiciones legales");
+define("STR_DEBE_ACEPTAR_LOS_TERMINOS"			,"Debe aceptar los terminos para poder continuar.");
 ?>

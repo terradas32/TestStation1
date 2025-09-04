@@ -78,16 +78,16 @@ if (isset($_POST['fGo'])){
 					//$ip = "80.28.158.173";
 					//$cIPLocalizadorData = $cIPLocalizador->getData($ip, constant("API_KEY_IPINFODB"));
 
-// 					echo "<br />" . $cIPLocalizadorData->statusCode;
-// 					echo "<br />" . $cIPLocalizadorData->ipAddress;
-// 					echo "<br />" . $cIPLocalizadorData->countryCode;
-// 					echo "<br />" . $cIPLocalizadorData->countryName;
-// 					echo "<br />" . $cIPLocalizadorData->regionName;
-// 					echo "<br />" . $cIPLocalizadorData->cityName;
-// 					echo "<br />" . $cIPLocalizadorData->zipCode;
-// 					echo "<br />" . $cIPLocalizadorData->latitude;
-// 					echo "<br />" . $cIPLocalizadorData->longitude;
-// 					echo "<br />" . $cIPLocalizadorData->timeZone;
+					//echo "<br />" . $cIPLocalizadorData->statusCode;
+					//echo "<br />" . $cIPLocalizadorData->ipAddress;
+					//echo "<br />" . $cIPLocalizadorData->countryCode;
+					//echo "<br />" . $cIPLocalizadorData->countryName;
+					//echo "<br />" . $cIPLocalizadorData->regionName;
+					//echo "<br />" . $cIPLocalizadorData->cityName;
+					//echo "<br />" . $cIPLocalizadorData->zipCode;
+					//echo "<br />" . $cIPLocalizadorData->latitude;
+					//echo "<br />" . $cIPLocalizadorData->longitude;
+					//echo "<br />" . $cIPLocalizadorData->timeZone;
 
 					$cEmpresasDB	= new EmpresasDB($conn);
 					$cEmpresas	= new Empresas();
@@ -101,8 +101,8 @@ if (isset($_POST['fGo'])){
 					{
 						//Miramos si aun estándo dentro de fechas, ya ha finalizado
 						//Todas las pruebas del proceso
-//						if (empty($rowUser['finalizado']))
-//						{
+						//if (empty($rowUser['finalizado']))
+						//{
 							$token =md5(uniqid('', true));
 							$cEntidad->setToken($token);
 							$cEntidadDB->ActualizaToken($cEntidad);
@@ -156,11 +156,11 @@ if (isset($_POST['fGo'])){
 	        								$cEmpresas_conf_tpv->setIdEmpresa($rowUser["idEmpresa"]);
 	        								$cEmpresas_conf_tpv->setIdTipoTpv($_sTipoTpv);
 	        								$cEmpresas_conf_tpv = $cEmpresas_conf_tpvDB->readEntidad($cEmpresas_conf_tpv);
-// 	        								echo "<br />32::Lanzar pasarela primer intento.";
-// 	        								echo "<br />32:mail:" . $rowUser["mail"];
-// 	        								echo "<br />32:idEmpresa:" . $rowUser["idEmpresa"];
-// 	        								echo "<br />32:idProceso:" . $rowUser["idProceso"];
-// 	        								echo "<br />32:idCandidato:" . $rowUser["idCandidato"];
+											// 	echo "<br />32::Lanzar pasarela primer intento.";
+											// 	echo "<br />32:mail:" . $rowUser["mail"];
+											// 	echo "<br />32:idEmpresa:" . $rowUser["idEmpresa"];
+											// 	echo "<br />32:idProceso:" . $rowUser["idProceso"];
+											// 	echo "<br />32:idCandidato:" . $rowUser["idCandidato"];
 	        								if ($cEmpresas_conf_tpv->getBUSINESS_CODE() == ""){
 	        									$strMensaje = "<br />Code:FD_BCODE0400 - Ha ocurrido un error al contactar con la pasarela del banco.<br />Contacte con " . $cEmpresas->getNombre();
 	        								}else{
@@ -176,9 +176,9 @@ if (isset($_POST['fGo'])){
 			        		}else{
 			        			include_once('datosprofesionales.php');
 			        		}
-//						}else{
-//							$strMensaje = constant("STR_USTED_HA_FINALIZADO_TODAS_LAS_PRUEBAS_DE_ESTE_PROCESO");
-//						}
+						//	}else{
+						//		$strMensaje = constant("STR_USTED_HA_FINALIZADO_TODAS_LAS_PRUEBAS_DE_ESTE_PROCESO");
+						//	}
 					}else{
 						$strMensaje = constant("STR_PROCESO_FUERA_DE_FECHAS");
 					}

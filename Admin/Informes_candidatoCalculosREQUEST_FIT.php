@@ -382,7 +382,7 @@ include_once ('include/conexion.php');
 							include('constantesInformes/' .	$_POST['fCodIdiomaIso2'] .'.php');
 
 							//Pasamos este parametro para que no genere fisicamente el fichero de informe
-							$NOGenerarFICHERO_INFORME=true;
+							//$NOGenerarFICHERO_INFORME=true;
 
 							$cRespPruebas = new Respuestas_pruebas();
 							$cRespPruebasDB = new Respuestas_pruebasDB($conn);
@@ -462,7 +462,7 @@ include_once ('include/conexion.php');
 	* @param String destpath
 	* @return boolean
 	*/
-	function chk_dir($path, $mode = 0777) //creates directory tree recursively
+	function chk_dir($path, $mode = 0777) : bool //creates directory tree recursively
 	{
 		$dirs = explode('/', $path);
 		$pos = strrpos($path, ".");

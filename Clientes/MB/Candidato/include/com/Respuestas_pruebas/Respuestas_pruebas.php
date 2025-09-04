@@ -403,7 +403,7 @@ class Respuestas_pruebas
 	* @return varchar(2)
 	*/
 	function getMinutos_test(){
-		return $this->minutos_test;
+		return $this->minutos_test == "" ? 0 : $this->minutos_test;
 	}
 	/**
 	* Fija el contenido de la propiedad minutos_test

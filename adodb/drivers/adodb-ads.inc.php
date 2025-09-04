@@ -1,20 +1,29 @@
 <?php
+/**
+ * ADOdb driver for ADS.
+ *
+ * NOTE: This driver requires the Advantage PHP client libraries, which
+ * can be downloaded for free via:
+ * @link http://devzone.advantagedatabase.com/dz/content.aspx?key=20
+ *
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
+ *
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ */
+
 /*
-  (c) 2000-2014 John Lim (jlim#natsoft.com.my). All rights reserved.
-  Portions Copyright (c) 2007-2009, iAnywhere Solutions, Inc.
-  All rights reserved. All unpublished rights reserved.
-
-  Released under both BSD license and Lesser GPL library license.
-  Whenever there is any discrepancy between the two licenses,
-  the BSD license will take precedence.
-
-Set tabs to 4 for best viewing.
-
-
-NOTE: This driver requires the Advantage PHP client libraries, which
-      can be downloaded for free via:
-      http://devzone.advantagedatabase.com/dz/content.aspx?key=20
-
 DELPHI FOR PHP USERS:
       The following steps can be taken to utilize this driver from the
       CodeGear Delphi for PHP product:
@@ -35,6 +44,7 @@ DELPHI FOR PHP USERS:
             Database object's DriverName property.
 
 */
+
 // security - hide paths
 if (!defined('ADODB_DIR')) {
 	die();
@@ -87,7 +97,7 @@ class ADODB_ads extends ADOConnection
 			$this->_connectionID = ads_connect($argDSN, $argUsername, $argPassword, $this->curmode);
 		}
 		$this->_errorMsg = $this->getChangedErrorMsg($last_php_error);
-		if (isset($this->connectStmt)) {
+		if ($this->connectStmt) {
 			$this->Execute($this->connectStmt);
 		}
 
@@ -117,7 +127,7 @@ class ADODB_ads extends ADOConnection
 		if ($this->_connectionID && $this->autoRollback) {
 			@ads_rollback($this->_connectionID);
 		}
-		if (isset($this->connectStmt)) {
+		if ($this->connectStmt) {
 			$this->Execute($this->connectStmt);
 		}
 
@@ -277,7 +287,7 @@ class ADODB_ads extends ADOConnection
 
 	// Returns tables,Views or both on successful execution. Returns
 	// tables by default on successful execution.
-	function &MetaTables($ttype = false, $showSchema = false, $mask = false)
+	function MetaTables($ttype = false, $showSchema = false, $mask = false)
 	{
 		$recordSet1 = $this->Execute("select * from system.tables");
 		if (!$recordSet1) {
@@ -315,7 +325,7 @@ class ADODB_ads extends ADOConnection
 
 	}
 
-	function &MetaPrimaryKeys($table, $owner = false)
+	function MetaPrimaryKeys($table, $owner = false)
 	{
 		$recordSet = $this->Execute("select table_primary_key from system.tables where name='$table'");
 		if (!$recordSet) {
@@ -523,7 +533,7 @@ class ADODB_ads extends ADOConnection
 	}
 
 	// Returns an array of columns names for a given table
-	function &MetaColumnNames($table, $numIndexes = false, $useattnum = false)
+	function MetaColumnNames($table, $numIndexes = false, $useattnum = false)
 	{
 		$recordSet = $this->Execute("select name from system.columns where parent='$table'");
 		if (!$recordSet) {
@@ -554,7 +564,6 @@ class ADODB_ads extends ADOConnection
 		return array($sql, $stmt, false);
 	}
 
-	/* returns queryID or false */
 	function _query($sql, $inputarr = false)
 	{
 		$last_php_error = $this->resetLastError();
@@ -675,20 +684,13 @@ class ADORecordSet_ads extends ADORecordSet
 	var $dataProvider = "ads";
 	var $useFetchArray;
 
-	function __construct($id, $mode = false)
+	function __construct($queryID, $mode = false)
 	{
-		if ($mode === false) {
-			global $ADODB_FETCH_MODE;
-			$mode = $ADODB_FETCH_MODE;
-		}
-		$this->fetchMode = $mode;
-
-		$this->_queryID = $id;
+		parent::__construct($queryID, $mode);
 
 		// the following is required for mysql odbc driver in 4.3.1 -- why?
 		$this->EOF = false;
 		$this->_currentRow = -1;
-		//parent::__construct($id);
 	}
 
 
@@ -751,7 +753,7 @@ class ADORecordSet_ads extends ADORecordSet
 	function &GetArrayLimit($nrows, $offset = -1)
 	{
 		if ($offset <= 0) {
-			$rs =& $this->GetArray($nrows);
+			$rs = $this->GetArray($nrows);
 			return $rs;
 		}
 		$savem = $this->fetchMode;
@@ -760,7 +762,7 @@ class ADORecordSet_ads extends ADORecordSet
 		$this->fetchMode = $savem;
 
 		if ($this->fetchMode & ADODB_FETCH_ASSOC) {
-			$this->fields =& $this->GetRowAssoc();
+			$this->fields = $this->GetRowAssoc();
 		}
 
 		$results = array();
@@ -793,7 +795,7 @@ class ADORecordSet_ads extends ADORecordSet
 		$rez = @ads_fetch_into($this->_queryID, $this->fields);
 		if ($rez) {
 			if ($this->fetchMode & ADODB_FETCH_ASSOC) {
-				$this->fields =& $this->GetRowAssoc();
+				$this->fields = $this->GetRowAssoc();
 			}
 			return true;
 		}

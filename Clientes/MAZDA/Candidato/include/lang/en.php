@@ -90,6 +90,10 @@ define("MSG_BIENVENIDA_COMENZAR", "To begin choose an option from the left menu.
 define("MSG_AVISO_LEGAL_P1"					, "In compliance with Organic Law 15/1999, of December 13rd, Protection of Personal Data, we inform you that your personal data will be incorporated into Psicólogos Empresariales, S.A. data base (addressed at Paseo Pintor Rosales, 44 1º Dcha- 28008 Madrid), in order to obtain psychological evaluation.");
 define("MSG_AVISO_LEGAL_P2"					, "To exercise your rights of access, rectification, cancellation and opposition please may address a written communication to Psicólogos Empresariales, S.A. as Security Responsible, at Paseo Pintor Rosales, 44 1 º D (28008-Madrid).");
 define("MSG_AVISO_LEGAL_P3"					, "In case that your evaluation was requested by a Psicólogos Empresariales client, as part of an assessment process in which you are voluntarily participating, we inform you that the results will be sole shared with this client as part of the evaluation or recruitment process.");
+define("MSG_AVISO_LEGAL_P4"					, "Asimismo, Psicólogos Empresariales y Asociados, S.A., si usted pulsa “Si”, comunicará sus datos de carácter personal y los resultados de su evaluación a Mazda Automóviles España, S.A., con domicilio en Madrid, calle Manuel Pombo Angulo, 28, con la finalidad de que Mazda pueda elaborar, evaluaciones estadísticas o análisis de mercados y planes de formación específicos para los asesores comerciales y asesores de servicio de los concesionarios y servicios autorizados de la red comercial. En caso de pulsar “No” sus datos no serán compartidos con Mazda España. ");
+define("MSG_AVISO_LEGAL_P5"					, "");
+
+
 define("MSG_ESTAS_SEGURO_DE_FINALIZAR_LA_PRUEBA"	, "Are you sure you want to end the test?");
 /*********** Mensajes de Error en los campos del formulario *************/
 //Formato: ERR_FORM_XXXXX
@@ -526,6 +530,7 @@ define("STR_TPV_DATOS_SUBTITULO", "Completing the Questionnaires  and Psychologi
 define("STR_TPV_DATOS_TEXTO", "Before starting, the payment must be completed through the following secure on-line merchant service.<br /><br />Thank you,");
 define("STR_TPV_PAGAR", "TO PAY");
 define("STR_TPV_CUESTIONARIOS", "Questionnaire");
+define("STR_TPV_PENDIENTE", "Pendiente");
 define("STR_RESPONSABILIDADES"					, "Responsibilities");
 define("STR_SUS_RESPONSABILIDADES"					, "Your responsibilities");
 define("STR_SU_COMPROMISO"					, "YOUR COMMITMENT");
@@ -535,5 +540,13 @@ define("STR_SI_NO_ACEPTO_TEXTO"					, "If you do not agree, contact the test adm
 define("STR_DEBE_ACEPTAR"			,"You must press 'I agree' to continue.");
 define("STR_TIEMPO_REQUERIDO", "Time required");
 define("STR_N_DE_PREGUNTAS", "Questions no.");
+
+
+define("STR_SECTOR", "Sector");
+define("STR_CONCESION", "Concesión / Talleres Autorizados");
+define("STR_FECHA_NACIMIENTO", "Fecha de Nacimiento");
+define("STR_ESPECIALIDAD", "Especialidad");
+define("STR_NIVEL_CONOCIMIENTO_TECNICO", "Autoevaluación del nivel de conocimientos técnicos en función del sector señalado");
+
 
 ?>

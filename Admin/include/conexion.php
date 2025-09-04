@@ -13,8 +13,13 @@ $DBPort = 3306;
 $dsn_options='?port='.$DBPort.'&persist=0&fetchmode=2';
 
 $dsn = "$DBType://$DBUser:$DBPass@$DBServer/$DBName$dsn_options";
-//echo $dsn;
+
 $conn = NewADOConnection($dsn);
-$conn->Execute ( "SET NAMES utf8" );
-//$conn->debug = true;
+if (is_object($conn)) {
+    $conn->Execute("SET NAMES utf8");
+    // Resto del código
+} else {
+    echo "Error: La variable de conexión no es un objeto válido.";
+}
+// $conn->debug = true;
 ?>

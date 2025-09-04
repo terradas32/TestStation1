@@ -1,6 +1,360 @@
 <?php
-require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Items_inversos/Items_inversosDB.php");
-require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Items_inversos/Items_inversos.php");
+
+if(!isset($counter) || $counter==0){
+	
+	if(isset($_POST['esZip']) && $_POST['esZip'] == true){
+		$dirGestor = constant("DIR_WS_GESTOR_HTTPS");
+		$documentRoot = constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
+	}else{
+		$dirGestor = constant("DIR_WS_GESTOR");
+		$documentRoot = constant("DIR_FS_DOCUMENT_ROOT");
+	}
+
+	global $dirGestor;
+	global $documentRoot;
+
+
+	/******************************************************************
+	* Funciones para la generación del Informe
+	******************************************************************/
+
+	function baremo_C($pd)
+	{
+		global $dirGestor;
+		global $documentRoot;
+		if ($pd<=132){ $baremo_C=1;}
+		if ($pd>=133 && $pd<=148){$baremo_C=2;}
+		if ($pd>=149 && $pd<=164){$baremo_C=3;}
+		if ($pd>=165 && $pd<=180){$baremo_C=4;}
+		if ($pd>=181 && $pd<=197){$baremo_C=5;}
+		if ($pd>=198 && $pd<=213){$baremo_C=6;}
+		if ($pd>=214 && $pd<=229){$baremo_C=7;}
+		if ($pd>=230 && $pd<=245){$baremo_C=8;}
+		if ($pd>=246 && $pd<=262){$baremo_C=9;}
+		if ($pd>=263){ $baremo_C=10;}
+		return $baremo_C;
+	}
+	//Funcion que devuelve un texto a la parte del informe de competencias de etoa
+	function textoDefinicion($puntuacion){
+		global $dirGestor;
+		global $documentRoot;
+		$str="";
+		if($puntuacion ==1 || $puntuacion==2){
+			$str=constant("STR_PRISMA_NUNCA");	//"NUNCA";
+		}
+		if($puntuacion ==3 || $puntuacion==4){
+			$str=constant("STR_PRISMA_CASI_NUNCA");	//"CASI NUNCA";
+		}
+		if($puntuacion ==5 || $puntuacion==6){
+			$str=constant("STR_PRISMA_A_VECES");	//"A VECES";
+		}
+		if($puntuacion ==7 || $puntuacion==8){
+			$str=constant("STR_PRISMA_CASI_SIEMPRE");	//"CASI SIEMPRE";
+		}
+		if($puntuacion ==9 || $puntuacion==10){
+			$str=constant("STR_PRISMA_SIEMPRE");	//"SIEMPRE";
+		}
+		return $str;
+	}
+	//Funcion que devuelve un texto a la parte del informe de competencias de etoa
+	function textoPuntuacion($puntuacion){
+		global $dirGestor;
+		global $documentRoot;
+		$str="";
+		if($puntuacion ==1 || $puntuacion==2){
+			$str=constant("STR_PRISMA_AREA_CLAVE_DE_MEJORA");	//"ÁREA CLAVE DE MEJORA";
+		}
+		if($puntuacion ==3 || $puntuacion==4){
+			$str=constant("STR_PRISMA_AREA_POTENCIAL_DESARROLLO");	//"ÁREA POTENCIAL DESARROLLO";
+		}
+		if($puntuacion ==5 || $puntuacion==6){
+			$str=constant("STR_PRISMA_AREA_EN_DESARROLLO");	//"ÁREA EN DESARROLLO";
+		}
+		if($puntuacion ==7 || $puntuacion==8){
+			$str=constant("STR_PRISMA_AREA_POTENCIAL_FORTALEZA");	//"ÁREA POTENCIAL FORTALEZA";
+		}
+		if($puntuacion ==9 || $puntuacion==10){
+			$str=constant("STR_PRISMA_AREA_DE_FORTALEZA");	//"ÁREA DE FORTALEZA";
+		}
+		return $str;
+	}
+	// Si llega MEJOR devolver 0
+	// Si llega PEOR devolver 2
+	// Si llega BLANCO devolver 1
+	function getInversoETOA($valor){
+		global $dirGestor;
+		global $documentRoot;
+		$inv=0;
+
+		//MEJOR => 2 PEOR => 0 VACIO => 1
+		switch ($valor)
+		{
+			case '1':	// Mejor
+				$inv = 0;
+				break;
+			case '2':	// Peor
+				$inv = 2;
+				break;
+			default:	// Sin contestar opcion 0 en respuestas
+				$inv = 1;
+				break;
+		}
+	//		if($valor==2){$inv=0;}
+	//		if($valor==1){$inv=1;}
+	//		if($valor==0){$inv=2;}
+	//		echo "<br />id::" . $valor .  " - valor::" . $inv;
+		return $inv;
+	}
+
+	/*
+	* INTERPRETACIÓN DE INFORME EXPERTO.
+	*/
+	function informeExperto($aPuntuaciones, $sHtmlCab, $idIdioma)
+	{
+		global $dirGestor;
+		global $documentRoot;
+
+		global $conn;
+		global $cBloquesDB;
+		global $cEscalasDB;
+		global $cEscalas_itemsDB;
+		global $cTextos_secciones;
+		global $cTextos_seccionesDB;
+		global $aPuntuacionesCompetencias;
+
+		$cTextos_secciones = new Textos_secciones();
+		$cTextos_secciones->setIdSeccion("37");
+		$cTextos_secciones->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
+		$cTextos_secciones->setIdPrueba($_POST['fIdPrueba']);
+		$cTextos_secciones->setIdTipoInforme($_POST['fIdTipoInforme']);
+		$cTextos_secciones = $cTextos_seccionesDB->readEntidad($cTextos_secciones);
+		// TEXTO INTRODUCCIÓN
+
+		$sHtml='
+			<div class="pagina">'. $sHtmlCab;
+	$s_test = str_replace('<div style="margin-left: 20px;">', '<p class="textos" style="margin-left: 20px;">',$cTextos_secciones->getTexto());
+	$s_test = str_replace('</div>', '</p>',$s_test);
+		$sHtml.= '
+				<div class="desarrollo">
+					<h2 class="subtitulo">' . mb_strtoupper(constant("STR_INTRODUCCION"), 'UTF-8') . '</h2>
+					<div class="caja">
+				<table width="100%" border="0">
+				<tr>
+					<td>
+						' . $s_test . '
+					</td>
+				</tr>
+				</table>
+					</div>
+				</div>
+				<!--FIN DIV DESARROLLO-->
+			</div>
+			<!--FIN DIV PAGINA-->
+		<hr>
+			';
+	//		$sHtml.=	constant("_NEWPAGE");
+		$sHtml.='
+			<div class="pagina">'. $sHtmlCab;
+		$cTextos_secciones = new Textos_secciones();
+		$cTextos_secciones->setIdSeccion("38");
+		$cTextos_secciones->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
+		$cTextos_secciones->setIdPrueba($_POST['fIdPrueba']);
+		$cTextos_secciones->setIdTipoInforme($_POST['fIdTipoInforme']);
+		$cTextos_secciones = $cTextos_seccionesDB->readEntidad($cTextos_secciones);
+
+		$aMasAlta = array("A" => $aPuntuacionesCompetencias['1-1'], "B" => $aPuntuacionesCompetencias['1-2'], "C" => $aPuntuacionesCompetencias['2-1'], "D" => $aPuntuacionesCompetencias['2-2']);
+		asort($aMasAlta);
+		$sMasAlta = "A";
+		foreach ($aMasAlta as $key => $val) {
+			$sMasAlta = $key;
+	//    		echo "$key = $val\n";
+		}
+		$sTextoTablas = $cTextos_secciones->getTexto();
+
+	$sTextoTablas = str_replace("line-height: 18px;margin-bottom: 10px;margin-top: 10px;", "line-height: 5px;margin-bottom: 10px;margin-top: 5px;", $sTextoTablas);
+	$sTextoTablas = str_replace("text-align: justify;line-height: 18px;", "text-align: justify;line-height: 17px;", $sTextoTablas);
+
+		switch ($sMasAlta)
+		{
+			case "A":
+				$sTextoTablas = str_replace("background-color: #BBBBBB;", "", $sTextoTablas);
+				$sTextoTablas = str_replace("background-color: #CCCCCC;", "", $sTextoTablas);
+				$sTextoTablas = str_replace("background-color: #DDDDDD;", "", $sTextoTablas);
+				break;
+			case "B":
+				$sTextoTablas = str_replace("background-color: #AAAAAA;", "", $sTextoTablas);
+				$sTextoTablas = str_replace("background-color: #CCCCCC;", "", $sTextoTablas);
+				$sTextoTablas = str_replace("background-color: #DDDDDD;", "", $sTextoTablas);
+				break;
+			case "C":
+				$sTextoTablas = str_replace("background-color: #AAAAAA;", "", $sTextoTablas);
+				$sTextoTablas = str_replace("background-color: #BBBBBB;", "", $sTextoTablas);
+				$sTextoTablas = str_replace("background-color: #DDDDDD;", "", $sTextoTablas);
+				break;
+			case "D":
+				$sTextoTablas = str_replace("background-color: #AAAAAA;", "", $sTextoTablas);
+				$sTextoTablas = str_replace("background-color: #BBBBBB;", "", $sTextoTablas);
+				$sTextoTablas = str_replace("background-color: #CCCCCC;", "", $sTextoTablas);
+				break;
+		}
+		$sPadding12 = "10";
+		if ($aPuntuacionesCompetencias['1-2'] >= 10){
+			$sPadding12 = "1";
+		}
+		$sHtml.='
+				<div class="desarrollo">
+					<h2 class="subtitulo">PERFIL DE ESTILO</h2>
+					<table class="estadistica" border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td style="width:200px;">&nbsp;</td>
+						<td colspan="10" class="">&nbsp;</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td colspan="10" class="bg_estadistica">&nbsp;</td>
+					</tr>
+					<tr>
+						<td><div style="width:10%" class="tension"></div><p class="est_titulos" style="text-align: left;text-indent: 5px;">PRÁCTICO OPERATIVO <span style="padding-left: 27px;">' . $aPuntuacionesCompetencias['1-1'] . '</span></p></td>
+						<td colspan="10" class="bg_estadistica"><div class="tension" style="width:' . $aPuntuacionesCompetencias['1-1']*10 .'%"></div></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td colspan="10" class="bg_estadistica">&nbsp;</td>
+					</tr>
+					<tr>
+						<td><div style="width:10%" class="actitud"></div><p class="est_titulos" style="text-align: left;text-indent: 5px;">INNOVADOR ARRIESGADO <span style="padding-left: ' . $sPadding12 . 'px;">' . $aPuntuacionesCompetencias['1-2'] . '</span></p></td>
+						<td colspan="10" class="bg_estadistica"><div class="actitud" style="width:' . $aPuntuacionesCompetencias['1-2']*10 .'%"></div></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td colspan="10" class="bg_estadistica">&nbsp;</td>
+					</tr>
+					<tr>
+						<td><div style="width:10%" class="control"></div><p class="est_titulos" style="text-align: left;text-indent: 5px;">TEÓRICO SISTEMÁTICO <span style="padding-left: 23px;">' . $aPuntuacionesCompetencias['2-1'] . '</span></p></td>
+						<td colspan="10" class="bg_estadistica"><div class="control" style="width:' . $aPuntuacionesCompetencias['2-1']*10 .'%"></div></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td colspan="10" class="bg_estadistica">&nbsp;</td>
+					</tr>
+					<tr>
+						<td><div style="width:10%" class="autodominio"></div><p class="est_titulos" style="text-align: left;text-indent: 5px;">ANALÍTICO OBSERVADOR <span style="padding-left: 13px;">' . $aPuntuacionesCompetencias['2-2'] . '</span></p></td>
+						<td colspan="10" class="bg_estadistica"><div class="autodominio" style="width:' . $aPuntuacionesCompetencias['2-2']*10 .'%"></div></td>
+					</tr>
+
+					<tr>
+						<td></td>
+						<td colspan="10" class="bg_estadistica" style="border-bottom:3px solid #666666;">&nbsp;</td>
+					</tr>
+					<tr>
+						<td style="text-align:right;"><p>0</p></td>
+						<td >
+							<table width="350" cellspacing=0 cellpadding=0 border="0">
+								<tr>
+									<td class="number"><p>1</p></td>
+									<td class="number"><p>2</p></td>
+									<td class="number"><p>3</p></td>
+									<td class="number"><p>4</p></td>
+									<td class="number"><p>5</p></td>
+									<td class="number"><p>6</p></td>
+									<td class="number"><p>7</p></td>
+									<td class="number"><p>8</p></td>
+									<td class="number"><p>9</p></td>
+									<td class="number"><p>10</p></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td colspan="10" class="">&nbsp;</td>
+					</tr>
+				</table>
+					<div class="caja">
+						' . $sTextoTablas . '
+					</div>
+				</div>
+				<!--FIN DIV DESARROLLO-->
+			</div>
+			<!--FIN DIV PAGINA-->
+		<hr>
+			';
+
+		return $sHtml;
+	}
+
+	function getPuntuacionExperto($aPuntuaciones, $idIdioma)
+	{
+		global $dirGestor;
+		global $documentRoot;
+
+		global $conn;
+		global $cBloquesDB;
+		global $cEscalasDB;
+		global $cEscalas_itemsDB;
+		global $cTextos_secciones;
+		global $cTextos_seccionesDB;
+		global $aPuntuacionesCompetencias;
+
+		$sSQLExport ="";
+		$aSQLPuntuacionesC = array();
+		global $cPruebas;
+		global $cProceso;
+		global $cRespPruebas;
+
+		$cTextos_secciones = new Textos_secciones();
+		$cTextos_secciones->setIdSeccion("37");
+		$cTextos_secciones->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
+		$cTextos_secciones->setIdPrueba($_POST['fIdPrueba']);
+		$cTextos_secciones->setIdTipoInforme($_POST['fIdTipoInforme']);
+		$cTextos_secciones = $cTextos_seccionesDB->readEntidad($cTextos_secciones);
+
+
+		$cTextos_secciones = new Textos_secciones();
+		$cTextos_secciones->setIdSeccion("38");
+		$cTextos_secciones->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
+		$cTextos_secciones->setIdPrueba($_POST['fIdPrueba']);
+		$cTextos_secciones->setIdTipoInforme($_POST['fIdTipoInforme']);
+		$cTextos_secciones = $cTextos_seccionesDB->readEntidad($cTextos_secciones);
+
+		$aMasAlta = array("A" => $aPuntuacionesCompetencias['1-1'], "B" => $aPuntuacionesCompetencias['1-2'], "C" => $aPuntuacionesCompetencias['2-1'], "D" => $aPuntuacionesCompetencias['2-2']);
+		asort($aMasAlta);
+		$sMasAlta = "A";
+		foreach ($aMasAlta as $key => $val) {
+			$sMasAlta = $key;
+			//    		echo "$key = $val\n";
+		}
+		$sTextoTablas = $cTextos_secciones->getTexto();
+
+		//PERFIL DE ESTILO - "OPTIMISMO"
+		$sSQLExport = "INSERT INTO export_personalidad_laboral (idEmpresa, idProceso, descProceso, idCandidato, idPrueba, descPrueba, fecPrueba, idBaremo, idTipoInforme, codIdiomaIso2Informe, idBloque, nomBloque, idEscala, nomEscala, descEscala, puntuacion, fecAlta) VALUES ";
+		$sSQLExport .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST['fIdBaremo'], false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($_POST['fCodIdiomaIso2'], false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("PERFIL DE ESTILO", false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("PRÁCTICO OPERATIVO", false) . "," . $conn->qstr("", false) . "," . $conn->qstr($aPuntuacionesCompetencias['1-1'], false) . ",now());\n";
+		$aSQLPuntuacionesPPL[] = $sSQLExport;
+
+		//PERFIL DE ESTILO - "INNOVADOR ARRIESGADO"
+		$sSQLExport = "INSERT INTO export_personalidad_laboral (idEmpresa, idProceso, descProceso, idCandidato, idPrueba, descPrueba, fecPrueba, idBaremo, idTipoInforme, codIdiomaIso2Informe, idBloque, nomBloque, idEscala, nomEscala, descEscala, puntuacion, fecAlta) VALUES ";
+		$sSQLExport .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST['fIdBaremo'], false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($_POST['fCodIdiomaIso2'], false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("PERFIL DE ESTILO", false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("INNOVADOR ARRIESGADO", false) . "," . $conn->qstr("", false) . "," . $conn->qstr($aPuntuacionesCompetencias['1-2'], false) . ",now());\n";
+		$aSQLPuntuacionesPPL[] = $sSQLExport;
+
+		//PERFIL DE ESTILO - "TEÓRICO SISTEMÁTICO"
+		$sSQLExport = "INSERT INTO export_personalidad_laboral (idEmpresa, idProceso, descProceso, idCandidato, idPrueba, descPrueba, fecPrueba, idBaremo, idTipoInforme, codIdiomaIso2Informe, idBloque, nomBloque, idEscala, nomEscala, descEscala, puntuacion, fecAlta) VALUES ";
+		$sSQLExport .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST['fIdBaremo'], false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($_POST['fCodIdiomaIso2'], false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("PERFIL DE ESTILO", false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("TEÓRICO SISTEMÁTICO", false) . "," . $conn->qstr("", false) . "," . $conn->qstr($aPuntuacionesCompetencias['2-1'], false) . ",now());\n";
+		$aSQLPuntuacionesPPL[] = $sSQLExport;
+
+		//PERFIL DE ESTILO - "ANALÍTICO OBSERVADOR"
+		$sSQLExport = "INSERT INTO export_personalidad_laboral (idEmpresa, idProceso, descProceso, idCandidato, idPrueba, descPrueba, fecPrueba, idBaremo, idTipoInforme, codIdiomaIso2Informe, idBloque, nomBloque, idEscala, nomEscala, descEscala, puntuacion, fecAlta) VALUES ";
+		$sSQLExport .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST['fIdBaremo'], false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($_POST['fCodIdiomaIso2'], false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("PERFIL DE ESTILO", false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("ANALÍTICO OBSERVADOR", false) . "," . $conn->qstr("", false) . "," . $conn->qstr($aPuntuacionesCompetencias['2-2'], false) . ",now());\n";
+		$aSQLPuntuacionesPPL[] = $sSQLExport;
+
+		return $aSQLPuntuacionesPPL;
+	}
+
+	/******************************************************************
+	* FIN Funciones para la generación del Informe
+	******************************************************************/
+}
+require_once($documentRoot . constant("DIR_WS_COM") . "Items_inversos/Items_inversosDB.php");
+require_once($documentRoot . constant("DIR_WS_COM") . "Items_inversos/Items_inversos.php");
 $cItems_inversosDB = new Items_inversosDB($conn);
 $cItems_inversos = new Items_inversos();
 		$cItems_inversos->setIdPrueba($_POST['fIdPrueba']);
@@ -271,18 +625,18 @@ $cItems_inversos = new Items_inversos();
 		$sHtmlFin	= '';
 		//$aux			= $this->conn;
 
-		$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+		$spath = (substr($documentRoot, -1, 1) != '/') ? $documentRoot . '/' : $documentRoot;
 
 		$sHtmlInicio='
 			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 				<html xmlns="http://www.w3.org/1999/xhtml">
 				<head>
 					<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-					<link rel="stylesheet" type="text/css" href="'.constant("DIR_WS_GESTOR").'estilosInformes/etoa/resetCSS.css"/>';
+					<link rel="stylesheet" type="text/css" href="'.$dirGestor.'estilosInformes/etoa/resetCSS.css"/>';
 					if($_POST['fIdTipoInforme'] != 11){
-						$sHtmlInicio.= 		'<link rel="stylesheet" type="text/css" href="'.constant("DIR_WS_GESTOR").'estilosInformes/etoa/style.css"/>';
+						$sHtmlInicio.= 		'<link rel="stylesheet" type="text/css" href="'.$dirGestor.'estilosInformes/etoa/style.css"/>';
 					}else{
-						$sHtmlInicio.= 		'<link rel="stylesheet" type="text/css" href="'.constant("DIR_WS_GESTOR").'estilosInformes/etoa/styleNarrativos.css"/>';
+						$sHtmlInicio.= 		'<link rel="stylesheet" type="text/css" href="'.$dirGestor.'estilosInformes/etoa/styleNarrativos.css"/>';
 					}
 		$sHtmlInicio.='
 					<title>etoa</title>
@@ -306,7 +660,7 @@ $sHtmlFin .='
 										<p class="textos">' . constant("STR_SR_A") . ' ' . $cCandidato->getNombre(). ' ' . $cCandidato->getApellido1(). ' ' .$cCandidato->getApellido2() .'</p>
 						    </td>
 						    <td class="logo">
-						    	<img src="'.constant("DIR_WS_GESTOR").'estilosInformes/etoa/img/logo-pequenio.jpg" title="logo"/>
+						    	<img src="'.$dirGestor.'estilosInformes/etoa/img/logo-pequenio.jpg" title="logo"/>
 						    </td>
 						    <td class="fecha">
 						        <p class="textos">' . date("d/m/Y") . '</p>
@@ -334,8 +688,8 @@ $sHtmlFin .='
 		//PORTADA
 		$sHtml.= '
 			<div class="pagina portada">
-		    	<img src="' . constant("DIR_WS_GESTOR") . 'graf/etoa/portada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
-		    	<h1 class="titulo"><img src="' . constant("DIR_WS_GESTOR") . 'estilosInformes/etoa/img/logo.jpg" /></h1>';
+		    	<img src="' . $dirGestor . 'graf/etoa/portada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
+		    	<h1 class="titulo"><img src="' . $dirGestor . 'estilosInformes/etoa/img/logo.jpg" /></h1>';
 			if($_POST['fIdTipoInforme']!=11){
 				$sHtml.= 		'<div id="txt_infome"><p>INFORME DE ESTILOS DE APRENDIZAJE</p></div>';
 			}else{
@@ -367,7 +721,7 @@ $sHtmlFin .='
 
 		$sHtml.= '
 			<div class="pagina portada" id="contraportada">
-    			<img id="imgContraportada" src="' . constant("DIR_WS_GESTOR") . 'graf/contraportada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
+    			<img id="imgContraportada" src="' . $dirGestor . 'graf/contraportada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
 			</div>
 			<!--FIN DIV PAGINA-->
 		';
@@ -379,7 +733,7 @@ if (!isset($NOGenerarFICHERO_INFORME))
 		$replace = array('@', '.');
 //		$sNombre = $cCandidato->getMail() . "_" . $_POST['fIdEmpresa']. "_" .$_POST['fIdProceso'] . "_" .$_POST['fIdTipoInforme'] . "_" . $cPruebas->getNombre();
 		$sDirImg="imgInformes/";
-		$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+		$spath = (substr($documentRoot, -1, 1) != '/') ? $documentRoot . '/' : $documentRoot;
 
 		$_fichero = $spath . $sDirImg . $sNombre . ".html";
 		//$cEntidad->chk_dir($spath . $sDirImg, 0777);
@@ -411,330 +765,4 @@ if (!isset($NOGenerarFICHERO_INFORME))
 
 	}
 }
-/******************************************************************
-* Funciones para la generación del Informe
-******************************************************************/
-
-	function baremo_C($pd)
-	{
-		if ($pd<=132){ $baremo_C=1;}
-		if ($pd>=133 && $pd<=148){$baremo_C=2;}
-		if ($pd>=149 && $pd<=164){$baremo_C=3;}
-		if ($pd>=165 && $pd<=180){$baremo_C=4;}
-		if ($pd>=181 && $pd<=197){$baremo_C=5;}
-		if ($pd>=198 && $pd<=213){$baremo_C=6;}
-		if ($pd>=214 && $pd<=229){$baremo_C=7;}
-		if ($pd>=230 && $pd<=245){$baremo_C=8;}
-		if ($pd>=246 && $pd<=262){$baremo_C=9;}
-		if ($pd>=263){ $baremo_C=10;}
-		return $baremo_C;
-	}
-	//Funcion que devuelve un texto a la parte del informe de competencias de etoa
-	function textoDefinicion($puntuacion){
-		$str="";
-		if($puntuacion ==1 || $puntuacion==2){
-			$str=constant("STR_PRISMA_NUNCA");	//"NUNCA";
-		}
-		if($puntuacion ==3 || $puntuacion==4){
-			$str=constant("STR_PRISMA_CASI_NUNCA");	//"CASI NUNCA";
-		}
-		if($puntuacion ==5 || $puntuacion==6){
-			$str=constant("STR_PRISMA_A_VECES");	//"A VECES";
-		}
-		if($puntuacion ==7 || $puntuacion==8){
-			$str=constant("STR_PRISMA_CASI_SIEMPRE");	//"CASI SIEMPRE";
-		}
-		if($puntuacion ==9 || $puntuacion==10){
-			$str=constant("STR_PRISMA_SIEMPRE");	//"SIEMPRE";
-		}
-		return $str;
-	}
-	//Funcion que devuelve un texto a la parte del informe de competencias de etoa
-	function textoPuntuacion($puntuacion){
-		$str="";
-		if($puntuacion ==1 || $puntuacion==2){
-			$str=constant("STR_PRISMA_AREA_CLAVE_DE_MEJORA");	//"ÁREA CLAVE DE MEJORA";
-		}
-		if($puntuacion ==3 || $puntuacion==4){
-			$str=constant("STR_PRISMA_AREA_POTENCIAL_DESARROLLO");	//"ÁREA POTENCIAL DESARROLLO";
-		}
-		if($puntuacion ==5 || $puntuacion==6){
-			$str=constant("STR_PRISMA_AREA_EN_DESARROLLO");	//"ÁREA EN DESARROLLO";
-		}
-		if($puntuacion ==7 || $puntuacion==8){
-			$str=constant("STR_PRISMA_AREA_POTENCIAL_FORTALEZA");	//"ÁREA POTENCIAL FORTALEZA";
-		}
-		if($puntuacion ==9 || $puntuacion==10){
-			$str=constant("STR_PRISMA_AREA_DE_FORTALEZA");	//"ÁREA DE FORTALEZA";
-		}
-		return $str;
-	}
-	// Si llega MEJOR devolver 0
-	// Si llega PEOR devolver 2
-	// Si llega BLANCO devolver 1
-	function getInversoETOA($valor){
-		$inv=0;
-
-		//MEJOR => 2 PEOR => 0 VACIO => 1
-		switch ($valor)
-		{
-			case '1':	// Mejor
-				$inv = 0;
-				break;
-			case '2':	// Peor
-				$inv = 2;
-				break;
-			default:	// Sin contestar opcion 0 en respuestas
-				$inv = 1;
-				break;
-		}
-//		if($valor==2){$inv=0;}
-//		if($valor==1){$inv=1;}
-//		if($valor==0){$inv=2;}
-//		echo "<br />id::" . $valor .  " - valor::" . $inv;
-		return $inv;
-	}
-
-	/*
-	 * INTERPRETACIÓN DE INFORME EXPERTO.
-	 */
-	function informeExperto($aPuntuaciones, $sHtmlCab, $idIdioma)
-	{
-
-		global $conn;
-		global $cBloquesDB;
-		global $cEscalasDB;
-		global $cEscalas_itemsDB;
-		global $cTextos_secciones;
-		global $cTextos_seccionesDB;
-		global $aPuntuacionesCompetencias;
-
-		$cTextos_secciones = new Textos_secciones();
-		$cTextos_secciones->setIdSeccion("37");
-		$cTextos_secciones->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
-		$cTextos_secciones->setIdPrueba($_POST['fIdPrueba']);
-		$cTextos_secciones->setIdTipoInforme($_POST['fIdTipoInforme']);
-		$cTextos_secciones = $cTextos_seccionesDB->readEntidad($cTextos_secciones);
-    	// TEXTO INTRODUCCIÓN
-
-		$sHtml='
-			<div class="pagina">'. $sHtmlCab;
-      $s_test = str_replace('<div style="margin-left: 20px;">', '<p class="textos" style="margin-left: 20px;">',$cTextos_secciones->getTexto());
-      $s_test = str_replace('</div>', '</p>',$s_test);
-		$sHtml.= '
-				<div class="desarrollo">
-		        	<h2 class="subtitulo">' . mb_strtoupper(constant("STR_INTRODUCCION"), 'UTF-8') . '</h2>
-        		    <div class="caja">
-                <table width="100%" border="0">
-                  <tr>
-                    <td>
-            			' . $s_test . '
-                    </td>
-                  </tr>
-                </table>
-		            </div>
-        		</div>
-        		<!--FIN DIV DESARROLLO-->
-        	</div>
-        	<!--FIN DIV PAGINA-->
-          <hr>
-        	';
-//		$sHtml.=	constant("_NEWPAGE");
-		$sHtml.='
-			<div class="pagina">'. $sHtmlCab;
-		$cTextos_secciones = new Textos_secciones();
-		$cTextos_secciones->setIdSeccion("38");
-		$cTextos_secciones->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
-		$cTextos_secciones->setIdPrueba($_POST['fIdPrueba']);
-		$cTextos_secciones->setIdTipoInforme($_POST['fIdTipoInforme']);
-		$cTextos_secciones = $cTextos_seccionesDB->readEntidad($cTextos_secciones);
-
-		$aMasAlta = array("A" => $aPuntuacionesCompetencias['1-1'], "B" => $aPuntuacionesCompetencias['1-2'], "C" => $aPuntuacionesCompetencias['2-1'], "D" => $aPuntuacionesCompetencias['2-2']);
-		asort($aMasAlta);
-		$sMasAlta = "A";
-		foreach ($aMasAlta as $key => $val) {
-			$sMasAlta = $key;
-//    		echo "$key = $val\n";
-		}
-		$sTextoTablas = $cTextos_secciones->getTexto();
-
-    $sTextoTablas = str_replace("line-height: 18px;margin-bottom: 10px;margin-top: 10px;", "line-height: 5px;margin-bottom: 10px;margin-top: 5px;", $sTextoTablas);
-    $sTextoTablas = str_replace("text-align: justify;line-height: 18px;", "text-align: justify;line-height: 17px;", $sTextoTablas);
-
-		switch ($sMasAlta)
-		{
-			case "A":
-				$sTextoTablas = str_replace("background-color: #BBBBBB;", "", $sTextoTablas);
-				$sTextoTablas = str_replace("background-color: #CCCCCC;", "", $sTextoTablas);
-				$sTextoTablas = str_replace("background-color: #DDDDDD;", "", $sTextoTablas);
-				break;
-			case "B":
-				$sTextoTablas = str_replace("background-color: #AAAAAA;", "", $sTextoTablas);
-				$sTextoTablas = str_replace("background-color: #CCCCCC;", "", $sTextoTablas);
-				$sTextoTablas = str_replace("background-color: #DDDDDD;", "", $sTextoTablas);
-				break;
-			case "C":
-				$sTextoTablas = str_replace("background-color: #AAAAAA;", "", $sTextoTablas);
-				$sTextoTablas = str_replace("background-color: #BBBBBB;", "", $sTextoTablas);
-				$sTextoTablas = str_replace("background-color: #DDDDDD;", "", $sTextoTablas);
-				break;
-			case "D":
-				$sTextoTablas = str_replace("background-color: #AAAAAA;", "", $sTextoTablas);
-				$sTextoTablas = str_replace("background-color: #BBBBBB;", "", $sTextoTablas);
-				$sTextoTablas = str_replace("background-color: #CCCCCC;", "", $sTextoTablas);
-				break;
-		}
-		$sPadding12 = "10";
-		if ($aPuntuacionesCompetencias['1-2'] >= 10){
-			$sPadding12 = "1";
-		}
-		$sHtml.='
-				<div class="desarrollo">
-					<h2 class="subtitulo">PERFIL DE ESTILO</h2>
-		          	<table class="estadistica" border="0" cellspacing="0" cellpadding="0">
-		              <tr>
-		                <td style="width:200px;">&nbsp;</td>
-		                <td colspan="10" class="">&nbsp;</td>
-		              </tr>
-		              <tr>
-		                <td>&nbsp;</td>
-		                <td colspan="10" class="bg_estadistica">&nbsp;</td>
-		              </tr>
-		              <tr>
-		                <td><div style="width:10%" class="tension"></div><p class="est_titulos" style="text-align: left;text-indent: 5px;">PRÁCTICO OPERATIVO <span style="padding-left: 27px;">' . $aPuntuacionesCompetencias['1-1'] . '</span></p></td>
-		                <td colspan="10" class="bg_estadistica"><div class="tension" style="width:' . $aPuntuacionesCompetencias['1-1']*10 .'%"></div></td>
-		              </tr>
-		              <tr>
-		                <td></td>
-		                <td colspan="10" class="bg_estadistica">&nbsp;</td>
-		              </tr>
-		              <tr>
-		                <td><div style="width:10%" class="actitud"></div><p class="est_titulos" style="text-align: left;text-indent: 5px;">INNOVADOR ARRIESGADO <span style="padding-left: ' . $sPadding12 . 'px;">' . $aPuntuacionesCompetencias['1-2'] . '</span></p></td>
-		                <td colspan="10" class="bg_estadistica"><div class="actitud" style="width:' . $aPuntuacionesCompetencias['1-2']*10 .'%"></div></td>
-		              </tr>
-		              <tr>
-		                <td></td>
-		                <td colspan="10" class="bg_estadistica">&nbsp;</td>
-		              </tr>
-		              <tr>
-		                <td><div style="width:10%" class="control"></div><p class="est_titulos" style="text-align: left;text-indent: 5px;">TEÓRICO SISTEMÁTICO <span style="padding-left: 23px;">' . $aPuntuacionesCompetencias['2-1'] . '</span></p></td>
-		                <td colspan="10" class="bg_estadistica"><div class="control" style="width:' . $aPuntuacionesCompetencias['2-1']*10 .'%"></div></td>
-		              </tr>
-		              <tr>
-		                <td></td>
-		                <td colspan="10" class="bg_estadistica">&nbsp;</td>
-		              </tr>
-		              <tr>
-		                <td><div style="width:10%" class="autodominio"></div><p class="est_titulos" style="text-align: left;text-indent: 5px;">ANALÍTICO OBSERVADOR <span style="padding-left: 13px;">' . $aPuntuacionesCompetencias['2-2'] . '</span></p></td>
-		                <td colspan="10" class="bg_estadistica"><div class="autodominio" style="width:' . $aPuntuacionesCompetencias['2-2']*10 .'%"></div></td>
-		              </tr>
-
-		              <tr>
-		                <td></td>
-		                <td colspan="10" class="bg_estadistica" style="border-bottom:3px solid #666666;">&nbsp;</td>
-		              </tr>
-		              <tr>
-		              	<td style="text-align:right;"><p>0</p></td>
-		              	<td >
-		              		<table width="350" cellspacing=0 cellpadding=0 border="0">
-		              			<tr>
-			                		<td class="number"><p>1</p></td>
-					                <td class="number"><p>2</p></td>
-					                <td class="number"><p>3</p></td>
-					                <td class="number"><p>4</p></td>
-					                <td class="number"><p>5</p></td>
-					                <td class="number"><p>6</p></td>
-					                <td class="number"><p>7</p></td>
-					                <td class="number"><p>8</p></td>
-					                <td class="number"><p>9</p></td>
-					                <td class="number"><p>10</p></td>
-					             </tr>
-					        </table>
-					      </td>
-		              </tr>
-		              <tr>
-		                <td></td>
-		                <td colspan="10" class="">&nbsp;</td>
-		              </tr>
-		          </table>
-					<div class="caja">
-						' . $sTextoTablas . '
-					</div>
-				</div>
-				<!--FIN DIV DESARROLLO-->
-    		</div>
-    		<!--FIN DIV PAGINA-->
-        <hr>
-    		';
-
-		return $sHtml;
-	}
-
-	function getPuntuacionExperto($aPuntuaciones, $idIdioma)
-	{
-
-		global $conn;
-		global $cBloquesDB;
-		global $cEscalasDB;
-		global $cEscalas_itemsDB;
-		global $cTextos_secciones;
-		global $cTextos_seccionesDB;
-		global $aPuntuacionesCompetencias;
-
-		$sSQLExport ="";
-		$aSQLPuntuacionesC = array();
-		global $cPruebas;
-		global $cProceso;
-		global $cRespPruebas;
-
-		$cTextos_secciones = new Textos_secciones();
-		$cTextos_secciones->setIdSeccion("37");
-		$cTextos_secciones->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
-		$cTextos_secciones->setIdPrueba($_POST['fIdPrueba']);
-		$cTextos_secciones->setIdTipoInforme($_POST['fIdTipoInforme']);
-		$cTextos_secciones = $cTextos_seccionesDB->readEntidad($cTextos_secciones);
-
-
-		$cTextos_secciones = new Textos_secciones();
-		$cTextos_secciones->setIdSeccion("38");
-		$cTextos_secciones->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
-		$cTextos_secciones->setIdPrueba($_POST['fIdPrueba']);
-		$cTextos_secciones->setIdTipoInforme($_POST['fIdTipoInforme']);
-		$cTextos_secciones = $cTextos_seccionesDB->readEntidad($cTextos_secciones);
-
-		$aMasAlta = array("A" => $aPuntuacionesCompetencias['1-1'], "B" => $aPuntuacionesCompetencias['1-2'], "C" => $aPuntuacionesCompetencias['2-1'], "D" => $aPuntuacionesCompetencias['2-2']);
-		asort($aMasAlta);
-		$sMasAlta = "A";
-		foreach ($aMasAlta as $key => $val) {
-			$sMasAlta = $key;
-			//    		echo "$key = $val\n";
-		}
-		$sTextoTablas = $cTextos_secciones->getTexto();
-
-		//PERFIL DE ESTILO - "OPTIMISMO"
-		$sSQLExport = "INSERT INTO export_personalidad_laboral (idEmpresa, idProceso, descProceso, idCandidato, idPrueba, descPrueba, fecPrueba, idBaremo, idTipoInforme, codIdiomaIso2Informe, idBloque, nomBloque, idEscala, nomEscala, descEscala, puntuacion, fecAlta) VALUES ";
-		$sSQLExport .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST['fIdBaremo'], false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($_POST['fCodIdiomaIso2'], false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("PERFIL DE ESTILO", false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("PRÁCTICO OPERATIVO", false) . "," . $conn->qstr("", false) . "," . $conn->qstr($aPuntuacionesCompetencias['1-1'], false) . ",now());\n";
-		$aSQLPuntuacionesPPL[] = $sSQLExport;
-
-		//PERFIL DE ESTILO - "INNOVADOR ARRIESGADO"
-		$sSQLExport = "INSERT INTO export_personalidad_laboral (idEmpresa, idProceso, descProceso, idCandidato, idPrueba, descPrueba, fecPrueba, idBaremo, idTipoInforme, codIdiomaIso2Informe, idBloque, nomBloque, idEscala, nomEscala, descEscala, puntuacion, fecAlta) VALUES ";
-		$sSQLExport .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST['fIdBaremo'], false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($_POST['fCodIdiomaIso2'], false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("PERFIL DE ESTILO", false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("INNOVADOR ARRIESGADO", false) . "," . $conn->qstr("", false) . "," . $conn->qstr($aPuntuacionesCompetencias['1-2'], false) . ",now());\n";
-		$aSQLPuntuacionesPPL[] = $sSQLExport;
-
-		//PERFIL DE ESTILO - "TEÓRICO SISTEMÁTICO"
-		$sSQLExport = "INSERT INTO export_personalidad_laboral (idEmpresa, idProceso, descProceso, idCandidato, idPrueba, descPrueba, fecPrueba, idBaremo, idTipoInforme, codIdiomaIso2Informe, idBloque, nomBloque, idEscala, nomEscala, descEscala, puntuacion, fecAlta) VALUES ";
-		$sSQLExport .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST['fIdBaremo'], false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($_POST['fCodIdiomaIso2'], false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("PERFIL DE ESTILO", false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("TEÓRICO SISTEMÁTICO", false) . "," . $conn->qstr("", false) . "," . $conn->qstr($aPuntuacionesCompetencias['2-1'], false) . ",now());\n";
-		$aSQLPuntuacionesPPL[] = $sSQLExport;
-
-		//PERFIL DE ESTILO - "ANALÍTICO OBSERVADOR"
-		$sSQLExport = "INSERT INTO export_personalidad_laboral (idEmpresa, idProceso, descProceso, idCandidato, idPrueba, descPrueba, fecPrueba, idBaremo, idTipoInforme, codIdiomaIso2Informe, idBloque, nomBloque, idEscala, nomEscala, descEscala, puntuacion, fecAlta) VALUES ";
-		$sSQLExport .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST['fIdBaremo'], false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($_POST['fCodIdiomaIso2'], false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("PERFIL DE ESTILO", false) . "," . $conn->qstr(0, false) . "," . $conn->qstr("ANALÍTICO OBSERVADOR", false) . "," . $conn->qstr("", false) . "," . $conn->qstr($aPuntuacionesCompetencias['2-2'], false) . ",now());\n";
-		$aSQLPuntuacionesPPL[] = $sSQLExport;
-
-		return $aSQLPuntuacionesPPL;
-	}
-
-/******************************************************************
-* FIN Funciones para la generación del Informe
-******************************************************************/
 ?>

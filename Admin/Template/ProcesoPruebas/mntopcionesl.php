@@ -4,6 +4,18 @@
     }else{
     	require_once("include/SeguridadTemplate.php");
     }
+
+	$clave = obtenerClavePlantilla();
+	$payload = [
+		'sql'   => $sql,
+		'nombre'=> $clave,
+		'ts'    => time(),
+		'nonce' => bin2hex(random_bytes(8)),
+	];
+
+	$token = excel_encrypt_payload($payload, EXCEL_ENC_KEY);
+	$sig   = excel_sign($token, EXCEL_HMAC_KEY);
+	$urlExcel = 'sqlToExcel.php?fSQLtoEXCEL='.base64_encode($token).'&signature='.base64_encode($sig);
 ?>
 <?php
 	$cPrueba = new Pruebas();
@@ -267,7 +279,8 @@ $aBuscador= $cOpciones->getBusqueda();
 	<table cellspacing="0" cellpadding="0" border="0" width="100%">
 		<tr>
 			<td width="10"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="10" height="1" border="0" alt="" /></td>
-			<td width="100%" colspan="2" class="naranjab"><?php echo sprintf(constant("STR_LISTA_DE_"),str_replace('_', ' ', constant("STR_OPCIONES")));?><a href="sqlToExcel.php?fSQLtoEXCEL=<?php echo base64_encode($sql . constant("CHAR_SEPARA") . "Opciones");?>"><img src="<?php echo constant('DIR_WS_GRAF');?>excel.gif" width="34" height="35" align="right" border="0" alt="<?php echo constant("STR_EXPORTAR_A_EXCEL");?>" /></a></td>
+			<td width="100%" colspan="2" class="naranjab"><?php echo sprintf(constant("STR_LISTA_DE_"),str_replace('_', ' ', constant("STR_OPCIONES")));?>
+			<a href="<?php echo($urlExcel); ?>"><img src="<?php echo constant('DIR_WS_GRAF');?>excel.gif" width="34" height="35" align="right" border="0" alt="<?php echo constant("STR_EXPORTAR_A_EXCEL");?>" /></a></td>
 		</tr>
 		<tr>
 			<td width="10"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="10" height="1" border="0" alt="" /></td>

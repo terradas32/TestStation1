@@ -178,7 +178,7 @@ function ajaxFileUpload()
 	$.ajaxFileUpload
 	(
 		{
-			url:'<?php echo constant('HTTP_SERVER')?>cargafichero.php',
+			url:'<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? constant("HTTPS_SERVER") : constant("HTTP_SERVER")) ?>cargafichero.php',
 			secureuri:false,
 			fileElementId:'fFichero',
 			dataType: 'json',

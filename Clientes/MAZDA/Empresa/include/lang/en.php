@@ -669,6 +669,12 @@ define("STR_PRUEBASPAPEL"                         , "Pruebas_papel");
 define("STR_FORMACION_ACADEMICA"                         , "Level of education");
 define("STR_AREA_PROFESIONAL"                         , "Professional area");
 define("STR_DATOS_TITULO"                         , "PERSONAL DATA");
+
+define("STR_DATOS_MB"                         , "Datos Concesión");
+define("STR_SECTOR", "Sector");
+define("STR_CONCESION", "Concesión / Talleres Autorizados");
+define("STR_FECHA_NACIMIENTO", "Fecha de Nacimiento");
+
 define("STR_UNIVERSIDAD"                         , "College");
 
 define("STR_MENU_1",    ":: Security");
@@ -879,5 +885,11 @@ define("STR_NO_DISPONE_DE_SUFICIENTES_UNIDADES_PARA_EFECTUAR_LA_OPERACION",  "Do
 define("STR_UNIDADES_DISPONIBLES",  "Available Units");
 define("STR_UNIDADES_A_CONSUMIR",  "Consuming Units");
 define("STR_POR_FAVOR_RECARGUE_UN_MINIMO_DE",  "Please reload at least");
+define("STR_NO_HAY_RESULTADOS",  "No hay resultados");
+define("STR_AVISO_LEGAL"                         , "Aviso Legal");
+define("MSG_AVISO_LEGAL_P1"					, "En cumplimiento de lo dispuesto en el Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo de 27 de abril de 2016 relativo a la protección de las personas físicas en lo que respecta al tratamiento de datos personales y a la libre circulación de estos datos (RGPD), le informamos que sus datos, serán incorporados a los ficheros de los que es responsable Psicólogos Empresariales y Asociados, S.A. con dirección en C/ Pintor Rosales, 44 1º D (28008-Madrid) con el fin de obtener evaluación psicológica.");
 define("STR_NO_HAY_RESULTADOS",  "No results were found");
+define("MSG_AVISO_LEGAL_P3"					, "En el caso de que Ud no sea una candidato propio de Psicólogos Empresariales y Asociados, S.A. y por tanto  la realización de la evaluación psicológica haya sido requerida por una empresa cliente de Psicólogos Empresariales y Asociados, S.A, como parte de un proceso de selección y/o evaluación al que Ud. opte o participe con ellos, se le informa de que, como parte de dicho proceso, los resultados de la evaluación serán comunicados a dicha empresa, con la exclusiva finalidad de esta gestión.");
+define("STR_CONDICIONES_LEGALES"			, "He leído y acepto las condiciones legales");
+define("STR_DEBE_ACEPTAR_LOS_TERMINOS"			,"Debe aceptar los terminos para poder continuar.");
 ?>

@@ -268,4 +268,7 @@ if ($listItems->fields['enunciado'] !="" && $listItems->fields['orden'] > 1)
 					cargaListening();
 				 });
 			</script>
-	
+			
+<script>
+	MathJax.typeset();	
+</script>

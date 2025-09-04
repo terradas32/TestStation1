@@ -89,18 +89,18 @@ if (isset($_GET['sTK']))
 	}else $strMensaje = constant('ERR_FORM_ERROR');
 }
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $sLang;?>" xml:lang="<?php echo $sLang;?>">
+<!doctype html>
+<html lang="<?php echo $sLang;?>">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<meta name="generator" content="WIZARD, WI2.2 www.azulpomodoro.com" />
+		<meta name="generator" content="WIZARD, WI2.2 www.negociainternet.com" />
 <?php include('include/metatags.php');?>
 	<link rel="shortcut icon" href="favicon.ico" />
 	<link rel="stylesheet" href="estilos/estilos-comunes.css" type="text/css" />
 	<link rel="stylesheet" href="estilos/estilos-candidato.css" type="text/css" />
-	<script language="javascript" type="text/javascript" src="codigo/noback.js"></script>
-    <script language="javascript" type="text/javascript" src="codigo/eventos.js"></script>
-	<script type="text/javascript">
+	 <script src="codigo/noback.js"></script>
+     <script src="codigo/eventos.js"></script>
+	<script  >
         function autoComplete()
         {
                 var i = 0;
@@ -134,11 +134,12 @@ if (isset($_GET['sTK']))
         </div><!-- Fin de accesos -->
     </div><!-- Fin de cuerpo -->
     <div id="pie">
-        <p class="dweb"><a href="http://www.azulpomodoro.com" title="Diseño Web"><?php echo constant("STR_DISENO_DESARROLLO");?></a></p>
+        <p class="dweb"><a href="http://www.negociainternet.com" title="Diseño Web"><?php echo constant("STR_DISENO_DESARROLLO");?></a></p>
         <p class="copy"><?php echo constant("NOMBRE_EMPRESA");?> - <?php echo constant("STR_DERECHOS_RESERVADOS");?></p>
+        <!-- <p class="copy dweb"><a href="<?php echo constant("HTTP_SERVER")?>legal.html" target="_blank" title="<?php echo constant("STR_AVISO_LEGAL");?>"><?php echo constant("STR_AVISO_LEGAL");?></a></p> -->
     </div><!-- Fin de pie -->
 </div><!-- Fin de la pagina -->
-<script type="text/javascript">// Script para Autocompletar "off" y que valide con la W3C
+<script  >// Script para Autocompletar "off" y que valide con la W3C
 	autoComplete();
 </script>
 </body>
@@ -152,7 +153,6 @@ if (isset($_GET['sTK']))
 		$sSubject=$cNotificaciones->getAsunto();
 		$sBody=$cNotificaciones->getCuerpo();
 		$sAltBody=strip_tags($cNotificaciones->getCuerpo());
-
 		require_once constant("DIR_WS_COM") . 'PHPMailer/Exception.php';
 		require_once constant("DIR_WS_COM") . 'PHPMailer/PHPMailer.php';
 		require_once constant("DIR_WS_COM") . 'PHPMailer/SMTP.php';
@@ -175,17 +175,19 @@ if (isset($_GET['sTK']))
 			$mail->SMTPAuth   = true;                               //Enable SMTP authentication
 			$mail->Username = constant("MAILUSERNAME");             //SMTP username
 			$mail->Password = constant("MAILPASSWORD");             //SMTP password
-			$mail->SMTPSecure = 'tls';							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+			$mail->SMTPSecure = constant("MAIL_ENCRYPTION");							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
 			$mail->Port      = constant("PORTMAIL");                                //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
 
 			$mail->CharSet = 'utf-8';
 			$mail->Debugoutput = 'html';
 
+			// Borro las direcciones de destino establecidas anteriormente
+			$mail->clearAllRecipients();
 
 			//Con la propiedad Mailer le indicamos que vamos a usar un
 			//servidor smtp
-			$mail->Mailer = $mail->Mailer = constant("MAILER");;
+			$mail->Mailer = constant("MAILER");
 
 			//Asignamos a Host el nombre de nuestro servidor smtp
 			$mail->Host = constant("HOSTMAIL");
@@ -199,13 +201,16 @@ if (isset($_GET['sTK']))
 
 			//Indicamos cual es nuestra dirección de correo y el nombre que
 			//queremos que vea el usuario que lee nuestro correo
-			$mail->From = $cFROM->getMail();
+			//$mail->From = $cFROM->getMail();
+			$mail->From = constant("EMAIL_CONTACTO");
+			$mail->AddReplyTo($cFROM->getMail(), $cFROM->getNombre());
 			$mail->FromName = $cFROM->getNombre();
+				$nomEmpresa = $cFROM->getNombre();
 
 			//Asignamos asunto y cuerpo del mensaje
 			//El cuerpo del mensaje lo ponemos en formato html, haciendo
 			//que se vea en negrita
-			$mail->Subject = $sSubject;
+			$mail->Subject = $nomEmpresa . " - " . $sSubject;
 			$mail->Body = $sBody;
 
 			//Definimos AltBody por si el destinatario del correo no admite
@@ -258,104 +263,5 @@ if (isset($_GET['sTK']))
 		}
 	    return $exito;
 	}
-	function enviaEmail_OLD($cEntidad)
-	{
-
-		require_once(constant("DIR_WS_COM"). "_Email/class.phpmailer.php");
-		require_once(constant("DIR_WS_COM"). "_Email/class.smtp.php");
-
-
-
-		$sTitulo		= $cEntidad->getNombre() . " - " . constant("MSG_SU_NUEVA_CONTRASENA_ES") . " ...";
-		$sArchivo		= "none";
-
-		$sComentarios	= constant("MSG_SU_NUEVA_CONTRASENA_ES") . ": " . $cEntidad->getPassword();
-	//*-------------------
-		//pasamos a enviar el correo
-		// primero hay que incluir la clase phpmailer para poder instanciar
-		//un objeto de la misma
-		//instanciamos un objeto de la clase phpmailer al que llamamos
-		//por ejemplo mail
-		$mail = new PHPMailer(true);  //PHPMailer instance with exceptions enabled
-$mail->CharSet = 'utf-8';
-$mail->Debugoutput = 'html';
-// Borro las direcciones de destino establecidas anteriormente
-$mail->clearAllRecipients();
-		//Con la propiedad CharSet le indicamos que vamos a usar utf-8
-		$mail->CharSet = "utf-8";
-		//Con la propiedad Mailer le indicamos que vamos a usar un
-		//servidor smtp
-		$mail->Mailer = constant("MAILER");
-		//Asignamos a Host el nombre de nuestro servidor smtp
-		$mail->Host = constant("HOSTMAIL");
-		//Le asignamos el puerto el por defecto es el 25, nosotros utilizamos el 587
-		$mail->Port = constant("PORTMAIL");
-		//Le indicamos que el servidor smtp requiere autenticación
-		$mail->SMTPAuth = true;
-		//Le decimos cual es nuestro nombre de usuario y password
-		$mail->Username = constant("MAILUSERNAME");
-		$mail->Password = constant("MAILPASSWORD");
-		//Indicamos cual es nuestra dirección de correo y el nombre que
-		//queremos que vea el usuario que lee nuestro correo
-		$mail->From = constant("EMAIL_CONTACTO");
-		$mail->FromName = constant("PERSONA_CONTACTO");
-		//Asignamos asunto y cuerpo del mensaje
-		//El cuerpo del mensaje lo ponemos en formato html, haciendo
-		//que se vea la negrita etc.
-		$mail->Subject = $sTitulo;
-		$mail->Body = $sComentarios;
-		//Definimos AltBody por si el destinatario del correo no admite
-		//email con formato html
-		$mail->AltBody = strip_tags($sComentarios);
-		//el valor por defecto 10 de Timeout es un poco escaso dado que voy a usar
-		//una cuenta gratuita y voy a usar attachments, por tanto lo pongo a 120
-		$mail->Timeout=120;
-		//Indicamos el fichero a adjuntar si el usuario seleccionó uno en el formulario
-		if ($sArchivo !="none"){
-			$mail->AddAttachment($sArchivo,$sArchivo);
-		}
-		//Indicamos cuales son las direcciones de destino del correo y enviamos
-		//los mensajes en bloques
-		$sMensajeOK = "";
-		$sMensajeNOOK = "";
-		set_time_limit(0); //establecemos el tiempo de ejecución sin limite.
-		ignore_user_abort(true);
-		//Mandamos al cliente
-        $mail->AddAddress($cEntidad->getEmail(), $cEntidad->getNombre());
-//**DESARROLLO		$mail->AddAddress($cEntidadEmpresas->getMailContacto(), $cEntidadEmpresas->getNombreContacto());
-		//Mandamos con copia oculta a Administración y al contacto del emisor
-        //$mail->AddBCC($cEntidadEmpresas->getMailAdministracion());
-//**DESARROLLO		$mail->AddBCC($cEntidadEmpresas->getMailContacto());
-		//Confirmación de lectura al contacto del emisor
-		//$mail->ConfirmReadingTo = $cEntidadEmpresas->getMailContacto();
-		$bExito = false;
-		$bExito = $mail->Send();
-		//La clase phpmailer tiene un pequeño bug y es que cuando envia un mail con
-		//attachment la variable ErrorInfo adquiere el valor Data not accepted, dicho
-		//valor no debe confundirnos ya que el mensaje ha sido enviado correctamente
-		if ($mail->ErrorInfo=="<br>SMTP Error: Datos no aceptados"){
-			$bExito=true;
-		}
-		//Si el mensaje no ha podido ser enviado se realizaran 4 intentos mas
-		//como mucho para intentar enviar el mensaje, cada intento se hara 5 s
-		//segundos despues del anterior, para ello se usa la funcion sleep
-		$intentos=1;
-		while((!$bExito) && ($intentos < 2) && ($mail->ErrorInfo != "SMTP Error: Data not accepted"))
-		{
-			sleep(rand(0,3));
-			$bExito = $mail->Send();
-			$intentos=$intentos+1;
-		}
-
-		if (!$bExito){
-			$aNOEnviados = $mail->to;
-			for($i = 0; $i < count($aNOEnviados); $i++){
-				$sMensajeNOOK .= "\\n" .  $aNOEnviados[$i][0];
-			}
-		}
-		$mail->ClearAllRecipients();
-		$mail->ClearAttachments();
-
-		return $sMensajeNOOK;
-	}
+	
 ?>

@@ -26,7 +26,7 @@ $cEmpresas = $cEmpresasDB->readEntidad($cEmpresas);
 $sLogo = '<img alt="' . constant("NOMBRE_EMPRESA") . '" src="' . constant("DIR_WS_GRAF") . 'logo.png" border="0" />';
 if ($cEmpresas->getPathLogo() != ""){
 	$altura = 85;
-	$size = @getimagesize(constant("DIR_WS_GESTOR") . $cEmpresas->getPathLogo());
+	$size = list($anchura, $altura) = @getimagesize(constant("DIR_WS_GESTOR") . $cEmpresas->getPathLogo());
 	if($size){
 		$anchura=$size[0];
 		$altura=$size[1];

@@ -6,7 +6,7 @@ header('Cache-Control: post-check=0, pre-check=0', false);
 header('Pragma: no-cache');
 
 
-ob_start();
+ob_start(); 
 	require('./include/Configuracion.php');
 	if (!isset($_REQUEST["fLang"])){
 		$_REQUEST["fLang"] = $_REQUEST["fCodIdiomaIso2"];
@@ -92,6 +92,13 @@ include_once ('include/conexion.php');
 //	echo "<br />" . $iPreguntasPorPagina;
     if ($bMultiPagina){
     	$iPaginas = $iPreguntasPorPagina;	//Contador del array Multipágina
+		if (empty($_POST["fPaginaSel"])){
+			$_POST["fPaginaSel"]=1;
+		}
+		if ($bMultiPagina){
+			$iLineas = $aPreguntasPorPagina[$_POST["fPaginaSel"]-1];
+			$sPreguntasPorPagina = $iLineas;
+		}
     }else{
     	$iPaginas = $iTamaniolistaItems / $sPreguntasPorPagina;
     	if($iTamaniolistaItems % $sPreguntasPorPagina !=0){

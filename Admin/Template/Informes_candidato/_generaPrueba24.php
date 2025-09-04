@@ -358,7 +358,7 @@
 					<p class="textos"><strong>' . constant("STR_NOMBRE_APELLIDOS") . ':</strong> '. $cCandidato->getNombre(). ' ' . $cCandidato->getApellido1(). ' ' .$cCandidato->getApellido2() .'</p>
 					<p class="textos"><strong>' . constant("STR_FECHA_INFORME") . ':</strong> '.date("d/m/Y").'</p>
 				</div>
-		    	<h2 id="copy">Copyright 2011, PSICÓLOGOS EMPRESARIALES S.A.</h2>
+		    	<h2 id="copy">AAAA Copyright 2011, PSICÓLOGOS EMPRESARIALES S.A.</h2>
 			</div>
 			<!--FIN DIV PAGINA-->
 			';

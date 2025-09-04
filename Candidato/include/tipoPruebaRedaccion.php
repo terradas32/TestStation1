@@ -164,4 +164,8 @@ $replace = '<br />';
 </table>
 <?php 
 	$listItems->MoveNext();
-	}?>
+}?>
+
+<script>
+	MathJax.typeset();	
+</script>

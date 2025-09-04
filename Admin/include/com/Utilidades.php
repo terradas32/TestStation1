@@ -2,6 +2,7 @@
 /**
  * Utilidades comunes
  */
+
 class Utilidades
 {
     /**********************************************
@@ -11,9 +12,10 @@ class Utilidades
 	*********************************************/
 	function chkChar($sCadena)
 	{
+		
 		$aChars = array('\"','<','>','&','|','\'', '%', '?', '=', '/', '\\');
 		$bRetorno = false;
-
+		
 		//miramos si la cadena tiene alguno de los caracteres para escapar
 		for ($i = 0; $i < strlen($sCadena); $i++)
 		{
@@ -21,15 +23,19 @@ class Utilidades
 			{
 				if (strpos($sCadena,  $aChars[$j]) === false)
 				{
+					
 					$bRetorno = false;
+					
 				}else{
 					$bRetorno = true;
+					
                 	break;
                 }
 			}
 			if ($bRetorno)
 				break;
 		}
+		
 		return $bRetorno;
 	}
     /**********************************************
@@ -52,6 +58,8 @@ class Utilidades
 	function validaXSS($sCadena)
 	{
         //$sCadena = htmlspecialchars($sCadena, ENT_QUOTES, "UTF-8");
+
+		$sCadena = $this->fixArrayToString($sCadena);
 		$sCadena = htmlentities($sCadena, ENT_QUOTES, "UTF-8");
         return $sCadena;
     }
@@ -64,6 +72,7 @@ class Utilidades
 	function validaXSS_EDITOR($sCadena)
 	{
 		//$sCadena = htmlspecialchars($sCadena, ENT_QUOTES, "UTF-8");
+		$sCadena = $this->fixArrayToString($sCadena);
 		$sCadena = htmlentities($sCadena, ENT_QUOTES, "UTF-8");
         return $sCadena;
     }
@@ -147,7 +156,7 @@ class Utilidades
 	    if (preg_match(	"/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@([_a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]{2,200}\.[a-zA-Z]{2,6}$/", $pMail ) ) {
 	       return true;
 	    } else {
-	       return false;
+	       return true;
 	    }
 	}
 	/**********************************************
@@ -234,7 +243,7 @@ class Utilidades
     *  @return String Fecha formateada por la maskara idioma
     */
     function PrintDate($fecha = "", $lang='es') {
-    	if ($lang == 'es'){
+    	if ($lang == 'es' || $lang == 'pt'){
     		$mask = "%d de %B de %Y";
     	}else{
     		$mask = "%B %d, %Y";
@@ -246,13 +255,20 @@ class Utilidades
         }
 
         setlocale(LC_ALL, $lang);
-        $loc = setlocale(LC_TIME, NULL);
+        // $loc = setlocale(LC_TIME, NULL);
+		// $formatter = new IntlDateFormatter($lang, IntlDateFormatter::LONG, IntlDateFormatter::NONE);
         $fecha = strftime($mask, $fecha);
+		// $fecha = $formatter->format($fecha);
+
         //Si no funciona setlocale lo sustituimos
         $en = array("January", "February", "March", "April", "May", "June" ,"July", "August", "September" , "October", "November", "December");
         $es = array("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio" ,"Julio", "Agosto", "Septiembre" , "Octubre", "Noviembre", "Diciembre");
+		$pt = array("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro");
         if ($lang == 'es'){
         	$fecha = str_ireplace($en, $es, $fecha);
+    	}
+        if ($lang == 'pt'){
+        	$fecha = str_ireplace($en, $pt, $fecha);
     	}
         return $fecha;
     }
@@ -333,7 +349,6 @@ class Utilidades
 	*/
 	function getValorCalculadoPRUEBAS($rsLine, $cOpciones, $conn){
 		$sValor="0";
-
 		//Leemos el item para saber cual es la opción correcta
 		require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Items/ItemsDB.php");
 		require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Items/Items.php");
@@ -730,5 +745,19 @@ class Utilidades
 		}
 		return $holder;
 	}
+
+	
+	/*
+	 * Soluciona el tratamiento como fatal error del paso de Array a la funcion nativa htmlentities
+	 * a partir de PHP 8
+	 */
+	 function fixArrayToString(string | array $string) : string
+	 {
+		if (gettype($string)==='array'){
+
+			$string = (count($string) > 0) ? strval($string[0]) : "";
+		}
+		return $string;
+	 }
 }//Fin de la Clase Utilidades
 ?>

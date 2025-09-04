@@ -77,7 +77,7 @@ class Respuestas_pruebasDB
 		$sql .= $aux->qstr($cEntidad->getIdCandidato(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getIdPrueba(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getCodIdiomaIso2(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getFinalizado(), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getFinalizado()), false) . ",";
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->qstr($cEntidad->getUsuAlta(), false) . ",";
@@ -174,7 +174,7 @@ class Respuestas_pruebasDB
 		$sql .= "idCandidato=" . $aux->qstr($cEntidad->getIdCandidato(), false) . ", ";
 		$sql .= "idPrueba=" . $aux->qstr($cEntidad->getIdPrueba(), false) . ", ";
 		$sql .= "codIdiomaIso2=" . $aux->qstr($cEntidad->getCodIdiomaIso2(), false) . ", ";
-		$sql .= "finalizado=" . $aux->qstr($cEntidad->getFinalizado(), false) . ", ";
+		$sql .= "finalizado=" . $aux->qstr(intval($cEntidad->getFinalizado()), false) . ", ";
 		$sql .= "fecMod=" . $aux->sysTimeStamp . ",";
 		$sql .= "usuMod=" . $aux->qstr($cEntidad->getUsuMod(), false) ;
 		$sql .= " WHERE ";
@@ -400,7 +400,7 @@ class Respuestas_pruebasDB
 		if ($cEntidad->getFinalizado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="finalizado>=" . $aux->qstr($cEntidad->getFinalizado(), false);
+			$sql .="finalizado>=" . $aux->qstr(intval($cEntidad->getFinalizado()), false);
 		}
 		if ($cEntidad->getFinalizadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);

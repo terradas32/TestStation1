@@ -41,24 +41,24 @@ class Respuestas_pruebas_itemsDB
 		$aux			= $this->conn;
 
 		$newId = $cEntidad->getIdEmpresa();
-		$iCont = 0;
-		$sql  = "SELECT COUNT(idEmpresa) AS Max FROM respuestas_pruebas_items ";
-		$sql .= "WHERE ";
-		$sql .="idEmpresa=" . $aux->qstr($cEntidad->getIdEmpresa(), false) . " AND idProceso=" . $aux->qstr($cEntidad->getIdProceso(), false) . " AND idCandidato=" . $aux->qstr($cEntidad->getIdCandidato(), false) . " AND codIdiomaIso2=" . $aux->qstr($cEntidad->getCodIdiomaIso2(), false) . " AND idPrueba=" . $aux->qstr($cEntidad->getIdPrueba(), false) . " AND idItem=" . $aux->qstr($cEntidad->getIdItem(), false) . " ";
-		$rs = $aux->Execute($sql);
-		if ($rs){
-			while ($arr = $rs->FetchRow()){
-				$iCont = $arr['Max'];
-			}
-		}
-		if ($iCont > 1 ){
-			//Existe el registro
-			$this->msg_Error	= array();
-			$sTypeError	=	date('d/m/Y H:i:s') . " Error Registro Existe [" . constant("MNT_ALTA") . "][Respuestas_pruebas_itemsDB]";
-			$this->msg_Error[]	= $sTypeError;
-			error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
-			return 0;
-		}
+		//$iCont = 0;
+		//$sql  = "SELECT COUNT(idEmpresa) AS Max FROM respuestas_pruebas_items ";
+		//$sql .= "WHERE ";
+		//$sql .="idEmpresa=" . $aux->qstr($cEntidad->getIdEmpresa(), false) . " AND idProceso=" . $aux->qstr($cEntidad->getIdProceso(), false) . " AND idCandidato=" . $aux->qstr($cEntidad->getIdCandidato(), false) . " AND codIdiomaIso2=" . $aux->qstr($cEntidad->getCodIdiomaIso2(), false) . " AND idPrueba=" . $aux->qstr($cEntidad->getIdPrueba(), false) . " AND idItem=" . $aux->qstr($cEntidad->getIdItem(), false) . " ";
+		//$rs = $aux->Execute($sql);
+		//if ($rs){
+		//	while ($arr = $rs->FetchRow()){
+		//		$iCont = $arr['Max'];
+		//	}
+		//}
+		//if ($iCont > 1 ){
+		//	//Existe el registro
+		//	$this->msg_Error	= array();
+		//	$sTypeError	=	date('d/m/Y H:i:s') . " Error Registro Existe [" . constant("MNT_ALTA") . "][Respuestas_pruebas_itemsDB]";
+		//	$this->msg_Error[]	= $sTypeError;
+		//	error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+		//	return 0;
+		//}
 		$comboDESC_EMPRESAS		= new Combo($aux,"_fDescEmpresa","idEmpresa","nombre","Descripcion","empresas","","","idEmpresa=" . $aux->qstr($cEntidad->getIdEmpresa(), false),"","orden");
 		$cEntidad->setDescEmpresa($comboDESC_EMPRESAS->getDescripcionCombo($cEntidad->getIdEmpresa()));
 		$comboDESC_PROCESOS		= new Combo($aux,"_fDescProceso","idProceso","nombre","Descripcion","procesos","","","idEmpresa=" . $aux->qstr($cEntidad->getIdEmpresa(), false) . " AND idProceso=" . $aux->qstr($cEntidad->getIdProceso(), false),"","fecMod");
@@ -69,10 +69,33 @@ class Respuestas_pruebas_itemsDB
 		$cEntidad->setDescIdiomaIso2($comboDESC_WI_IDIOMAS->getDescripcionCombo($cEntidad->getCodIdiomaIso2()));
 		$comboDESC_PRUEBAS		= new Combo($aux,"_fDescPrueba","idPrueba","nombre","Descripcion","pruebas","","","codIdiomaIso2=" . $aux->qstr($cEntidad->getCodIdiomaIso2(), false),"","fecMod");
 		$cEntidad->setDescPrueba($comboDESC_PRUEBAS->getDescripcionCombo($cEntidad->getIdPrueba()));
-		$comboDESC_ITEMS		= new Combo($aux,"_fDescItem","idItem","enunciado","Descripcion","items","","","codIdiomaIso2=" . $aux->qstr($cEntidad->getCodIdiomaIso2(), false) . " AND idPrueba=" . $aux->qstr($cEntidad->getIdPrueba(), false) . " AND idItem=" . $aux->qstr($cEntidad->getIdItem(), false),"","fecMod");
-		$cEntidad->setDescItem($comboDESC_ITEMS->getDescripcionCombo($cEntidad->getIdItem()));
-		$comboDESC_OPCIONES		= new Combo($aux,"_fDescOpcion","idOpcion","descripcion","Descripcion","opciones","","","codIdiomaIso2=" . $aux->qstr($cEntidad->getCodIdiomaIso2(), false) . " AND idPrueba=" . $aux->qstr($cEntidad->getIdPrueba(), false) . " AND idItem=" . $aux->qstr($cEntidad->getIdItem(), false) . " AND idOpcion=" . $aux->qstr($cEntidad->getIdOpcion(), false),"","fecMod");
-		$cEntidad->setDescOpcion($comboDESC_OPCIONES->getDescripcionCombo($cEntidad->getIdOpcion()));
+		if ($cEntidad->getId_tri() != "") {
+			require_once(constant("DIR_WS_COM") . "Items/ItemsDB.php");
+			require_once(constant("DIR_WS_COM") . "Items/Items.php");
+			$_cItemsDB	= new ItemsDB($aux);
+			$_cItems		= new Items();
+			$_cItems->setId($cEntidad->getId_tri());
+			$_cItems->setCodIdiomaIso2($cEntidad->getCodIdiomaIso2());
+			$_cItems = $_cItemsDB->readEntidadId($_cItems);
+			$cEntidad->setDescItem($_cItems->getEnunciado());
+			//--
+			require_once(constant("DIR_WS_COM") . "Opciones/OpcionesDB.php");
+			require_once(constant("DIR_WS_COM") . "Opciones/Opciones.php");
+			$_cOpcionesDB	= new OpcionesDB($aux);
+			$_cOpciones		= new Opciones();
+			$_cOpciones->setIdPrueba($_cItems->getIdPrueba());
+			$_cOpciones->setIdItem($_cItems->getIdItem());
+			$_cOpciones->setCodIdiomaIso2($cEntidad->getCodIdiomaIso2());
+			$_cOpciones->setIdOpcion($cEntidad->getIdOpcion());
+			$_cOpciones = $_cOpcionesDB->readEntidad($_cOpciones);
+			$cEntidad->setDescOpcion($_cOpciones->getDescripcion());
+		}else{
+			$comboDESC_ITEMS		= new Combo($aux,"_fDescItem","idItem","enunciado","Descripcion","items","","","codIdiomaIso2=" . $aux->qstr($cEntidad->getCodIdiomaIso2(), false) . " AND idPrueba=" . $aux->qstr($cEntidad->getIdPrueba(), false) . " AND idItem=" . $aux->qstr($cEntidad->getIdItem(), false),"","fecMod");
+			$cEntidad->setDescItem($comboDESC_ITEMS->getDescripcionCombo($cEntidad->getIdItem()));
+			$comboDESC_OPCIONES		= new Combo($aux,"_fDescOpcion","idOpcion","descripcion","Descripcion","opciones","","","codIdiomaIso2=" . $aux->qstr($cEntidad->getCodIdiomaIso2(), false) . " AND idPrueba=" . $aux->qstr($cEntidad->getIdPrueba(), false) . " AND idItem=" . $aux->qstr($cEntidad->getIdItem(), false) . " AND idOpcion=" . $aux->qstr($cEntidad->getIdOpcion(), false),"","fecMod");
+			$cEntidad->setDescOpcion($comboDESC_OPCIONES->getDescripcionCombo($cEntidad->getIdOpcion()));
+		}
+
 
 		$sql = "INSERT INTO respuestas_pruebas_items (";
 		$sql .= "idEmpresa" . ",";
@@ -92,6 +115,12 @@ class Respuestas_pruebas_itemsDB
 		$sql .= "codigo" . ",";
 		$sql .= "orden" . ",";
 		$sql .= "valor" . ",";
+		if ($cEntidad->getId_tri() != "") {
+			$sql .= "id_tri" . ",";
+		}
+		if ($cEntidad->getIndex_tri() != "") {
+			$sql .= "index_tri" . ",";
+		}
 		$sql .= "fecAlta" . ",";
 		$sql .= "fecMod" . ",";
 		$sql .= "usuAlta" . ",";
@@ -114,6 +143,12 @@ class Respuestas_pruebas_itemsDB
 		$sql .= $aux->qstr($cEntidad->getCodigo(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getOrden(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getValor(), false) . ",";
+		if ($cEntidad->getId_tri() != ""){
+			$sql .= $cEntidad->getId_tri() . ",";	
+		}
+		if ($cEntidad->getIndex_tri() != ""){
+			$sql .= $cEntidad->getIndex_tri() . ",";
+		}
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->qstr(($cEntidad->getUsuAlta() != "") ? $cEntidad->getUsuAlta() : $cEntidad->getIdCandidato(), false) . ",";
@@ -466,7 +501,110 @@ class Respuestas_pruebas_itemsDB
 				$and = true;
 				$sql  .="idItem=" . $aux->qstr($cEntidad->getIdItem(), false) . " ";
 			}
-//			echo "<br />BORRAR::" . $sql;
+			if($aux->Execute($sql) === false){
+				$retorno=false;
+				$this->msg_Error	= array();
+				$sTypeError	=	date('d/m/Y H:i:s') . " Error SQL [" . constant("MNT_BORRAR") . "][Respuestas_pruebas_itemsDB]";
+				$this->msg_Error[]	= $sTypeError;
+				error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+			}
+		}else $retorno=false;
+		if ($retorno){
+			require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambiosDB.php");
+			require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambios.php");
+			$cEntidadHistorico_cambiosDB	= new Historico_cambiosDB($aux);  // Entidad DB Historico_cambios
+			$cEntidadHistorico_cambios		= new Historico_cambios();  // Entidad Historico_cambios
+			require_once(constant("DIR_WS_COM") . "Usuarios/UsuariosDB.php");
+			require_once(constant("DIR_WS_COM") . "Usuarios/Usuarios.php");
+			$_cEntidadUsuariosDB	= new UsuariosDB($aux);
+			$_cEntidadUsuarios		= new Usuarios();
+			$_cEntidadUsuarios->setIdUsuario($cEntidad->getUsuAlta());
+			$_cEntidadUsuariosDB->readEntidad($_cEntidadUsuarios);
+			$cEntidadHistorico_cambios->setFuncionalidad(basename($_SERVER['PHP_SELF']));
+			$cEntidadHistorico_cambios->setModo(constant("MNT_ALTA"));
+			$cEntidadHistorico_cambios->setQuery($sql);
+			$cEntidadHistorico_cambios->setIp($_SERVER['REMOTE_ADDR']);
+			$cEntidadHistorico_cambios->setIdUsuario($_cEntidadUsuarios->getIdUsuario());
+			$cEntidadHistorico_cambios->setIdUsuarioTipo($_cEntidadUsuarios->getIdUsuarioTipo());
+			$cEntidadHistorico_cambios->setLogin($_cEntidadUsuarios->getLogin());
+			$cEntidadHistorico_cambios->setNombre($_cEntidadUsuarios->getNombre());
+			$cEntidadHistorico_cambios->setApellido1($_cEntidadUsuarios->getApellido1());
+			$cEntidadHistorico_cambios->setApellido2($_cEntidadUsuarios->getApellido2());
+			$cEntidadHistorico_cambios->setEmail($_cEntidadUsuarios->getEmail());
+			$cEntidadHistorico_cambios->setUsuAlta(($cEntidad->getUsuAlta() != "") ? $cEntidad->getUsuAlta() : $cEntidad->getIdCandidato());
+			$cEntidadHistorico_cambios->setUsuMod(($cEntidad->getUsuMod() != "") ? $cEntidad->getUsuMod() : $cEntidad->getIdCandidato());
+			$HistId	= $cEntidadHistorico_cambiosDB->insertar($cEntidadHistorico_cambios);
+			if (empty($HistId)){
+				$this->msg_Error	= array();
+				$sTypeError	=	date('d/m/Y H:i:s') . " Error [GUARDANDO HISTORICO][" . constant("MNT_ALTA") . "][Respuestas_pruebas_itemsDB]";
+				$this->msg_Error[]	= $sTypeError;
+				error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+				header('Location: ' . constant("HTTP_SERVER") . 'index.php');
+				exit;
+			}
+		}
+
+		return $retorno;
+	}
+	
+	/*************************************************************************
+	* Borra una entidad en la base de datos.
+	* @param entidad Entidad a borrar contiene los datos de condición
+	* @return boolean Estado del borrado
+	* @exception Exception Error al ejecutar la acción
+	*  en la base de datos
+	************************************************************************/
+	function borrarId_tri($cEntidad)
+	{
+		$aux			= $this->conn;
+		$this->msg_Error			= array();
+		$and			= false;
+		$retorno			= true;
+
+		if ($retorno){
+			//Borramos el registro de la Entidad.
+			$sql  ="DELETE FROM respuestas_pruebas_items ";
+			$sql  .="WHERE ";
+			if ($cEntidad->getIdEmpresa() != ""){
+				$sql .= $this->getSQLAnd($and);
+				$and = true;
+				$sql  .="idEmpresa=" . $aux->qstr($cEntidad->getIdEmpresa(), false) . " ";
+			}
+			if ($cEntidad->getIdProceso() != ""){
+				$sql .= $this->getSQLAnd($and);
+				$and = true;
+				$sql  .="idProceso=" . $aux->qstr($cEntidad->getIdProceso(), false) . " ";
+			}
+			if ($cEntidad->getIdCandidato() != ""){
+				$sql .= $this->getSQLAnd($and);
+				$and = true;
+				$sql  .="idCandidato=" . $aux->qstr($cEntidad->getIdCandidato(), false) . " ";
+			}
+			if ($cEntidad->getCodIdiomaIso2() != ""){
+				$sql .= $this->getSQLAnd($and);
+				$and = true;
+				$sql  .="codIdiomaIso2=" . $aux->qstr($cEntidad->getCodIdiomaIso2(), false) . " ";
+			}
+			if ($cEntidad->getIdPrueba() != ""){
+				$sql .= $this->getSQLAnd($and);
+				$and = true;
+				$sql  .="idPrueba=" . $aux->qstr($cEntidad->getIdPrueba(), false) . " ";
+			}
+			if ($cEntidad->getIdItem() != ""){
+				$sql .= $this->getSQLAnd($and);
+				$and = true;
+				$sql  .="idItem=" . $aux->qstr($cEntidad->getIdItem(), false) . " ";
+			}
+			if ($cEntidad->getId_tri() != ""){
+				$sql .= $this->getSQLAnd($and);
+				$and = true;
+				$sql  .="id_tri=" . $aux->qstr($cEntidad->getId_tri(), false) . " ";
+			}
+			if ($cEntidad->getIndex_tri() != ""){
+				$sql .= $this->getSQLAnd($and);
+				$and = true;
+				$sql  .="index_tri=" . $aux->qstr($cEntidad->getIndex_tri(), false) . " ";
+			}
 			if($aux->Execute($sql) === false){
 				$retorno=false;
 				$this->msg_Error	= array();
@@ -549,7 +687,8 @@ class Respuestas_pruebas_itemsDB
 					$cEntidad->setDescOpcion($arr['descOpcion']);
 					$cEntidad->setOrden($arr['orden']);
 					$cEntidad->setValor($arr['valor']);
-
+					$cEntidad->setId_tri($arr['id_tri']);
+					$cEntidad->setIndex_tri($arr['index_tri']);
 					$cEntidad->setFecAlta($arr['fecAlta']);
 					$cEntidad->setFecMod($arr['fecMod']);
 					$cEntidad->setUsuAlta($arr['usuAlta']);
@@ -567,7 +706,64 @@ class Respuestas_pruebas_itemsDB
 		}
 		return $cEntidad;
 	}
+	
+	/*************************************************************************
+	* Consulta en la base de datos recogiendo la información
+	* recibida por la entidad, esta forma de consultar genera
+	* un <b>solo</b> registro conteniendo la información
+	* de la entidad recibida. Este metodo se utiliza para efectuar
+	* consultas concretas de un solo registro.
+	* @param entidad Entidad con la información basica a consultar
+	* @exception Exception Error al ejecutar la acción
+	*  en la base de datos
+	* @return cEntidad con la información recuperada.
+	*************************************************************************/
+	function readEntidadIndex_tri($cEntidad)
+	{
+		$aux			= $this->conn;
 
+		$sql = "SELECT *  FROM respuestas_pruebas_items WHERE ";
+		$sql  .="idEmpresa=" . $aux->qstr($cEntidad->getIdEmpresa(), false) . " AND idProceso=" . $aux->qstr($cEntidad->getIdProceso(), false) . " AND idCandidato=" . $aux->qstr($cEntidad->getIdCandidato(), false) . " AND codIdiomaIso2=" . $aux->qstr($cEntidad->getCodIdiomaIso2(), false) . " AND idPrueba=" . $aux->qstr($cEntidad->getIdPrueba(), false) . " AND idItem=" . $aux->qstr($cEntidad->getIdItem(), false) . " ";
+		$sql  .="AND index_tri=" . $aux->qstr($cEntidad->getIndex_tri(), false) . " ";
+		$rs = $aux->Execute($sql);
+		if ($rs){
+			while ($arr = $rs->FetchRow()){
+					$cEntidad->setIdEmpresa($arr['idEmpresa']);
+					$cEntidad->setDescEmpresa($arr['descEmpresa']);
+					$cEntidad->setIdProceso($arr['idProceso']);
+					$cEntidad->setDescProceso($arr['descProceso']);
+					$cEntidad->setIdCandidato($arr['idCandidato']);
+					$cEntidad->setDescCandidato($arr['descCandidato']);
+					$cEntidad->setCodIdiomaIso2($arr['codIdiomaIso2']);
+					$cEntidad->setDescIdiomaIso2($arr['descIdiomaIso2']);
+					$cEntidad->setIdPrueba($arr['idPrueba']);
+					$cEntidad->setDescPrueba($arr['descPrueba']);
+					$cEntidad->setIdItem($arr['idItem']);
+					$cEntidad->setDescItem($arr['descItem']);
+					$cEntidad->setIdOpcion($arr['idOpcion']);
+					$cEntidad->setDescOpcion($arr['descOpcion']);
+					$cEntidad->setOrden($arr['orden']);
+					$cEntidad->setValor($arr['valor']);
+					$cEntidad->setId_tri($arr['id_tri']);
+					$cEntidad->setIndex_tri($arr['index_tri']);
+					$cEntidad->setFecAlta($arr['fecAlta']);
+					$cEntidad->setFecMod($arr['fecMod']);
+					$cEntidad->setUsuAlta($arr['usuAlta']);
+					$cEntidad->setUsuMod($arr['usuMod']);
+			}
+		}else{
+
+			echo(constant("ERR"));
+			$this->msg_Error	= array();
+			$sTypeError	=	date('d/m/Y H:i:s') . " Error SQL [readEntidad][Respuestas_pruebas_itemsDB]";
+			$this->msg_Error[]	= $sTypeError;
+			error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+			exit;
+
+		}
+		return $cEntidad;
+	}
+	
 	/*************************************************************************
 	* Lista en la base de datos recogiendo la información
 	* recibida por la entidad, Este metodo se utiliza para búsquedas
@@ -651,6 +847,16 @@ class Respuestas_pruebas_itemsDB
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
 			$sql .="UPPER(descOpcion) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDescOpcion() . "%") . ")";
+		}
+		if ($cEntidad->getId_tri() != "") {
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="id_tri =" . $aux->qstr($cEntidad->getId_tri(), false);
+		}
+		if ($cEntidad->getIndex_tri() != "") {
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="index_tri =" . $aux->qstr($cEntidad->getIndex_tri(), false);
 		}
 		if ($cEntidad->getOrden() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -786,6 +992,16 @@ class Respuestas_pruebas_itemsDB
 			$and = true;
 			$sql .="UPPER(descOpcion) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDescOpcion() . "%") . ")";
 		}
+		if ($cEntidad->getId_tri() != "") {
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="id_tri =" . $aux->qstr($cEntidad->getId_tri(), false);
+		}
+		if ($cEntidad->getIndex_tri() != "") {
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="index_tri =" . $aux->qstr($cEntidad->getIndex_tri(), false);
+		}
 		if ($cEntidad->getOrden() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
@@ -873,6 +1089,7 @@ class Respuestas_pruebas_itemsDB
 
 	function quitaImagen($cEntidad)
 	{
+		$retorno="";
 		$aux			= $this->conn;
 		$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT_ADMIN"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . '/' : constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
 

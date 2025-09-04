@@ -69,7 +69,7 @@ if (!empty($_GET['s']))
 		$cEmpresas = $cEmpresasDB->readEntidad($cEmpresas);
 
 		if ($cEmpresas->getPathLogo() != ""){
-			$size = @getimagesize(constant("DIR_WS_GESTOR") . $cEmpresas->getPathLogo());
+			$size = list($anchura, $altura) = @getimagesize(constant("DIR_WS_GESTOR") . $cEmpresas->getPathLogo());
 			$anchura=$size[0];
 			$altura=$size[1];
 			if ($altura > 85){

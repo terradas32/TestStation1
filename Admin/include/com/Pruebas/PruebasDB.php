@@ -115,6 +115,7 @@ class PruebasDB
 		$sql .= "preguntasPorPagina" . ",";
 		$sql .= "estiloOpciones" . ",";
 //		$sql .= "permiteBlancos" . ",";
+		$sql .= "tarifa" . ",";
 		$sql .= "bajaLog" . ",";
 		$sql .= "necesitara" . ",";
 		
@@ -142,6 +143,7 @@ class PruebasDB
 		$sql .= $aux->qstr($cEntidad->getPreguntasPorPagina(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getEstiloOpciones(), false) . ",";
 //		$sql .= $aux->qstr($cEntidad->getPermiteBlancos(), false) . ",";
+		$sql .= $aux->qstr($cEntidad->getTarifa(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getBajaLog(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getNecesitara(), false) . ",";
 		
@@ -305,7 +307,7 @@ class PruebasDB
 		$sql .= "preguntasPorPagina=" . $aux->qstr($cEntidad->getPreguntasPorPagina(), false) . ", ";
 		$sql .= "estiloOpciones=" . $aux->qstr($cEntidad->getEstiloOpciones(), false) . ", ";
 //		$sql .= "permiteBlancos=" . $aux->qstr($cEntidad->getPermiteBlancos(), false) . ", ";
-		
+		$sql .= "tarifa=" . $aux->qstr($cEntidad->getTarifa(), false) . ", ";
 		$sql .= "bajaLog=" . $aux->qstr($cEntidad->getBajaLog(), false) . ", ";
 		$sql .= "necesitara=" . $aux->qstr($cEntidad->getNecesitara(), false) . ", ";
 		
@@ -472,8 +474,10 @@ class PruebasDB
 					$cEntidad->setPreguntasPorPagina($arr['preguntasPorPagina']);
 					$cEntidad->setEstiloOpciones($arr['estiloOpciones']);
 					$cEntidad->setPermiteBlancos($arr['permiteBlancos']);
+					$cEntidad->setTarifa($arr['tarifa']);					
 					$cEntidad->setBajaLog($arr['bajaLog']);
 					$cEntidad->setNecesitara($arr['necesitara']);
+					$cEntidad->setNum_preguntas_max_tri($arr['num_preguntas_max_tri']);
 					
 					$cEntidad->setFecAlta($arr['fecAlta']);
 					$cEntidad->setFecMod($arr['fecMod']);
@@ -554,12 +558,12 @@ class PruebasDB
 			$and = true;
 			$sql .="UPPER(observaciones) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getObservaciones() . "%") . ")";
 		}
-		if ($cEntidad->getDuracion() != ""){
+		if ($cEntidad->getDuracion() != "" && $cEntidad->getDuracion() != 0){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
 			$sql .="UPPER(duracion) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDuracion() . "%") . ")";
 		}
-		if ($cEntidad->getDuracion2() != ""){
+		if ($cEntidad->getDuracion2() != "" && $cEntidad->getDuracion2() != 0){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
 			$sql .="UPPER(duracion2) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDuracion2() . "%") . ")";
@@ -605,7 +609,16 @@ class PruebasDB
 			$and = true;
 			$sql .="UPPER(necesitara) = UPPER(" . $aux->qstr("" . $cEntidad->getNecesitara() . "") . ")";
 		}
-		
+		if ($cEntidad->getTarifa() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="tarifa>=" . $aux->qstr($cEntidad->getTarifa(), false);
+		}
+		if ($cEntidad->getTarifaHast() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="tarifa<=" . $aux->qstr($cEntidad->getTarifaHast(), false);
+		}
 		if ($cEntidad->getBajaLog() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
@@ -717,12 +730,12 @@ class PruebasDB
 			$and = true;
 			$sql .="UPPER(observaciones) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getObservaciones() . "%") . ")";
 		}
-		if ($cEntidad->getDuracion() != ""){
+		if ($cEntidad->getDuracion() != "" && $cEntidad->getDuracion() != 0){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
 			$sql .="UPPER(duracion) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDuracion() . "%") . ")";
 		}
-		if ($cEntidad->getDuracion2() != ""){
+		if ($cEntidad->getDuracion2() != "" && $cEntidad->getDuracion2() != 0){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
 			$sql .="UPPER(duracion2) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDuracion2() . "%") . ")";
@@ -768,7 +781,16 @@ class PruebasDB
 			$and = true;
 			$sql .="UPPER(necesitara) = UPPER(" . $aux->qstr("" . $cEntidad->getNecesitara() . "") . ")";
 		}
-		
+		if ($cEntidad->getTarifa() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="tarifa>=" . $aux->qstr($cEntidad->getTarifa(), false);
+		}
+		if ($cEntidad->getTarifaHast() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="tarifa<=" . $aux->qstr($cEntidad->getTarifaHast(), false);
+		}
 		if ($cEntidad->getBajaLog() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;

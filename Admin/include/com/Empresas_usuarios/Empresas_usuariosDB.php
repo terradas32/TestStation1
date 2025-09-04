@@ -82,8 +82,8 @@ class Empresas_usuariosDB
 		$sql = "INSERT INTO empresas_usuarios (";
 		$sql .= "idEmpresa" . ",";
 		$sql .= "idUsuario" . ",";
-	  	$sql .= (trim($cEntidad->getUsuario()) != "") ? "usuario" . "," : "";
-	  	$sql .= (trim($cEntidad->getPassword()) != "") ? "password" . "," : "";
+	  	$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? "usuario" . "," : "";
+	  	$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password" . "," : "";
 		$sql .= "nombre" . ",";
 		$sql .= "apellido1" . ",";
 		$sql .= "apellido2" . ",";
@@ -95,8 +95,8 @@ class Empresas_usuariosDB
 		$sql .= " VALUES (";
 		$sql .= $aux->qstr($cEntidad->getIdEmpresa(), false) . ",";
 		$sql .= $aux->qstr( $newId) . ",";
-		$sql .= (trim($cEntidad->getUsuario()) != "") ? $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
-    	$sql .= (trim($cEntidad->getPassword()) != "") ? $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+		$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
+    	$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
     	$sql .= $aux->qstr($cEntidad->getNombre(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getApellido1(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getApellido2(), false) . ",";
@@ -219,8 +219,8 @@ class Empresas_usuariosDB
 		$sql = "UPDATE empresas_usuarios SET ";
 		$sql .= "idEmpresa=" . $aux->qstr($cEntidad->getIdEmpresa(), false) . ", ";
 		$sql .= "idUsuario=" . $aux->qstr($cEntidad->getIdUsuario(), false) . ", ";
-	  	$sql .= (trim($cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
-	  	$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+	  	$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
+	  	$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 		$sql .= "nombre=" . $aux->qstr($cEntidad->getNombre(), false) . ", ";
 		$sql .= "apellido1=" . $aux->qstr($cEntidad->getApellido1(), false) . ", ";
 		$sql .= "apellido2=" . $aux->qstr($cEntidad->getApellido2(), false) . ", ";

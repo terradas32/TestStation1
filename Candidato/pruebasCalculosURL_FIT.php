@@ -1,4 +1,5 @@
 <?php
+// CRON cada 5 min revogiendo 15 registros por llamada 
 // Ignorar los abortos hechos por el usuario y permitir que el script
 // se ejecute para siempre
 ignore_user_abort(true);
@@ -79,7 +80,7 @@ echo date("Y-m-d H:i:s");
 	//DELETE FROM respuestas_pruebas_resultados_fit WHERE finalizado=0
 	//SELECT * FROM respuestas_pruebas_resultados_fit WHERE idPrueba IN (SELECT idPrueba from pruebas where idTipoPrueba NOT IN (2,5,10,11,14,15,16,17) and idPrueba NOT IN (5,41,97,98) GROUP BY idPrueba) and fecAlta >= NOW() - INTERVAL 1 YEAR
 	//$sSQL = "SELECT * FROM respuestas_pruebas_resultados_fit ORDER BY veces ASC , fecAlta DESC LIMIT 0,20";
-	$sSQL = "SELECT * FROM respuestas_pruebas_resultados_fit ORDER BY veces, fecAlta ASC LIMIT 0,8";
+	$sSQL = "SELECT * FROM respuestas_pruebas_resultados_fit ORDER BY veces ASC, fecAlta DESC LIMIT 0,8";
 	echo "<br />" . $sSQL;
 	$rsRespuestas_pruebasApti = $conn->Execute($sSQL);
 
@@ -95,8 +96,12 @@ echo date("Y-m-d H:i:s");
 		$sSQL = "SELECT count(*) AS cuantos FROM export_personalidad_fit WHERE idEmpresa=" . $rsRespuestas_pruebasApti->fields['idEmpresa'] . " AND ";
 		$sSQL .= "idProceso=" . $rsRespuestas_pruebasApti->fields['idProceso'] . " AND ";
 		$sSQL .= "idCandidato=" . $rsRespuestas_pruebasApti->fields['idCandidato'] . " AND ";
-		$sSQL .= "idPrueba=" . $rsRespuestas_pruebasApti->fields['idPrueba'] . " ";
+		$sSQL .= "idPrueba=" . $rsRespuestas_pruebasApti->fields['idPrueba'] . " AND ";
+		$sSQL .= "idTipoInforme = 71";
 		$rsYaGenerado = $conn->Execute($sSQL);
+
+		/* echo '</br>'.$rsYaGenerado->fields['cuantos'] ;
+		break; */
 		if ($rsYaGenerado->fields['cuantos'] == 0)
 		{
 	    	$cRespuestasPruebasItems = new Respuestas_pruebas_items();
@@ -119,7 +124,7 @@ echo date("Y-m-d H:i:s");
 			$cRespuestasPruebasItems->setCodIdiomaIso2($rsRespuestas_pruebasApti->fields['codIdiomaIso2']);
 
 			$sqlRespItems= $cRespuestasPruebasItemsDB->readLista($cRespuestasPruebasItems);
-	//		echo "<br />" . $sqlRespItems;
+			//echo "<br />" . $sqlRespItems;
 	    	//$listaRespItems = $conn->Execute($sqlRespItems);
 
 			$cRespuestasPruebas = new Respuestas_pruebas();
@@ -135,6 +140,7 @@ echo date("Y-m-d H:i:s");
 	    	$sPreguntasPorPagina = $cPruebasD->getPreguntasPorPagina();
 	    	//Prueba finalizada por tiempo
 	    	$bSinFinalizar=false;
+
 	    	if ($bSinFinalizar == false)
 	    	{
 		    	//Al finalizar una prueba bien se por tiempo o normal, hay que descontar los dongles a la empresa
@@ -200,6 +206,7 @@ echo date("Y-m-d H:i:s");
 		    	$dTotalCoste=0;
 		    	while(!$rsProceso_baremos->EOF)
 		    	{
+
 			    	//4º Miramos que dongles hay que facturar para la prueba finalizada,
 			    	// segun los informes seleccionados.
 			    	$cProceso_informes = new Proceso_informes();
@@ -211,10 +218,10 @@ echo date("Y-m-d H:i:s");
 			    	$sSQL = $cProceso_informesDB->readLista($cProceso_informes);
 			    	$rsProceso_informes = $conn->Execute($sSQL);
 
-//		    		$cBaremos = new Baremos($conn);
-//		    		$cBaremos->setIdBaremo($cProceso_informes->getIdBaremo());
-//		    		$cBaremos->setIdPrueba($cProceso_informes->getIdPrueba());
-//		    		$cBaremos = $cBaremosDB->readEntidad($cBaremos);
+					//$cBaremos = new Baremos($conn);
+					//$cBaremos->setIdBaremo($cProceso_informes->getIdBaremo());
+					//$cBaremos->setIdPrueba($cProceso_informes->getIdPrueba());
+					//$cBaremos = $cBaremosDB->readEntidad($cBaremos);
 		    		$_sBaremo ="";
 		    		$_idBaremo =$cProceso_informes->getIdBaremo();
 		    		$_idBaremo = (!empty($_idBaremo)) ? $_idBaremo : "1";
@@ -254,7 +261,7 @@ echo date("Y-m-d H:i:s");
 							$cTipos_informes->setIdTipoInforme($cInformes_pruebas->getIdTipoInforme());
 							$cTipos_informes = $cTipos_informesDB->readEntidad($cTipos_informes);
 
-							//$dTotalCoste += $cInformes_pruebas->getTarifa();
+							//$dTotalCoste += (int)$cInformes_pruebas->getTarifa();
 
 							//6º Insertamos por cada informe una línea en Consumo
 							$cConsumos = new Consumos();
@@ -297,7 +304,7 @@ echo date("Y-m-d H:i:s");
 							$cConsumos->setConcepto(constant("STR_PRUEBA_FINALIZADA"));
 							$cConsRead->setConcepto(constant("STR_PRUEBA_FINALIZADA"));
 
-							$cConsumos->setUnidades($cInformes_pruebas->getTarifa());
+							$cConsumos->setUnidades((int)$cInformes_pruebas->getTarifa());
 							$cConsumos->setUsuAlta($cCandidato->getIdCandidato());
 							$cConsumos->setUsuMod($cCandidato->getIdCandidato());
 							//Revisamos si ya se le ha cobrado, si el Candidato actualiza la página, no hay que cobrar dos veces
@@ -322,19 +329,35 @@ echo date("Y-m-d H:i:s");
 								//$cUtilidades->execInBackground($cmd);
 								$_idBaremo = $cProceso_informes->getIdBaremo();
 								$_idBaremo = (empty($_idBaremo)) ? "1" : $_idBaremo;
-								$cmdPost = constant("DIR_WS_GESTOR") . 'Informes_candidatoCalculosREQUEST_FIT.php?MODO=627&fIdTipoInforme=' . $cInformes_pruebas->getIdTipoInforme() . '&fCodIdiomaIso2=' . $cInformes_pruebas->getCodIdiomaIso2() . '&fIdPrueba=' . $rsRespuestas_pruebasApti->fields['idPrueba'] . '&fIdEmpresa=' . $rsRespuestas_pruebasApti->fields['idEmpresa'] . '&fIdProceso=' . $rsRespuestas_pruebasApti->fields['idProceso'] . '&fIdCandidato=' . $rsRespuestas_pruebasApti->fields['idCandidato'] . '&fCodIdiomaIso2Prueba=' . $rsRespuestas_pruebasApti->fields['codIdiomaIso2'] . '&fIdBaremo=' . $_idBaremo;
-								echo "<br /><a href='" . $cmdPost . "' taget='_blank'>" . $cmdPost . "</a>";
-								echo "<br />WHERE idEmpresa=" . $rsRespuestas_pruebasApti->fields['idEmpresa'] . " AND idProceso=" .  $rsRespuestas_pruebasApti->fields['idProceso'] . " AND idCandidato=" . $rsRespuestas_pruebasApti->fields['idCandidato'] . " AND idPrueba=" . $rsRespuestas_pruebasApti->fields['idPrueba'] ;
-								$cUtilidades->backgroundPost($cmdPost);
-								file_get_contents($cmdPost);
 
-                	$sSQL = "UPDATE respuestas_pruebas_resultados_fit SET veces=veces+1 WHERE idEmpresa=" . $rsRespuestas_pruebasApti->fields['idEmpresa'] . " AND ";
-          			$sSQL .= "idProceso=" . $rsRespuestas_pruebasApti->fields['idProceso'] . " AND ";
-          			$sSQL .= "idCandidato=" . $rsRespuestas_pruebasApti->fields['idCandidato'] . " AND ";
-          			$sSQL .= "idPrueba=" . $rsRespuestas_pruebasApti->fields['idPrueba'] . " ";
-          			$conn->Execute($sSQL);
-								//sleep(1); //Retrasamos la llamada al siguiente 1 segundo
-		    			$rsProceso_informes->MoveNext();
+								/* Recuperamos todos los tipos de informe que tenga la asociación proceso - prueba
+								y generamos un informe por cada una Jairo López Jáñez - Xeridia S.L */
+								$sqlReportTypes = "SELECT idTipoInforme FROM proceso_informes WHERE idEmpresa='" . $rsRespuestas_pruebasApti->fields['idEmpresa'] . "' && idProceso='" . $rsRespuestas_pruebasApti->fields['idProceso'] . "' && '" . $rsRespuestas_pruebasApti->fields['idPrueba'] . "'";
+
+								// Creating DB connection
+								$connection = mysqli_connect(DB_HOST, DB_USUARIO, DB_PASSWORD, DB_DATOS);
+
+								$consulta = mysqli_query($connection, $sqlReportTypes);
+
+								while ($resultado = mysqli_fetch_array($consulta)){
+									$cmdPost = constant("DIR_WS_GESTOR") . 'Informes_candidatoCalculosREQUEST_FIT.php?MODO=627&fIdTipoInforme=' . $resultado['idTipoInforme'] . '&fCodIdiomaIso2=' . $cInformes_pruebas->getCodIdiomaIso2() . '&fIdPrueba=' . $rsRespuestas_pruebasApti->fields['idPrueba'] . '&fIdEmpresa=' . $rsRespuestas_pruebasApti->fields['idEmpresa'] . '&fIdProceso=' . $rsRespuestas_pruebasApti->fields['idProceso'] . '&fIdCandidato=' . $rsRespuestas_pruebasApti->fields['idCandidato'] . '&fCodIdiomaIso2Prueba=' . $rsRespuestas_pruebasApti->fields['codIdiomaIso2'] . '&fIdBaremo=' . $_idBaremo;
+									// Pruebas en local
+									// $cmdPost = str_replace("https://", "http://", $cmdPost);
+									echo "<br /><a href='" . $cmdPost . "' taget='_blank'>" . $cmdPost . "</a>";
+									echo "<br />WHERE idEmpresa=" . $rsRespuestas_pruebasApti->fields['idEmpresa'] . " AND idProceso=" .  $rsRespuestas_pruebasApti->fields['idProceso'] . " AND idCandidato=" . $rsRespuestas_pruebasApti->fields['idCandidato'] . " AND idPrueba=" . $rsRespuestas_pruebasApti->fields['idPrueba'] ;
+									$cUtilidades->backgroundPost($cmdPost);
+									file_get_contents($cmdPost);
+								}
+
+								mysqli_close($connection);
+
+								$sSQL = "UPDATE respuestas_pruebas_resultados_fit SET veces=veces+1 WHERE idEmpresa=" . $rsRespuestas_pruebasApti->fields['idEmpresa'] . " AND ";
+								$sSQL .= "idProceso=" . $rsRespuestas_pruebasApti->fields['idProceso'] . " AND ";
+								$sSQL .= "idCandidato=" . $rsRespuestas_pruebasApti->fields['idCandidato'] . " AND ";
+								$sSQL .= "idPrueba=" . $rsRespuestas_pruebasApti->fields['idPrueba'] . " ";
+								$conn->Execute($sSQL);
+										//sleep(1); //Retrasamos la llamada al siguiente 1 segundo
+								$rsProceso_informes->MoveNext();
 		    		}
 			    	$rsProceso_baremos->MoveNext();
 		    	}

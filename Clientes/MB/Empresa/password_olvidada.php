@@ -135,8 +135,8 @@ if (isset($_POST['fGo']))
         </div><!-- Fin de accesos -->
     </div><!-- Fin de cuerpo -->
     <div id="pie">
-        <p class="dweb"><a href="http://www.azulpomodoro.com" title="Diseño Web"><?php echo constant("STR_DISENO_DESARROLLO");?></a></p>
-        <p class="copy"><?php echo constant("NOMBRE_EMPRESA");?> - <?php echo constant("STR_DERECHOS_RESERVADOS");?></p>
+        <!-- <p class="dweb"><a href="http://www.azulpomodoro.com" title="Diseño Web"><?php echo constant("STR_DISENO_DESARROLLO");?></a></p>
+         --><p class="copy"><?php echo constant("NOMBRE_EMPRESA");?> - <?php echo constant("STR_DERECHOS_RESERVADOS");?></p>
     </div><!-- Fin de pie -->
 </div><!-- Fin de la pagina -->
 <script type="text/javascript">// Script para Autocompletar "off" y que valide con la W3C
@@ -185,9 +185,10 @@ $mail->clearAllRecipients();
 		//queremos que vea el usuario que lee nuestro correo
 
 		//$mail->From = $cEmpresaPE->getMail();
-		$mail->From = constant("MAILUSERNAME");
+		$mail->From = constant("EMAIL_CONTACTO");
 		$mail->AddReplyTo($cEmpresaPE->getMail(), $cEmpresaPE->getNombre());
 		$mail->FromName = $cEmpresaPE->getNombre();
+				$nomEmpresa = $cEmpresaPE->getNombre();
 		//Asignamos asunto y cuerpo del mensaje
 		//El cuerpo del mensaje lo ponemos en formato html, haciendo
 		//que se vea la negrita etc.

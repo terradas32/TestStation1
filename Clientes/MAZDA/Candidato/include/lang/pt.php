@@ -90,6 +90,11 @@ define("MSG_BIENVENIDA_COMENZAR"					, "Para começar a escolher uma opção no 
 define("MSG_AVISO_LEGAL_P1"					, "Em cumprimento do disposto na Lei Orgânica 15/1999, de 13 de dezembro, de Protecção de Dados de Carácter Pessoal, informamos-lhe de que seus dados, serão incorporados aos ficheiros dos que é responsável Psicólogos Empresariais e Sócios, S.A. com direcção em C/ Pintor Rosales, 44 1º D (28008-Madri) com o fim de avaliação psicológica.");
 define("MSG_AVISO_LEGAL_P2"					, "Para o exercício dos direitos de acesso, rectificação, cancelamento e oposição poderá dirigir uma comunicação por escrito a Psicólogos Empresariais e Sócios, S.A. – Responsável por Segurança, C/ Pintor Rosales, 44 1º D (28008 -Madrid).");
 define("MSG_AVISO_LEGAL_P3"					, "No caso de que Você não seja um candidato próprio de Psicólogos Empresariais e Sócios, S.A. e por tanto a realização da avaliação psicológica tenha sido requerida por uma empresa cliente de Psicólogos Empresariais e Sócios, S.A, como parte de um processo de selecção e/ou avaliação ao que Você opte ou participe com eles, informa-se-lhe de que, como parte de dito processo, os resultados da avaliação serão comunicados a dita empresa, com a exclusiva finalidade desta gestão.");
+define("MSG_AVISO_LEGAL_P4"					, "Asimismo, Psicólogos Empresariales y Asociados, S.A., si usted pulsa “Si”, comunicará sus datos de carácter personal y los resultados de su evaluación a Mazda Automóviles España, S.A., con domicilio en Madrid, calle Manuel Pombo Angulo, 28, con la finalidad de que Mazda pueda elaborar, evaluaciones estadísticas o análisis de mercados y planes de formación específicos para los asesores comerciales y asesores de servicio de los concesionarios y servicios autorizados de la red comercial. En caso de pulsar “No” sus datos no serán compartidos con Mazda España. ");
+define("MSG_AVISO_LEGAL_P5"					, "");
+
+
+
 define("MSG_ESTAS_SEGURO_DE_FINALIZAR_LA_PRUEBA"	, "Tem certeza de que quer terminar o teste?");
 /*********** Mensajes de Error en los campos del formulario *************/
 //Formato: ERR_FORM_XXXXX
@@ -520,5 +525,29 @@ define("IR_A_PAGINA", "Vá para a Página");
 define("BUSCAR_PRIMERA_SIN_RESPONDER", "Pesquisar primeira pergunta sem resposta");
 define("FINALIZAR", "Finalizar");
 define("TU_TIEMPO_SE_HA_AGOTADO", "Seu tempo acabou.");
+
+define("STR_TPV_DATOS_TITULO", "Pasarela segura de pago");
+define("STR_TPV_DATOS_SUBTITULO", "Completar los Cuestionarios, tiene un coste total de %s (Impuestos incluidos)");
+define("STR_TPV_DATOS_TEXTO", "Antes de comenzar se te solicita que completes dicho pago a través de la siguiente pasarela segura de pago.<br /><br />Gracias,");
+define("STR_TPV_PAGAR", "PAGAR");
+define("STR_TPV_CUESTIONARIOS", "Cuestionarios");
+define("STR_TPV_PENDIENTE", "Pendiente");
+define("STR_RESPONSABILIDADES"					, "Responsabilidades");
+define("STR_SUS_RESPONSABILIDADES"					, "Sus responsabilidades");
+define("STR_SU_COMPROMISO"					, "SU COMPROMISO");
+define("STR_SU_COMPROMISO_TEXTO"					, "Antes de continuar, debe aceptar una serie de responsabilidades y compromisos.<br /><br />Me comprometo a:<br /><br /><br />•	Realizar esta evaluación honestamente y sin ayuda de otras personas o recursos no autorizados.<br /><br />•	No copiar o distribuir información sobre esta evaluación, de ninguna manera.<br /><br />•	Realizar, si se me solicita, otra evaluación supervisada para verificar los resultados de esta evaluación.");
+define("STR_ACEPTO"					, "Acepto");
+define("STR_SI_NO_ACEPTO_TEXTO"					, "Si no acepta, comuníquelo al administrador de la prueba y haga click en Desconectar, arriba a la derecha. <img src='graf/btn_salir_off.gif' border=0 />");
+define("STR_DEBE_ACEPTAR"			,"Debe aceptar para poder continuar.");
+define("STR_TIEMPO_REQUERIDO", "Tiempo requerido");
+define("STR_N_DE_PREGUNTAS", "Nº de preguntas");
+
+
+define("STR_SECTOR", "Sector");
+define("STR_CONCESION", "Concesión / Talleres Autorizados");
+define("STR_FECHA_NACIMIENTO", "Fecha de Nacimiento");
+define("STR_ESPECIALIDAD", "Especialidad");
+define("STR_NIVEL_CONOCIMIENTO_TECNICO", "Autoevaluación del nivel de conocimientos técnicos en función del sector señalado");
+
 
 ?>

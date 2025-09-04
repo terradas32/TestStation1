@@ -1497,7 +1497,7 @@ class FuncionalidadesDB
 					$sMenus .= '
 							<td ';
 					if (!empty($lista->fields['bgFile'])){
-						$sMenus .= ' style="background:url(' . constant("HTTP_SERVER") . $lista->fields['bgFile'] . ') no-repeat;" ';
+						$sMenus .= ' style="background:url(' . constant("HTTPS_SERVER") . $lista->fields['bgFile'] . ') no-repeat;" ';
 					}
 				if (!empty($lista->fields['bgColor']))
 				{
@@ -1561,7 +1561,7 @@ class FuncionalidadesDB
 					$findme   = 'http';
 					$pos = strpos($mystring, $findme);
 					if ($pos === false) {
-							$sUrl = constant("HTTP_SERVER") . $lista->fields['url'];
+							$sUrl = constant("HTTPS_SERVER") . $lista->fields['url'];
 					} else {
 					    $sUrl = $lista->fields['url'];
 					}

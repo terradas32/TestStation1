@@ -1,69 +1,17 @@
 <?php
-	//Variables globales de cálculo
-	$respuestasBlancas=0;
-	$puntuacion=0;
 
-	$vocabularioOK=0;
-	$vocabularioERROR=0;
-	$vocabularioBLANCO=0;
-
-	$gramaticaOK=0;
-	$gramaticaERROR=0;
-	$gramaticaBLANCO=0;
-
-	$comprensionOK=0;
-	$comprensionERROR=0;
-	$comprensionBLANCO=0;
-
-	// CÁLCULOS GLOBALES
-	$cRespuestas_pruebas_itemsBD = new Respuestas_pruebas_itemsDB($conn);
-
-	$listaItemsPrueba->Move(0);
-	while(!$listaItemsPrueba->EOF){
-	    $cRespuestas_pruebas_items = new Respuestas_pruebas_items();
-
-	    $cRespuestas_pruebas_items->setIdEmpresa($_POST['fIdEmpresa']);
-		$cRespuestas_pruebas_items->setIdProceso($_POST['fIdProceso']);
-		$cRespuestas_pruebas_items->setIdCandidato($_POST['fIdCandidato']);
-		$cRespuestas_pruebas_items->setIdPrueba($_POST['fIdPrueba']);
-		$cRespuestas_pruebas_items->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-		$cRespuestas_pruebas_items->setIdItem($listaItemsPrueba->fields['idItem']);
-		$cRespuestas_pruebas_items = $cRespuestas_pruebas_itemsBD->readEntidad($cRespuestas_pruebas_items);
-//		echo "->item::" . $listaItemsPrueba->fields['idItem'] . " - " . $cRespuestas_pruebas_items->getIdOpcion();
-		if ($cRespuestas_pruebas_items->getIdOpcion() != ""){
-			//Miramos la opcion de respuesta
-			$cOpcionRespuesta = new Opciones();
-			$cOpcionRespuesta->setIdItem($listaItemsPrueba->fields['idItem']);
-			$cOpcionRespuesta->setIdPrueba($listaItemsPrueba->fields['idPrueba']);
-			$cOpcionRespuesta->setIdOpcion($cRespuestas_pruebas_items->getIdOpcion());
-			$cOpcionRespuesta->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-			$cOpcionRespuesta = $cOpcionesDB->readEntidad($cOpcionRespuesta);
-
-			if ($listaItemsPrueba->fields['correcto'] == $cOpcionRespuesta->getCodigo()){
-//				echo "<br />item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
-				setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "OK");
-				$puntuacion++;
-			}else{
-				if ($cRespuestas_pruebas_items->getIdOpcion() == ""){
-//					echo "<br />BLANCAS:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
-					setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "BLANCO");
-					$respuestasBlancas++;
-				}else{
-//					echo "<br />ERROR:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
-					setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "ERROR");
-				}
-			}
-		}else{
-//			echo "<br />BLANCAS:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
-			setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "BLANCO");
-			$respuestasBlancas++;
-		}
-		$listaItemsPrueba->MoveNext();
+if(!isset($counter) || $counter==0){
+	
+	if(isset($_POST['esZip']) && $_POST['esZip'] == true){
+		$dirGestor = constant("DIR_WS_GESTOR_HTTPS");
+		$documentRoot = constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
+	}else{
+		$dirGestor = constant("DIR_WS_GESTOR");
+		$documentRoot = constant("DIR_FS_DOCUMENT_ROOT");
 	}
-	//Preguntas erroneas
-	$erroneas = $listaItemsPrueba->recordCount() - $puntuacion - $respuestasBlancas;
-	//barra con el valor obtenido por el candidato
-	$factor= ($puntuacion*100)/$listaItemsPrueba->recordCount();
+
+	global $dirGestor;
+	global $documentRoot;
 
 
 	function setPuntuacionTipoTipoItem($ti, $resultado){
@@ -137,6 +85,72 @@
 		} // end switch
 	}
 	// FIN CALCULOS
+}
+	//Variables globales de cálculo
+	$respuestasBlancas=0;
+	$puntuacion=0;
+
+	$vocabularioOK=0;
+	$vocabularioERROR=0;
+	$vocabularioBLANCO=0;
+
+	$gramaticaOK=0;
+	$gramaticaERROR=0;
+	$gramaticaBLANCO=0;
+
+	$comprensionOK=0;
+	$comprensionERROR=0;
+	$comprensionBLANCO=0;
+
+	// CÁLCULOS GLOBALES
+	$cRespuestas_pruebas_itemsBD = new Respuestas_pruebas_itemsDB($conn);
+
+	$listaItemsPrueba->Move(0);
+	while(!$listaItemsPrueba->EOF){
+	    $cRespuestas_pruebas_items = new Respuestas_pruebas_items();
+
+	    $cRespuestas_pruebas_items->setIdEmpresa($_POST['fIdEmpresa']);
+		$cRespuestas_pruebas_items->setIdProceso($_POST['fIdProceso']);
+		$cRespuestas_pruebas_items->setIdCandidato($_POST['fIdCandidato']);
+		$cRespuestas_pruebas_items->setIdPrueba($_POST['fIdPrueba']);
+		$cRespuestas_pruebas_items->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+		$cRespuestas_pruebas_items->setIdItem($listaItemsPrueba->fields['idItem']);
+		$cRespuestas_pruebas_items = $cRespuestas_pruebas_itemsBD->readEntidad($cRespuestas_pruebas_items);
+//		echo "->item::" . $listaItemsPrueba->fields['idItem'] . " - " . $cRespuestas_pruebas_items->getIdOpcion();
+		if ($cRespuestas_pruebas_items->getIdOpcion() != ""){
+			//Miramos la opcion de respuesta
+			$cOpcionRespuesta = new Opciones();
+			$cOpcionRespuesta->setIdItem($listaItemsPrueba->fields['idItem']);
+			$cOpcionRespuesta->setIdPrueba($listaItemsPrueba->fields['idPrueba']);
+			$cOpcionRespuesta->setIdOpcion($cRespuestas_pruebas_items->getIdOpcion());
+			$cOpcionRespuesta->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+			$cOpcionRespuesta = $cOpcionesDB->readEntidad($cOpcionRespuesta);
+
+			if ($listaItemsPrueba->fields['correcto'] == $cOpcionRespuesta->getCodigo()){
+//				echo "<br />item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
+				setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "OK");
+				$puntuacion++;
+			}else{
+				if ($cRespuestas_pruebas_items->getIdOpcion() == ""){
+//					echo "<br />BLANCAS:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
+					setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "BLANCO");
+					$respuestasBlancas++;
+				}else{
+//					echo "<br />ERROR:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
+					setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "ERROR");
+				}
+			}
+		}else{
+//			echo "<br />BLANCAS:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
+			setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "BLANCO");
+			$respuestasBlancas++;
+		}
+		$listaItemsPrueba->MoveNext();
+	}
+	//Preguntas erroneas
+	$erroneas = $listaItemsPrueba->recordCount() - $puntuacion - $respuestasBlancas;
+	//barra con el valor obtenido por el candidato
+	$factor= ($puntuacion*100)/$listaItemsPrueba->recordCount();
 
 	$comboTIPOS_INFORMES	= new Combo($conn,"fIdTipoInforme","idTipoInforme","nombre","Descripcion","tipos_informes","",constant("SLC_OPCION"),"codIdiomaIso2=" . $conn->qstr($_POST['fCodIdiomaIso2'], false),"","fecMod");
 	$sDescInforme = $comboTIPOS_INFORMES->getDescripcionCombo($_POST['fIdTipoInforme']);
@@ -158,15 +172,15 @@
 	$sHtmlFin	= '';
 	//$aux			= $this->conn;
 
-	$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+	$spath = (substr($documentRoot, -1, 1) != '/') ? $documentRoot . '/' : $documentRoot;
 
 	$sHtmlInicio='
 		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 			<html xmlns="http://www.w3.org/1999/xhtml">
 			<head>
 				<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-					<link rel="stylesheet" type="text/css" href="'.constant("DIR_WS_GESTOR").'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/resetCSS.css"/>
-					<link rel="stylesheet" type="text/css" href="'.constant("DIR_WS_GESTOR").'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/style.css"/>
+					<link rel="stylesheet" type="text/css" href="'.$dirGestor.'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/resetCSS.css"/>
+					<link rel="stylesheet" type="text/css" href="'.$dirGestor.'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/style.css"/>
 					<title>' . $cPruebas->getIdPrueba() . ' - ' . $_sBaremo . '</title>
 					<style type="text/css">
 					<!--
@@ -188,7 +202,7 @@ $sHtmlFin .='
 										<p class="textos">' . constant("STR_SR_A") . ' ' . $cCandidato->getNombre(). ' ' . $cCandidato->getApellido1(). ' ' .$cCandidato->getApellido2() .'</p>
 						    </td>
 						    <td class="logo">
-						    	<img src="'.constant("DIR_WS_GESTOR").'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo-pequenio.jpg" title="logo"/>
+						    	<img src="'.$dirGestor.'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo-pequenio.jpg" title="logo"/>
 						    </td>
 						    <td class="fecha">
 						        <p class="textos">' . date("d/m/Y") . '</p>
@@ -224,8 +238,8 @@ $sHtmlFin .='
 		//PORTADA
 		$sHtml.= '
 			<div class="pagina portada">
-		    	<img src="' . constant("DIR_WS_GESTOR").'graf/prueba' . $cPruebas->getIdPrueba() . '/portada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
-		    	<h1 class="titulo"><img src="' . constant("DIR_WS_GESTOR").'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo.jpg" /></h1>';
+		    	<img src="' . $dirGestor.'graf/prueba' . $cPruebas->getIdPrueba() . '/portada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
+		    	<h1 class="titulo"><img src="' . $dirGestor.'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo.jpg" /></h1>';
 		$sHtml.= 		'<div id="txt_infome"><p>' . $sDescInforme . '</p></div>';
 		$sHtml.='
 				<div id="informe">
@@ -374,7 +388,7 @@ $sHtmlFin .='
     										<font style="font-size: 14px;padding-left:20px;color: #000000;font-weight: bold;">' . constant("STR_PC") . ' = ' . ($iWhidth * $iPercentil) . '%</font>
     									</td>
     									<td width="81%" style="height:45px;border-left:2px solid #004080;">
-    										<img src="'.constant('DIR_WS_GESTOR') . constant('DIR_WS_GRAF'). 'numeritosEstandar.jpg'.'" style="width: 498px;">
+    										<img src="'. $dirGestor . constant('DIR_WS_GRAF'). 'numeritosEstandar.jpg'.'" style="width: 498px;">
     									</td>
     								</tr>
     								<tr>
@@ -382,7 +396,7 @@ $sHtmlFin .='
     										<font style="font-size: 14px;color: #000000;font-weight: bold;"></font>
     									</td>
     									<td width="81%" style="height:40px;border-left:2px solid #004080;vertical-align:middle;">
-    										<img src="' . constant('DIR_WS_GESTOR') . constant('DIR_WS_GRAF'). 'bodoque_gigante.jpg'.'" style="width:' . (($iPercentil*498)/100) . 'px;height:35px;">
+    										<img src="' . $dirGestor . constant('DIR_WS_GRAF'). 'bodoque_gigante.jpg'.'" style="width:' . (($iPercentil*498)/100) . 'px;height:35px;">
     									</td>
     								</tr>
     							</table>
@@ -535,7 +549,7 @@ $sHtmlFin .='
     			';
 		$sHtml.= '
 			<div class="pagina portada" id="contraportada">
-    			<img id="imgContraportada" src="' . constant("DIR_WS_GESTOR") . 'graf/contraportada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
+    			<img id="imgContraportada" src="' . $dirGestor . 'graf/contraportada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
 			</div>
 			<!--FIN DIV PAGINA-->
 		';
@@ -547,7 +561,7 @@ if (!isset($NOGenerarFICHERO_INFORME))
 		$replace = array('@', '.');
 //		$sNombre = $cCandidato->getMail() . "_" . $_POST['fIdEmpresa']. "_" .$_POST['fIdProceso'] . "_" .$_POST['fIdTipoInforme'] . "_" . $cPruebas->getNombre();
 		$sDirImg="imgInformes/";
-		$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+		$spath = (substr($documentRoot, -1, 1) != '/') ? $documentRoot . '/' : $documentRoot;
 
 		$_fichero = $spath . $sDirImg . $sNombre . ".html";
 		//$cEntidad->chk_dir($spath . $sDirImg, 0777);

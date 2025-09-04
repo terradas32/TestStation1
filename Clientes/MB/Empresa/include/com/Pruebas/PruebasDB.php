@@ -519,10 +519,15 @@ class PruebasDB
 			$and = true;
 			$sql .="UPPER(observaciones) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getObservaciones() . "%") . ")";
 		}
-		if ($cEntidad->getDuracion() != ""){
+		if ($cEntidad->getDuracion() != "" && $cEntidad->getDuracion() != 0){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
 			$sql .="UPPER(duracion) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDuracion() . "%") . ")";
+		}
+		if ($cEntidad->getDuracion2() != "" && $cEntidad->getDuracion2() != 0){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="UPPER(duracion2) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDuracion2() . "%") . ")";
 		}
 		if ($cEntidad->getLogoPrueba() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -660,10 +665,15 @@ class PruebasDB
 			$and = true;
 			$sql .="UPPER(observaciones) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getObservaciones() . "%") . ")";
 		}
-		if ($cEntidad->getDuracion() != ""){
+		if ($cEntidad->getDuracion() != "" && $cEntidad->getDuracion() != 0){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
 			$sql .="UPPER(duracion) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDuracion() . "%") . ")";
+		}
+		if ($cEntidad->getDuracion2() != "" && $cEntidad->getDuracion2() != 0){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="UPPER(duracion2) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDuracion2() . "%") . ")";
 		}
 		if ($cEntidad->getLogoPrueba() != ""){
 			$sql .= $this->getSQLWhere($and);

@@ -10,16 +10,19 @@
 
 
 // Incluimos la librerias necesarias
-require('include/Configuracion.php');
-require_once(constant('DOMPDF_DIR') . 'autoload.inc.php');
+// require('include/Configuracion.php');
+// require_once(constant('DOMPDF_DIR') . 'autoload.inc.php');
+// 
+// 
+// require_once(constant('DOMPDF_DIR') . 'lib/html5lib/Parser.php');
+// require_once(constant('DOMPDF_DIR') . 'lib/php-font-lib/src/FontLib/Autoloader.php');
+// require_once(constant('DOMPDF_DIR') . 'lib/php-svg-lib/src/autoload.php');
+// require_once(constant('DOMPDF_DIR') . 'src/Autoloader.php');
+// require_once(constant('DOMPDF_DIR') . 'src/FontMetrics.php');
+// Dompdf\Autoloader::register();
 
+require_once(constant('DOMPDF_VENDOR_DIR') . 'autoload.php');
 
-require_once(constant('DOMPDF_DIR') . 'lib/html5lib/Parser.php');
-require_once(constant('DOMPDF_DIR') . 'lib/php-font-lib/src/FontLib/Autoloader.php');
-require_once(constant('DOMPDF_DIR') . 'lib/php-svg-lib/src/autoload.php');
-require_once(constant('DOMPDF_DIR') . 'src/Autoloader.php');
-require_once(constant('DOMPDF_DIR') . 'src/FontMetrics.php');
-Dompdf\Autoloader::register();
 // Reference the Dompdf namespace
 use Dompdf\Dompdf;
 use Dompdf\Options;

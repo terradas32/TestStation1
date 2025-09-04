@@ -101,9 +101,9 @@ class CandidatosDB
 		$sql .= $aux->qstr($cEntidad->getTelefono(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getEstadoCivil(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getNacionalidad(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getInformado(), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getInformado()), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getPagoTpv(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getFinalizado(), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getFinalizado()), false) . ",";
 		$sql .= $aux->DBDate($cEntidad->getFechaFinalizado()) . ",";
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->sysTimeStamp . ",";
@@ -118,6 +118,15 @@ class CandidatosDB
 			return 0;
 		}
 		else{
+			$cEntidad->setIdCandidato($newId);
+			if (!$this->decuentaConsumoXAdministracion($cEntidad))
+			{
+				$this->msg_Error	= array();
+				$sTypeError	=	date('d/m/Y H:i:s') . " Error [decuentaConsumoXAdministracion][" . constant("MNT_ALTA") . "][CandidatosDB]";
+				$this->msg_Error[]	= $sTypeError;
+				error_log($sTypeError . " ->tEmpresa::" . $cEntidad->getIdEmpresa() ."|Proceso::" . $cEntidad->getIdProceso() . "|Candidato::" . $newId . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+			}
+
 			require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambiosDB.php");
 			require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambios.php");
 			$cEntidadHistorico_cambiosDB	= new Historico_cambiosDB($aux);  // Entidad DB Historico_cambios
@@ -194,8 +203,8 @@ class CandidatosDB
 	************************************************************************/
 	function modificar($cEntidad)
 	{
-		$aux			= $this->conn;
-
+		$aux = $this->conn;
+		
 		$sql = "UPDATE candidatos SET ";
 		$sql .= "idCandidato=" . $aux->qstr($cEntidad->getIdCandidato(), false) . ", ";
 		$sql .= "idEmpresa=" . $aux->qstr($cEntidad->getIdEmpresa(), false) . ", ";
@@ -205,7 +214,7 @@ class CandidatosDB
 		$sql .= "apellido2=" . $aux->qstr($cEntidad->getApellido2(), false) . ", ";
 		$sql .= "dni=" . $aux->qstr($cEntidad->getDni(), false) . ", ";
 		$sql .= "mail=" . $aux->qstr($cEntidad->getMail(), false) . ", ";
-		$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+		$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 		$sql .= "idTratamiento=" . $aux->qstr($cEntidad->getIdTratamiento(), false) . ", ";
 		$sql .= "idSexo=" . $aux->qstr($cEntidad->getIdSexo(), false) . ", ";
 		$sql .= "idEdad=" . $aux->qstr($cEntidad->getIdEdad(), false) . ", ";
@@ -222,16 +231,17 @@ class CandidatosDB
 		$sql .= "telefono=" . $aux->qstr($cEntidad->getTelefono(), false) . ", ";
 		$sql .= "estadoCivil=" . $aux->qstr($cEntidad->getEstadoCivil(), false) . ", ";
 		$sql .= "nacionalidad=" . $aux->qstr($cEntidad->getNacionalidad(), false) . ", ";
-		$sql .= (trim($cEntidad->getInformado()) != "") ? "informado=" . $aux->qstr($cEntidad->getInformado(), false) . "," : "";
-		$sql .= "finalizado=" . $aux->qstr($cEntidad->getFinalizado(), false) . ", ";
+		$sql .= (trim($cEntidad->getInformado()) != "") ? "informado=" . $aux->qstr(intval($cEntidad->getInformado()), false) . "," : "";
+		$sql .= "finalizado=" . $aux->qstr(intval($cEntidad->getFinalizado()), false) . ", ";
 		$sql .= "fechaFinalizado=" . $aux->DBDate($cEntidad->getFechaFinalizado()) . ",";
 		$sql .= "fecMod=" . $aux->sysTimeStamp . ",";
 		$sql .= "usuMod=" . $aux->qstr($cEntidad->getUsuMod(), false) . " ";
 		$sql .= " WHERE ";
 		$sql .="idCandidato=" . $aux->qstr($cEntidad->getIdCandidato(), false) . " AND idEmpresa=" . $aux->qstr($cEntidad->getIdEmpresa(), false) . " AND idProceso=" . $aux->qstr($cEntidad->getIdProceso(), false) . " ";
-//		echo $sql;exit;
+
 		$retorno=true;
 		if($aux->Execute($sql) === false){
+
 			$retorno=false;
 			$this->msg_Error	= array();
 			$sTypeError	=	date('d/m/Y H:i:s') . " Error SQL [" . constant("MNT_MODIFICAR") . "][CandidatosDB]";
@@ -726,7 +736,7 @@ class CandidatosDB
 		if ($cEntidad->getInformado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="informado>=" . $aux->qstr($cEntidad->getInformado(), false);
+			$sql .="informado>=" . $aux->qstr(intval($cEntidad->getInformado()), false);
 		}
 		if ($cEntidad->getInformadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -736,7 +746,7 @@ class CandidatosDB
 		if ($cEntidad->getFinalizado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="finalizado>=" . $aux->qstr($cEntidad->getFinalizado(), false);
+			$sql .="finalizado>=" . $aux->qstr(intval($cEntidad->getFinalizado()), false);
 		}
 		if ($cEntidad->getFinalizadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -980,7 +990,7 @@ class CandidatosDB
 		if ($cEntidad->getInformado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="informado>=" . $aux->qstr($cEntidad->getInformado(), false);
+			$sql .="informado>=" . $aux->qstr(intval($cEntidad->getInformado()), false);
 		}
 		if ($cEntidad->getInformadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -990,7 +1000,7 @@ class CandidatosDB
 		if ($cEntidad->getFinalizado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="finalizado>=" . $aux->qstr($cEntidad->getFinalizado(), false);
+			$sql .="finalizado>=" . $aux->qstr(intval($cEntidad->getFinalizado()), false);
 		}
 		if ($cEntidad->getFinalizadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -1079,7 +1089,6 @@ class CandidatosDB
 			}
 		}
 		$this->sSQL=$sql;
-//		echo $sql;
 		return $sql;
 	}
 	/*************************************************************************
@@ -1446,7 +1455,6 @@ class CandidatosDB
 		$sql = "UPDATE candidatos SET  ";
 		return $retorno;
 	}
-<<<<<<< HEAD
 
 	/******************************************************************************************
 	* Devuelve una cadena para insertar un valor de
@@ -1731,7 +1739,5 @@ class CandidatosDB
 
 		return $retorno;
 	}
-=======
->>>>>>> ef67b2adad35376e7004f53c2ad7cef5f1096846
 }//Fin de la Clase CandidatosDB
 ?>

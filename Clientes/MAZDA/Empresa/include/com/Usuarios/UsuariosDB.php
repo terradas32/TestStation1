@@ -66,7 +66,7 @@ class UsuariosDB
 		$sql .= "idUsuario" . ",";
 		$sql .= "idUsuarioTipo" . ",";
 	  	$sql .= (trim($cEntidad->getLogin()) != "") ? "login" . "," : "";
-	  	$sql .= (trim($cEntidad->getPassword()) != "") ? "password" . "," : "";
+	  	$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password" . "," : "";
 		$sql .= "nombre" . ",";
 		$sql .= "apellido1" . ",";
 		$sql .= "apellido2" . ",";
@@ -81,7 +81,7 @@ class UsuariosDB
 		$sql .= $aux->qstr( $newId) . ",";
 		$sql .= $aux->qstr($cEntidad->getIdUsuarioTipo(), false) . ",";
 		$sql .= (trim($cEntidad->getLogin()) != "") ? $aux->qstr($cEntidad->getLogin(), false) . "," : "";
-    	$sql .= (trim($cEntidad->getPassword()) != "") ? $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+    	$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
     	$sql .= $aux->qstr($cEntidad->getNombre(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getApellido1(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getApellido2(), false) . ",";
@@ -180,7 +180,7 @@ class UsuariosDB
 		$sql .= "idUsuario=" . $aux->qstr($cEntidad->getIdUsuario(), false) . ", ";
 		$sql .= $aux->qstr(($cEntidad->getIdUsuarioTipo() != "") ? $cEntidad->getIdUsuarioTipo() : "0", false) . ",";
 	  	$sql .= (trim($cEntidad->getLogin()) != "") ? "login=" . $aux->qstr($cEntidad->getLogin(), false) . "," : "";
-	  	$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+	  	$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 		$sql .= "nombre=" . $aux->qstr($cEntidad->getNombre(), false) . ", ";
 		$sql .= "apellido1=" . $aux->qstr($cEntidad->getApellido1(), false) . ", ";
 		$sql .= "apellido2=" . $aux->qstr($cEntidad->getApellido2(), false) . ", ";

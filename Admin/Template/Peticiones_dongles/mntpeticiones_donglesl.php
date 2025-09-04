@@ -4,6 +4,18 @@
     }else{
     	require_once("include/SeguridadTemplate.php");
     }
+
+	$clave = obtenerClavePlantilla();
+	$payload = [
+		'sql'   => $sql,
+		'nombre'=> $clave,
+		'ts'    => time(),
+		'nonce' => bin2hex(random_bytes(8)),
+	];
+
+	$token = excel_encrypt_payload($payload, EXCEL_ENC_KEY);
+	$sig   = excel_sign($token, EXCEL_HMAC_KEY);
+	$urlExcel = 'sqlToExcel.php?fSQLtoEXCEL='.base64_encode($token).'&signature='.base64_encode($sig);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $sLang;?>" xml:lang="<?php echo $sLang;?>">
@@ -189,26 +201,29 @@ function _body_onunload(){	lon();	}
 		while (!$lista->EOF)
 		{
 			$cEmpresa = new Empresas();
-      $idEmpresaReceptora = $lista->fields['idEmpresaReceptora'];
+			$idEmpresaReceptora = $lista->fields['idEmpresaReceptora'];
 
-      if (!empty($lista->fields['concepto'])){
-        $a = stripos($lista->fields['concepto'], ": ");
-        $b = stripos($lista->fields['concepto'], " Descontadas de:");
-        $usuarioAux = substr($lista->fields['concepto'], $a+2);
-        $aUsuario = explode(" ", $usuarioAux);
-        $usuario = $aUsuario[0];
-        $cEmpresaNombre = new Empresas();
-        $cEmpresaNombre->setNombre($usuario);
-        $sqlEmpresaNombre = $cEmpresasDB->readLista($cEmpresaNombre);
-        $rsEmpresaNombre = $conn->Execute($sqlEmpresaNombre);
-         while (!$rsEmpresaNombre->EOF){
-           $idEmpresaReceptora = $rsEmpresaNombre->fields['idEmpresa'];
-           $rsEmpresaNombre->MoveNext();
-           break;
-         }
-      }
+			if (!empty($lista->fields['concepto'])){
+				$a = stripos($lista->fields['concepto'], ": ");
+				$b = stripos($lista->fields['concepto'], " Descontadas de:");
+				$usuarioAux = substr($lista->fields['concepto'], $a+2);
+				$aUsuario = explode(" ", $usuarioAux);
+				$usuario = $aUsuario[0];
+				$cEmpresaNombre = new Empresas();
+				$cEmpresaNombre->setNombre($usuario);
+				$sqlEmpresaNombre = $cEmpresasDB->readLista($cEmpresaNombre);
+				//echo "<script>console.log('".json_encode($sqlEmpresaNombre)."');</script>";
+				$rsEmpresaNombre = $conn->Execute($sqlEmpresaNombre);
+				while (!$rsEmpresaNombre->EOF){
+					$idEmpresaReceptora = $rsEmpresaNombre->fields['idEmpresa'];
+					$rsEmpresaNombre->MoveNext();
+					break;
+				}
+			}
+			//echo "<script>console.log('".json_encode($idEmpresaReceptora)."');</script>";
 			$cEmpresa->setIdEmpresa($idEmpresaReceptora);
 			$cEmpresa = $cEmpresasDB->readEntidad($cEmpresa);
+			//echo "<script>console.log('".json_encode($cEmpresa->setIdEmpresa($idEmpresaReceptora))."');</script>";
 			$sEstado = "";
 			if($lista->fields['estado']==0){
 				$sEstado="Pendiente";
@@ -219,20 +234,20 @@ function _body_onunload(){	lon();	}
 			if($lista->fields['estado']==2){
 				$sEstado="Rechazada";
 			}
-		?>
-		<tr onmouseover="this.bgColor='<?php echo constant("ONMOUSEOVER");?>'" onmouseout="this.bgColor='<?php echo constant("ONMOUSEOUT");?>'" bgcolor="<?php echo constant("ONMOUSEOUT");?>">
-			<td bgcolor="<?php echo constant("BG_COLOR");?>"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="1" border="0" alt="" /></td>
-			<td class="tddatoslista" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['idPeticion']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['idPeticion'], "<b><i><u><strong><br><br />")),0,11);?></td>
-			<td class="tddatoslista" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['idEmpresa']);?>"><?php echo $comboEMPRESAS->getDescripcionCombo($lista->fields['idEmpresa']);?></td>
-			<td class="tddatoslista" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['idEmpresaReceptora']);?>"><?php echo substr(str_replace("\n","<br />",$cEmpresa->getNombre()),0,255);?></td>
-			<td class="tddatoslista" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['nDongles']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['nDongles'], "<b><i><u><strong><br><br />")),0,11);?></td>
-			<td class="tddatoslista" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['estado']);?>"><?php echo substr(str_replace("\n","<br />",$sEstado),0,11);?></td>
-			<td class="tddatoslista" valign="top" align="center" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['fecAlta']);?>"><script language="javascript" type="text/javascript">document.write(formatThisDate('<?php echo $lista->fields['fecAlta'];?>'));</script></td>
-			<td class="tddatoslista" valign="top" align="center" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['fecMod']);?>"><script language="javascript" type="text/javascript">document.write(formatThisDate('<?php echo $lista->fields['fecMod'];?>'));</script></td>
-			<td class="negro" align="center" valign="middle"><?php if($_bBorrar && $lista->fields['estado'] == "0") {?><a href="#" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');confBorrar(<?php echo constant("MNT_BORRAR");?>,'<?php echo constant("DEL_GENERICO");?>');"><img src="<?php echo constant('DIR_WS_GRAF');?>menos.gif" width="9" height="9" border="0" alt="<?php echo constant("STR_BORRAR");?>" /></a><?php } ?></td>
-		</tr>
-		<?php $i++;
-		$lista->MoveNext();
+			?>
+			<tr onmouseover="this.bgColor='<?php echo constant("ONMOUSEOVER");?>'" onmouseout="this.bgColor='<?php echo constant("ONMOUSEOUT");?>'" bgcolor="<?php echo constant("ONMOUSEOUT");?>">
+				<td bgcolor="<?php echo constant("BG_COLOR");?>"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="1" border="0" alt="" /></td>
+				<td class="tddatoslista" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['idPeticion']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['idPeticion'], "<b><i><u><strong><br><br />")),0,11);?></td>
+				<td class="tddatoslista" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['idEmpresa']);?>"><?php echo $comboEMPRESAS->getDescripcionCombo($lista->fields['idEmpresa']);?></td>
+				<td class="tddatoslista" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['idEmpresaReceptora']);?>"><?php echo substr(str_replace("\n","<br />",$cEmpresa->getNombre()),0,255);?></td>
+				<td class="tddatoslista" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['nDongles']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['nDongles'], "<b><i><u><strong><br><br />")),0,11);?></td>
+				<td class="tddatoslista" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['estado']);?>"><?php echo substr(str_replace("\n","<br />",$sEstado),0,11);?></td>
+				<td class="tddatoslista" valign="top" align="center" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['fecAlta']);?>"><script language="javascript" type="text/javascript">document.write(formatThisDate('<?php echo $lista->fields['fecAlta'];?>'));</script></td>
+				<td class="tddatoslista" valign="top" align="center" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['fecMod']);?>"><script language="javascript" type="text/javascript">document.write(formatThisDate('<?php echo $lista->fields['fecMod'];?>'));</script></td>
+				<td class="negro" align="center" valign="middle"><?php if($_bBorrar && $lista->fields['estado'] == "0") {?><a href="#" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPeticion']);?>');confBorrar(<?php echo constant("MNT_BORRAR");?>,'<?php echo constant("DEL_GENERICO");?>');"><img src="<?php echo constant('DIR_WS_GRAF');?>menos.gif" width="9" height="9" border="0" alt="<?php echo constant("STR_BORRAR");?>" /></a><?php } ?></td>
+			</tr>
+			<?php $i++;
+			$lista->MoveNext();
 		} ?>
 	</table>
 	<?php $s = ob_get_contents();
@@ -330,7 +345,8 @@ $aBuscador= $cEntidad->getBusqueda();
 	<input type="hidden" name="fIdPeticion" value="" />
 	<input type="hidden" name="ORIGEN" value="<?php echo constant("MNT_LISTAR");?>" />
 	<input type="hidden" name="fReordenar" value="" />
-	<input type="hidden" name="fSQLtoEXCEL" value="<?php echo base64_encode($sql . constant("CHAR_SEPARA") . "peticiones_dongles");?>" />
+	<input type="hidden" name="signature" value="<?php echo(base64_encode($sig)); ?>" />
+	<input type="hidden" name="fSQLtoEXCEL" value="<?php echo(base64_encode($token)); ?>" />
 	<input type="hidden" name="LSTIdPeticionHast" value="<?php echo (isset($_POST['LSTIdPeticionHast'])) ? $cUtilidades->validaXSS($_POST['LSTIdPeticionHast']) : "";?>" />
 	<input type="hidden" name="LSTIdPeticion" value="<?php echo (isset($_POST['LSTIdPeticion'])) ? $cUtilidades->validaXSS($_POST['LSTIdPeticion']) : "";?>" />
 	<input type="hidden" name="LSTIdEmpresaHast" value="<?php echo (isset($_POST['LSTIdEmpresaHast'])) ? $cUtilidades->validaXSS($_POST['LSTIdEmpresaHast']) : "";?>" />

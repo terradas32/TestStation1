@@ -269,7 +269,11 @@ else	$HELP="xx";
 				</tr>
 				
 
-
+				<tr>
+					<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
+					<td nowrap="nowrap" width="140" class="negrob" valign="top"><label for="fTarifa">Tarifa Administración</label>&nbsp;</td>
+					<td><input type="text" id="fTarifa" name="fTarifa" value="<?php echo $cEntidad->getTarifa();?>" class="obliga"  onchange="javascript:trim(this);" /></td>
+				</tr>
 				<tr>
 					<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
 					<td nowrap="nowrap" width="140" class="negrob" valign="top"><?php echo constant("STR_BAJA_LOG");?>&nbsp;</td>

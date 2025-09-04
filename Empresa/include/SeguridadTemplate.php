@@ -45,6 +45,6 @@
 		exit;
 	}
 
-	$_bModificar	=	($hDatos->fields["modificar"] == "on") ? true : false;
-	$_bBorrar		=	($hDatos->fields["borrar"] == "on") ? true : false;
+	$_bModificar	=	(!empty($hDatos->fields["modificar"]) && $hDatos->fields["modificar"] == "on") ? true : false;
+	$_bBorrar		=	(!empty($hDatos->fields["borrar"]) && $hDatos->fields["borrar"] == "on") ? true : false;
 ?>

@@ -77,6 +77,7 @@ define("TIT_PEDIDOS_TIENDA"						, "Store Orders");
 //Formato: CONF_
 define("CONF_ALTA"					, "Record correctly activated with ID ");
 define("CONF_SESSION"				, "Your session has expired: data has not been saved.");
+define("CONF_ALTA_VARIOS"			, "Se han dado de alta correctamente %s registros de un Total de %s");
 /*********** Mensajes *************/
 //Formato: MSG_
 define("MSG_POR_FAVOR_ESPERE_CARGANDO", "Please wait. <br /> Loading ...");
@@ -140,6 +141,9 @@ define("ERR_FORM_DOWNLOAD_FICHERO"			, "File could not be downloaded.");
 define("ERR_SIN_DONGLES", "You do not have enough Unit Credits for reloading. \\n Perform a reload request to run this operation. ");
 define("ERR_FORM_ASIG_PRUEBA_BAREMO", "You must select: \\nTest, Test, Norm Set, \\nLanguage report and Types Report to add tests.");
 define("ERR_FORM_ASIG_PRUEBA", "You must select: \\nTest, Language, \\nLanguage Report and Types Report to add tests.");
+define("ERR_PROCESO_DESHABILITADO_ALTAS_CIEGAS"					, "El proceso en el que intenta participar está deshabilitado por favor contacte con la persona que le facilitó el link.");
+define("ERR_ENVIAR_CORREOS_SIGUIENTES_DIRECCIONES"					, "No se ha podido enviar correos a las siguientes direcciones:");
+define("ERR_CREAR_ZIP"					, "No se ha podido crear el archivo ZIP en este momento.");
 //Literales en los campos de formulario.
 //Formato: STR_XXXXX
 define("STR_CAMPO_REQUERIDO", "Required field");
@@ -688,11 +692,90 @@ define("STR_RESULTADO"                         , "RESULT");
 define("STR_PRUEBASPAPEL"                         , "Pruebas_papel");
 define("STR_FORMACION_ACADEMICA"                         , "Level of Education");
 define("STR_AREA_PROFESIONAL"                         , "Professional area");
+define("STR_PUNTUACION_MIN"                         , "Puntuación Min");
+define("STR_PUNTUACION_MAX"                         , "Puntuación Max");
+define("STR_PERFILESIDEALES"                         , "Perfiles ideales");
 define("STR_FECHA_DE_FINALIZACION"                         , "Completion Date");
+define("STR_DATOS_TITULO"                         , "DATOS PERSONALES");
+define("STR_UNIVERSIDAD"                         , "Universidad");
+define("STR_DATOS_MB"                         , "Solicitar Sector MB");
+define("STR_SECTOR", "Sector");
+define("STR_CONCESION", "Concesión / Talleres Autorizados");
+define("STR_FECHA_NACIMIENTO", "Fecha de Nacimiento");
+define("STR_GENERAR",  "Generar");
 define("STR_APTITUDES",  "Aptitudes");
-define("STR_PUBLICAR"                         , "Publish");
-define("STR_ZONA_PUBLICACION"                         , "Area to publish");
-define("STR_RECOMENDACIONES"                         , "Recommendations");
+define("STR_ID_TIPO_TPV"                         , "Id Tipo Tpv");
+define("STR_TERMINAL_TYPE"                         , "TERMINAL TYPE");
+define("STR_OPERATION_TYPE"                         , "OPERATION TYPE");
+define("STR_URL_NOTIFY"                         , "URL NOTIFY");
+define("STR_URL_OK"                         , "URL OK");
+define("STR_URL_KO"                         , "URL KO");
+define("STR_SERVICE_ACTION"                         , "SERVICE ACTiON");
+define("STR_TIPOSTPV"                         , "Tipos_tpv");
+
+define("STR_BUSINESS_NAME"                         , "BUSINESS NAME");
+define("STR_BUSINESS_CODE"                         , "BUSINESS CODE");
+define("STR_BUSINESS_PASS"                         , "BUSINESS PASS");
+define("STR_BUSINESS_COINC"                         , "BUSINESS COINC");
+define("STR_EMPRESASCONFTPV"                         , "Empresas_conf_tpv");
+
+define("STR_ID_RECARGA"                         , "Id Recarga");
+define("STR_LOCALIZADOR"                         , "Localizador");
+define("STR_IMP_BASE"                         , "Imp. Base");
+define("STR_IMP_IMPUESTOS"                         , "Imp. Impuestos");
+define("STR_IMP_BASE_IMPUESTOS"                         , "Imp. Base Impuestos");
+define("STR_APELLIDOS"                         , "Apellidos");
+define("STR_COD_POSTAL"                         , "Cód. Postal");
+define("STR_CIUDAD"                         , "Ciudad");
+define("STR_TELEFONO1"                         , "Telefono1");
+define("STR_COD_ESTADO"                         , "Cód. Estado");
+define("STR_COD_AUTORIZACION"                         , "Cód. Autorización");
+define("STR_COD_ERROR"                         , "Cód. Error");
+define("STR_DESC_ERROR"                         , "Desc. Error");
+define("STR_CANDIDATOSPAGOSTPV"                         , "Candidatos_pagos_tpv");
+define("STR_TIPO_TPV"                         , "Tipo Tpv");
+define("STR_DATOS_BANCARIOS",  "Datos bancarios");
+define("STR_CONTRATO",  "Contrato");
+define("STR_LOS_CAMPOS_MARCADOS_CON",  "Los campos marcados son");
+define("STR_OBLIGATORIOS",  "obligatorios");
+define("STR_DATOS_PROCESO",  "Datos Proceso");
+define("STR_COMUNICACION",  "Comunicación");
+define("STR_SELECCIONA_EL_TIPO_DE_CARGA_DE_CANDIDATOS",  "Seleccione el tipo de carga de candidatos");
+define("STR_CARGA_MASIVA",  "Carga masiva");
+define("STR_ALTA_MANUAL",  "Alta manual");
+define("STR_IMPORTAR_CANDIDATOS",  "Importar candidatos");
+define("MSG_IMPORTAR_CANDIDATOS",  "Puede importar cualquier tipo de fichero <strong>CSV</strong> (Archivo de texto delimitado por comas), seleccione el fichero que desea utilizar y pulse <b>Añadir</b>. Le proporcionamos un ejemplo de fichero de carga pulse:");
+define("MSG_IMPORTAR_CANDIDATOS2",  "Cargue un máximo de <strong>500 candidatos</strong> por fichero.");
+define("MSG_IMPORTAR_CANDIDATOS3",  "Espere hasta que le aparezca el resumen de la carga.");
+define("MSG_VARIOS_MIN_NO_CIERRE",  "Este proceso puede tardar varios minutos.<br />No cierre la ventana del navegador.");
+define("STR_DE",  "de");
+define("STR_ENVIADOS_CORRECTAMENTE",  "se han enviado correctamente");
+define("STR_PUNTO_Y_COMA",  "Punto y coma (;)");
+define("STR_COMA",  "Coma (,)");
+define("STR_PAGINA",  "Página");
+define("STR_ENVIO_DE_CONTRASENAS",  "Envío de contraseñas");
+define("STR_INDIVIDUALES",  "Individuales");
+define("STR_JUNTAS_EN_UN_SOLO_CORREO",  "Juntas en un sólo correo");
+define("STR_PERÍODO_DE_TIEMPO",  "Período de tiempo");
+define("STR_SELECCIONE_UNA_EMPRESA_Y_PROCESO",  "Seleccione una empresa y proceso");
+
+define("STR_REGISTROS_SE_EXPORTARAN",  "Registros se exportaran");
+define("STR_ESTA_OPERACION_PUEDE_DURAR_VARIOS_MINUTOS",  "Esta operación puede durar varios minutos");
+define("STR_PULSE_SOBRE_EL_ICONO_EXCEL_PARA_DESCARGAR_LAS_PUNTUACIONES",  "Pulse sobre el icono Excel para descargar las puntuaciones");
+
+define("STR_RECHAZADA",  "Rechazada");
+define("STR_ACEPTADA",  "Aceptada");
+define("STR_PENDIENTE",  "Pendiente");
+define("STR_NO_DISPONE_DE_SUFICIENTES_UNIDADES_PARA_EFECTUAR_LA_OPERACION",  "No Dispone de suficientes Unidades para efectuar la operación");
+define("STR_UNIDADES_DISPONIBLES",  "Unidades Disponibles");
+define("STR_UNIDADES_A_CONSUMIR",  "Unidades a consumir");
+define("STR_POR_FAVOR_RECARGUE_UN_MINIMO_DE",  "Por favor recargue un mínimo de");
+define("STR_NO_HAY_RESULTADOS",  "No hay resultados");
+
+define("STR_PUBLICAR"                         , "Publicar");
+define("STR_ZONA_PUBLICACION"                         , "Zona Publicación");
+define("STR_RECOMENDACIONES"                         , "Recomendaciones");
+
 define("STR_FECHA_DE_PRUEBA"                         , "Fecha de Prueba");
 define("STR_FECHA_DE_ALTA_PROCESO"                         , "Fecha de Alta Proceso");
 define("STR_CORRECTAS"                         , "Correctas");
@@ -701,9 +784,61 @@ define("STR_PERCENTIL"                         , "Percentile");
 define("STR_POR"                         , "By");
 define("STR_ESTILO"                         , "Style");
 define("STR_IDFORMACION"                         , "IdFormación");
+define("STR_EXPORTAPTITUDINALES"                         , "Export_aptitudinales");
+define("STR_EXPORTPERSONALIDAD"                         , "Export_personalidad");
+
 define("STR_DESCONTAR_UNIDADES_DE_LA_MATRIZ"                         , "Descontar Unidades de la Matriz");
 define("STR_SOLICITAR_UNIDADES_A"                         , "Solicitar Unidades a");
 define("STR_PAIS_DE_PROCEDENCIA"                         , "Country of Origin");
+define("STR_EL_REGISTRO_NO_EXISTE"					, "El registro no existe.");
+define("STR_ALTAS_ANONIMAS", "Altas anónimas");
+define("STR_TEXTO_ACCESO_BLIND"						, "Para darse de alta en el proceso, rellene los siguientes campos con sus datos.");
+define("STR_NECESITA_AYUDA_SOPORTE_AL_USUARIO"						, "Necesita ayuda? Soporte al usuario");
+define("STR_AYUDA_AL_CANDIDATO"						, "Ayuda al Candidato");
+define("STR_SOPORTE_AL_USUARIO"						, "Soporte al Usuario");
+define("STR_CONTACTA_CON_NOSOTROS"						, "Contacta con nosotros");
+define("STR_EXPANDIR_TODO"						, "Expandir todo");
+define("STR_CONTRAER_TODO"						, "Contraer todo");
+define("STR_MENSAJE"						, "Mensaje");
+define("STR_ENVIAR"						, "Enviar");
+define("STR_AYUDA_A_LA_EMPRESA"						, "Ayuda a la Empresa");
+
+define("STR_INDICE_DE_RAPIDEZ"						, "Índice De Rapidez");
+define("STR_INDICE_DE_PRECISION"						, "Índice De Precisión");
+if (!defined('STR_PRODUCTO_RENDIMIENTO')) {
+ 	define("STR_PRODUCTO_RENDIMIENTO"						, "Producto Rendimiento");
+}
+define("STR_EMPRESA_A_LA_QUE_SE_LE_DESCUENTA"						, "Empresa a la que se le descuenta");
+define("STR_PAIS_DE_PROCEDENCIA"                         , "País de procedencia");
+define("STR_G_C"                         , "G.C.");
+
+define("STR_ALTA_ANONIMA"                         , "Alta anónima");
+define("STR_ESTA_SEGURO"                         , "¿Está seguro?");
+define("STR_N_DE_ALTAS"                         , "Nº de altas");
+define("STR_TODAS"                         , "Todas");
+define("STR_AVISO_LEGAL"                         , "Aviso Legal");
+define("STR_DESCARGAR_INFORMES"                         , "Descargar Informes");
+define("STR_VOLVER_A_EVALUAR"                         , "Volver a evaluar");
+define("STR_ZONA_HORARIA"                         , "Zona horaria");
+define("STR_NO_DEFINIDA"                         , "No definida");
+define("STR_PERSONA_CONTACTO"                         , "Persona Contacto");
+define("STR_TLF_CONTACTO"                         , "Tlf. Contacto");
+define("STR_PROCESO_CONFIDENCIAL"                         , "Proceso confidencial");
+define("STR_NOTIFICACION"                         , "Notificación");
+define("STR_FECHA_DESDE_NO_PUEDE_SER_MENOR_QUE"	, "Fecha Desde no puede ser menor que");
+define("STR_DESDE_NO_PUEDE_SER_MAYOR_QUE_FECHA_HASTA"	, "Desde no puede ser mayor que la fecha Hasta");
+define("STR_RESUMEN"	, "Resumen");
+define("STR_INFORMES_AGREGADOS_AL_FICHERO_ZIP"	, "Informes agregados al fichero ZIP");
+define("STR_FICHERO_NO_ENCONTRADO"	, "Fichero NO ENCONTRADO");
+define("STR_INFORMES_NO_AGREGADOS_AL_FICHERO_ZIP"	, "Informes NO agregados al fichero ZIP");
+define("STR_ERRORES"	, "Errores");
+define("STR_NO_SE_HA_PODIDO_CREAR_EL_ARCHIVO_ZIP"	, "No se ha podido crear el archivo ZIP en este momento.");
+define("STR_NO_SE_HA_PODIDO_ANIADIR_EL_FICHERO"	, "No se ha podido añadir el fichero");
+define("STR_NO_EXISTEN_INFORMES_VALIDOS_PARA_LA_DESCARGA"	, "No existen informes validos para la descarga.");
+define("STR_ENVIAR_RESTO_DE_PRUEBAS"	, "Replicar Resultados");
+define("MSG_CANDIDATOS_REPETIDOS_ASTERISCO"	, "<strong>NOTA IMPORTANTE</strong>: A continuación, se especifican cada una de las acciones que puede realizar:<br /><br />1.<strong>Replicar Resultados</strong>: Por medio de esta acción, replicará en el presente proceso los resultados obtenidos con anterioridad en las pruebas que señale. <br />En caso de que el proceso esté compuesto por más pruebas que las señaladas, el participante recibirá un mensaje invitación para realizar el resto de evaluaciones.<br />Las pruebas que hayan sido replicadas no generarán consumos.<br /><br />2.<strong>Volver a evaluar todas</strong>: Seleccione esta acción para enviar todas las pruebas nuevamente.<br />Se descontarán las unidades una vez que el participante finalice las pruebas.");
+define("STR_CONFIRMACION"                         , "Confirmación");
+
 define("STR_ZONA_HORARIA"                         , "Time zone");
 define("STR_NO_DEFINIDA"                         , "Undefined");
 define("STR_PROCESO_CONFIDENCIAL"                         , "Confidential process");

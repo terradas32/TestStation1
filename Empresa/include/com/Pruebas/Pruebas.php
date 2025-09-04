@@ -25,8 +25,14 @@ class Pruebas
 		var $descripcion;
 		var $idTipoPrueba;
 		var $idTipoPruebaHast;
+		var $idTipoRazonamiento;
+		var $idTipoRazonamientoHast;
+		var $idTipoNivel;
+		var $idTipoNivelHast;
+		
 		var $observaciones;
 		var $duracion;
+		var $duracion2;
 		var $logoPrueba;
 		var $capturaPantalla;
 		var $cabecera;
@@ -37,6 +43,11 @@ class Pruebas
 		
 		var $bajaLog;
 		var $bajaLogHast;
+		var $necesitara;
+		var $num_preguntas_max_tri;
+		var $tarifa;
+		var $tarifaHast;
+		
 		var $fecAlta;
 		var $fecAltaHast;
 		var $fecMod;
@@ -61,8 +72,15 @@ class Pruebas
 		$this->descripcion			= "";
 		$this->idTipoPrueba			= "";
 		$this->idTipoPruebaHast			= "";
+		$this->idTipoRazonamiento			= "";
+		$this->idTipoRazonamientoHast			= "";
+		$this->idTipoNivel			= "";
+		$this->idTipoNivelHast			= "";
+		
+		
 		$this->observaciones			= "";
 		$this->duracion			= "";
+		$this->duracion2			= "";
 		$this->logoPrueba			= "";
 		$this->capturaPantalla			= "";
 		$this->cabecera			= "";
@@ -73,6 +91,11 @@ class Pruebas
 		
 		$this->bajaLog			= "";
 		$this->bajaLogHast			= "";
+		$this->necesitara			= "";
+		$this->num_preguntas_max_tri	= "";
+		$this->tarifa			= "";
+		$this->tarifaHast			= "";
+		
 		$this->fecAlta			= "";
 		$this->fecAltaHast			= "";
 		$this->fecMod			= "";
@@ -81,8 +104,8 @@ class Pruebas
 		$this->usuAltaHast			= "";
 		$this->usuMod			= "";
 		$this->usuModHast			= "";
-		$this->PKListaExcel		=	"idPrueba,codIdiomaIso2,codigo,nombre,descripcion,idTipoPrueba,observaciones,duracion,bajaLog,fecAlta,fecMod,usuAlta,usuMod";
-		$this->DESCListaExcel	=	"Id  Prueba,Idioma,Código,Nombre,Descripción,Tipo Prueba,Observaciones,Duración,Baja Log,Fecha de Alta,Fecha de Modificación,Usuario de Alta,Usuario de Modificación";
+		$this->PKListaExcel		=	"idPrueba,codIdiomaIso2,codigo,nombre,descripcion,idTipoPrueba,idTipoRazonamiento,IdTipoNivel,observaciones,duracion,duracion2,tarifa,bajaLog,fecAlta,fecMod,usuAlta,usuMod";
+		$this->DESCListaExcel	=	"Id  Prueba,Idioma,Código,Nombre,Descripción,Tipo Prueba,Razonamiento,Nivel,Observaciones,Duración,Duración 2,tarifa,Baja Log,Fecha de Alta,Fecha de Modificación,Usuario de Alta,Usuario de Modificación";
 	}
 
 
@@ -206,6 +229,70 @@ class Pruebas
 	function setIdTipoPruebaHast($sCadena){
 		$this->idTipoPruebaHast = $sCadena;
 	}
+	
+	/**
+	* Devuelve el contenido de la propiedad idTipoRazonamiento
+	* @return int(11)
+	*/
+	function getIdTipoRazonamiento(){
+		return $this->idTipoRazonamiento;
+	}
+	/**
+	* Fija el contenido de la propiedad idTipoRazonamiento
+	* @param idTipoRazonamiento
+	* @return void
+	*/
+	function setIdTipoRazonamiento($sCadena){
+		$this->idTipoRazonamiento = $sCadena;
+	}
+	/**
+	* Devuelve el contenido de la propiedad idTipoRazonamientoHast
+	* @return int(11)
+	*/
+	function getIdTipoRazonamientoHast(){
+		return $this->idTipoRazonamientoHast;
+	}
+	/**
+	* Fija el contenido de la propiedad idTipoRazonamientoHast
+	* @param idTipoRazonamiento
+	* @return void
+	*/
+	function setIdTipoRazonamientoHast($sCadena){
+		$this->idTipoRazonamientoHast = $sCadena;
+	}
+	
+	/**
+	* Devuelve el contenido de la propiedad idTipoNivel
+	* @return int(11)
+	*/
+	function getIdTipoNivel(){
+		return $this->idTipoNivel;
+	}
+	/**
+	* Fija el contenido de la propiedad idTipoNivel
+	* @param idTipoNivel
+	* @return void
+	*/
+	function setIdTipoNivel($sCadena){
+		$this->idTipoNivel = $sCadena;
+	}
+	/**
+	* Devuelve el contenido de la propiedad idTipoNivelHast
+	* @return int(11)
+	*/
+	function getIdTipoNivelHast(){
+		return $this->idTipoNivelHast;
+	}
+	/**
+	* Fija el contenido de la propiedad idTipoNivelHast
+	* @param idTipoNivel
+	* @return void
+	*/
+	function setIdTipoNivelHast($sCadena){
+		$this->idTipoNivelHast = $sCadena;
+	}
+	
+	
 	/**
 	* Devuelve el contenido de la propiedad observaciones
 	* @return varchar(255)
@@ -226,7 +313,7 @@ class Pruebas
 	* @return varchar(255)
 	*/
 	function getDuracion(){
-		return $this->duracion;
+		return $this->duracion == "" ? 0 : $this->duracion;
 	}
 	/**
 	* Fija el contenido de la propiedad duracion
@@ -235,6 +322,21 @@ class Pruebas
 	*/
 	function setDuracion($sCadena){
 		$this->duracion = $sCadena;
+	}
+	/**
+	* Devuelve el contenido de la propiedad duracion2
+	* @return varchar(255)
+	*/
+	function getDuracion2(){
+		return $this->duracion2 == "" ? 0 : $this->duracion2;
+	}
+	/**
+	* Fija el contenido de la propiedad duracion
+	* @param duracion2
+	* @return void
+	*/
+	function setDuracion2($sCadena){
+		$this->duracion2 = $sCadena;
 	}
 	/**
 	* Devuelve el contenido de la propiedad logoPrueba
@@ -370,6 +472,69 @@ class Pruebas
 	*/
 	function setBajaLogHast($sCadena){
 		$this->bajaLogHast = $sCadena;
+	}
+	
+	/**
+	 * Devuelve el contenido de la propiedad Necesitara
+	 * @return int(2)
+	 */
+	function getNecesitara(){
+		return $this->necesitara;
+	}
+	/**
+	 * Fija el contenido de la propiedad Necesitara
+	 * @param bajaLog
+	 * @return void
+	 */
+	function setNecesitara($sCadena){
+		$this->necesitara = $sCadena;
+	}
+	
+	/**
+	 * Devuelve el contenido de la propiedad num_preguntas_max_tri
+	 * @return int(2)
+	 */
+	function getNum_preguntas_max_tri(){
+		return $this->num_preguntas_max_tri;
+	}
+	/**
+	 * Fija el contenido de la propiedad num_preguntas_max_tri
+	 * @param bajaLog
+	 * @return void
+	 */
+	function setNum_preguntas_max_tri($sCadena){
+		$this->num_preguntas_max_tri = $sCadena;
+	}
+	
+	/**
+	* Devuelve el contenido de la propiedad tarifa
+	* @return int(11)
+	*/
+	function getTarifa(){
+		return $this->tarifa;
+	}
+	/**
+	* Fija el contenido de la propiedad tarifa
+	* @param tarifa
+	* @return void
+	*/
+	function setTarifa($sCadena){
+		$this->tarifa = $sCadena;
+	}
+	/**
+	* Devuelve el contenido de la propiedad tarifaHast
+	* @return int(11)
+	*/
+	function getTarifaHast(){
+		return $this->tarifaHast;
+	}
+	/**
+	* Fija el contenido de la propiedad tarifaHast
+	* @param tarifa
+	* @return void
+	*/
+	function setTarifaHast($sCadena){
+		$this->tarifaHast = $sCadena;
 	}
 	/**
 	* Devuelve el contenido de la propiedad fecAlta

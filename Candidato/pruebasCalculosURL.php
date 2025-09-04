@@ -222,7 +222,7 @@ echo date("Y-m-d H:i:s");
 							$cTipos_informes->setIdTipoInforme($cInformes_pruebas->getIdTipoInforme());
 							$cTipos_informes = $cTipos_informesDB->readEntidad($cTipos_informes);
 	
-							//$dTotalCoste += $cInformes_pruebas->getTarifa();
+							//$dTotalCoste += (int)$cInformes_pruebas->getTarifa();
 	
 							//6º Insertamos por cada informe una línea en Consumo
 							$cConsumos = new Consumos();
@@ -265,7 +265,7 @@ echo date("Y-m-d H:i:s");
 							$cConsumos->setConcepto(constant("STR_PRUEBA_FINALIZADA"));
 							$cConsRead->setConcepto(constant("STR_PRUEBA_FINALIZADA"));
 	
-							$cConsumos->setUnidades($cInformes_pruebas->getTarifa());
+							$cConsumos->setUnidades((int)$cInformes_pruebas->getTarifa());
 							$cConsumos->setUsuAlta($cCandidato->getIdCandidato());
 							$cConsumos->setUsuMod($cCandidato->getIdCandidato());
 							//Revisamos si ya se le ha cobrado, si el Candidato actualiza la página, no hay que cobrar dos veces

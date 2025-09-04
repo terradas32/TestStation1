@@ -15,6 +15,9 @@ class Empresas
 		var $sOrderBy; //Campo order de la query de búsqueda.
 		var $sOrder; //Orden DESC ASC.
 		var $sLineasPagina; //Líneas por página.
+		var $idCliente;
+		var $idClienteHast;
+
 		var $idEmpresa;
 		var $idEmpresaHast;
 		var $nombre;
@@ -64,16 +67,13 @@ class Empresas
 		var $umbral_aviso;
 		var $umbral_avisoHast;
 
-<<<<<<< HEAD
 		var $power_bi_token;
 		var $power_bi_active;
 		var $power_bi_token_fit;
 		var $power_bi_active_fit;
-		var $texto_fit_comp;
+		//var $texto_fit_comp;
 
 
-=======
->>>>>>> ef67b2adad35376e7004f53c2ad7cef5f1096846
 		var $nombreCan;
 		var $apellido1;
 		var $apellido2;
@@ -121,6 +121,9 @@ class Empresas
 	{
 		$this->iCont			= 0;
 		$this->aBusqueda		= array();
+		$this->idCliente	= "";
+		$this->idClienteHast	= "";
+
 		$this->idEmpresa	= "";
 		$this->idEmpresaHast	= "";
 		$this->nombre			= "";
@@ -171,15 +174,12 @@ class Empresas
 		$this->umbral_aviso			= "";
 		$this->umbral_avisoHast			= "";
 
-<<<<<<< HEAD
 		$this->power_bi_token	= "";
 		$this->power_bi_active =  "";
 		$this->power_bi_token_fit	= "";
 		$this->power_bi_active_fit =  "";
-		$this->texto_fit_comp =  "";
+		//$this->texto_fit_comp =  "";
 
-=======
->>>>>>> ef67b2adad35376e7004f53c2ad7cef5f1096846
 		$this->nombreCan			= "";
 		$this->apellido1			= "";
 		$this->apellido2			= "";
@@ -224,6 +224,37 @@ class Empresas
 
 
 	}
+	/**
+	* Devuelve el contenido de la propiedad idCliente
+	* @return int(11)
+	*/
+	function getIdCliente(){
+		return $this->idCliente;
+	}
+	/**
+	* Fija el contenido de la propiedad idCliente
+	* @param idCliente
+	* @return void
+	*/
+	function setIdCliente($sCadena){
+		$this->idCliente = $sCadena;
+	}
+	/**
+	* Devuelve el contenido de la propiedad idClienteHast
+	* @return int(11)
+	*/
+	function getIdClienteHast(){
+		return $this->idClienteHast;
+	}
+	/**
+	* Fija el contenido de la propiedad idClienteHast
+	* @param idClienteHast
+	* @return void
+	*/
+	function setIdClienteHast($sCadena){
+		$this->idClienteHast = $sCadena;
+	}
+
 
 	/**
 	* Devuelve el contenido de la propiedad idEmpresa
@@ -922,6 +953,7 @@ class Empresas
 	function setUmbral_aviso($sCadena){
 		$this->umbral_aviso = $sCadena;
 	}
+
 	/**
 	* Devuelve el contenido de la propiedad umbral_avisoHast
 	* @return int(11)
@@ -937,7 +969,6 @@ class Empresas
 	function setUmbral_avisoHast($sCadena){
 		$this->umbral_avisoHast = $sCadena;
 	}
-<<<<<<< HEAD
 
 	/**
 	* Devuelve el contenido de la propiedad power_bi_token
@@ -998,9 +1029,9 @@ class Empresas
 	* Devuelve el contenido de la propiedad texto_fit_comp
 	* @return string(500)
 	*/
-	function gettexto_fit_comp(){
+	/* function gettexto_fit_comp(){
 		return $this->texto_fit_comp;
-	}
+	} */
 	/**
 	* Fija el contenido de la propiedad power_bi_active_fit
 	* @param power_bi_active_fit
@@ -1010,12 +1041,10 @@ class Empresas
 		$this->power_bi_active_fit = $sCadena;
 	}
 
-	function settexto_fit_comp($sCadena){
+	/* function settexto_fit_comp($sCadena){
 		$this->texto_fit_comp = $sCadena;
-	}
+	} */
 
-=======
->>>>>>> ef67b2adad35376e7004f53c2ad7cef5f1096846
 	function setNombreCan($sCadena){
 		$this->nombreCan= $sCadena;
 	}

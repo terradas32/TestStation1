@@ -1,9 +1,0 @@
- INSERT INTO wi_usuarios (idUsuario,login,password,idUsuarioTipo) VALUES ('3','Admin','28c6596119334e30ef4bd206b514e632','0');
- INSERT INTO wi_usuarios (idUsuario,login,password,idUsuarioTipo) VALUES ('9','COLLEROS','63234ea72841983657201ed5ced7e2fc','0');
- INSERT INTO wi_usuarios (idUsuario,login,password,idUsuarioTipo) VALUES ('11','rriocalvo','30e554d39d7af4e4793671d566fea400','0');
- INSERT INTO wi_usuarios (idUsuario,login,password,idUsuarioTipo) VALUES ('12','contabilidad','ffcdbad4a4e96f3d802da777cea1c334','4');
- INSERT INTO wi_usuarios (idUsuario,login,password,idUsuarioTipo) VALUES ('13','CORRECCION','8cb0a7c08ccaa261211ccdac0c238fa2','3');
- INSERT INTO wi_usuarios (idUsuario,login,password,idUsuarioTipo) VALUES ('14','comercial','68bc1ee8f461ef061cb35cd0b5dbf8ab','2');
- INSERT INTO wi_usuarios (idUsuario,login,password,idUsuarioTipo) VALUES ('15','PATRICIA','251d547a612cc6b6ee6c2ab8c7327aa2','0');
- INSERT INTO wi_usuarios (idUsuario,login,password,idUsuarioTipo) VALUES ('16','GEMA','5f1b8c96beb7a60acb4798103433c847','0');
- INSERT INTO wi_usuarios (idUsuario,login,password,idUsuarioTipo) VALUES ('19','NEGOCIA','813a7f6bf90b0fd1e00b7c4a0aff716d','0');

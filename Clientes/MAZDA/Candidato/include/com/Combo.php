@@ -20,7 +20,7 @@ class Combo
 	var $sDefault				= "";
 	var $sOrderBy				= "";
 	var $sGroupBy				= "";
-	
+
 	/**
 	* constructor q inicializa los datos de un combo
 	* @param conn Conexion a traves de la cual realizar las operaciones sobre la base de datos
@@ -46,7 +46,7 @@ class Combo
 		$this->sTabla 		= $sTabla;
 		$this->sOrderBy		= $sOrderBy;
 		$this->sGroupBy		= $sGroupBy;
-		
+
 		if ($sPadre != "")
 			$this->sIdPadre = strtoupper($sPadre);
 		else $this->sIdPadre = "";
@@ -56,16 +56,16 @@ class Combo
 		if ($sAsIdKey != ""){
 			$this->sAsIdKey = $sAsIdKey;
 		}
-		$this->vDatos 		= $this->consultaDatos();
+		//$this->vDatos 		= $this->consultaDatos();
 		$this->sAction 		= "onChange='javascript:cambia$sNombre()'";
 		$this->sDefault 	= $sDefault;
 	} // fin del constructor
     /** establece los datos devueltos por una select **/
-	function consultaDatos() 
+	function consultaDatos()
 	{
     	$sQuery = "";
 		$aux = $this->miconexion;
-		
+
 		//creamos la query
 		$sQuery.="SELECT $this->sIdKey ";//	$sQuery.="SELECT " . $this->sIdKey;  //-josemi-
 		if (!empty($this->sAsIdKey)){
@@ -73,39 +73,40 @@ class Combo
 			$this->sIdKey = $this->sAsIdKey;
 		}
 		$sQuery.=",";
-		
+
 		//si no tenemos concatenacion de campos el nombre de descripcion = campo
 		if ($this->sPipe == "")
 			$sQuery.=$this->sDescKey;
 		else
 			$sQuery.=$this->sPipe . " AS " . $this->sDescKey;
-					
+
 	    if ($this->sIdPadre != "")
 		    $sQuery.=", $this->sIdPadre";
-		
-    	$sQuery.=" FROM " . $this->sTabla;
+
+    	//$sQuery.=" FROM " . strtolower($this->sTabla);
+      $sQuery.=" FROM " . $this->sTabla;
     	$sQuery.=	$this->getWhere(); //NOSE COMO HACER LLEGAR ASTA AQUI LA SENTENCIA DEL WHERE PARA QUE SEA DINAMICO <<<<<$sQuery.=" WHERE BajaLog!='on' " >>>>;
 		$sQuery.= (empty($this->sGroupBy)) ? "" : " GROUP BY " . $this->sGroupBy;
     	$sQuery.= " ORDER BY ";
 		$sQuery.= (empty($this->sOrderBy)) ? $this->sDescKey : $this->sOrderBy;
-		
+
 		//obtenemos la conexion
-//		echo $sQuery . "<br />";
+		//echo "<br />" . $sQuery ;
 		$result = $aux->Execute($sQuery);
-		
+
 		return $result;
 	} // fin de consultaDatos
 
 	/** establece los datos devueltos por una select **/
-	function consultaDatosQuery($sQuery) 
+	function consultaDatosQuery($sQuery)
 	{
 	    //obtenemos la conexion
 		$aux = $this->miconexion;
 		$result = $aux->Execute($sQuery);
 		return $result;
-	    
+
 	} // fin de consultaDatos
-	
+
 	/**
 	* establece los datos en un vector
 	* @param sQuery			String con la query desde la q generamos los datos del combo
@@ -114,16 +115,19 @@ class Combo
 	{
 		$this->vDatos = $this->consultaDatosQuery($sQuery);
 	}
-	
+
 	/**
 	* devuelve los datos contenidos en un vector
 	* @return vDatos			Vector de Hashtable q contiene los datos
-	**/	
+	**/
 	function getDatos()
 	{
+		if (empty($this->vDatos)){
+			$this->vDatos 		= $this->consultaDatos();
+		}
 		return $this->vDatos;
 	}
-	
+
 	/**
 	* devuelve el nombre del combo
 	* @return String
@@ -132,10 +136,10 @@ class Combo
 	{
 		return $this->sNombre;
 	}
-	
+
 	/**
 	* establece el valor de la propiedad sNombre
-	* @sNombre					
+	* @sNombre
 	*/
 	function setNombre($sCadena)
 	{
@@ -150,7 +154,7 @@ class Combo
 	{
 		return $this->sIdKey;
 	}
-	
+
 	/**
 	* establece el valor de la propiedad sIdKey
 	* @sIdKey
@@ -159,7 +163,7 @@ class Combo
 	{
 		$this->sIdKey = $sCadena;
 	}
-	
+
 	/**
 	* devuelve el campo q contiene las descripciones de las options
 	* @return String
@@ -168,7 +172,7 @@ class Combo
 	{
 		return $this->sDescKey;
 	}
-	
+
 	/**
 	* establece el valor de la propiedad sDescKey
 	* @sDescKey
@@ -186,7 +190,7 @@ class Combo
 	{
 		return $this->sTabla;
 	}
-	
+
 	/**
 	* establece el valor de la propiedad sTabla
 	* @sTabla
@@ -195,7 +199,7 @@ class Combo
 	{
 		$this->sTabla= $sCadena;
 	}
-	
+
 	/**
 	* devuelve la clave q contiene la id del padre
 	* @return String
@@ -204,7 +208,7 @@ class Combo
 	{
 		return $this->sIdPadre;
 	}
-	
+
 	/**
 	* establece el valor de la propiedad sIdPadre
 	* @sIdPadre
@@ -222,7 +226,7 @@ class Combo
 	{
 		return $this->sAction;
 	}
-	
+
 	/**
 	* establece el valor de la propiedad sAction
 	* @sAction
@@ -240,7 +244,7 @@ class Combo
 	{
 		return $this->sDefault;
 	}
-	
+
 	/**
 	* establece el valor de la propiedad sDefault
 	* @param sDefault
@@ -249,7 +253,7 @@ class Combo
 	{
 		$this->sDefault= $sCadena;
 	}
-	
+
 	/**
 	* devuelve el where del combo
 	* @return String
@@ -260,7 +264,7 @@ class Combo
 			return " WHERE $this->sWhere";
 		else return "";
 	}
-		
+
 	/**
 	* metodo q devuelve el codigo HTML q genera el Combo
 	* @param sSize			size del combo
@@ -275,11 +279,15 @@ class Combo
 	{
 		$sHTML = "";    // el HTML q genera el Combo
 		$sAccion = "";	//accion q se ejecutara
+		if (empty($this->vDatos)){
+			$this->vDatos 		= $this->consultaDatos();
+		}
+		
 		if ($sAction != "")
 			$sAccion = $sAction;
-		
+
 		$this->setAction($sAccion);
-		// Creamos la cabecera del Combo		
+		// Creamos la cabecera del Combo
 		$sHTML.=$this->setCabeceraCombo($this->sNombre,$sSize,$sClass,$sAccion);
 	    // si tenemos un primer opcion lo insertamos
 		if ($this->sDefault != "")
@@ -307,8 +315,8 @@ class Combo
 
 		 // una vez tenemos todos los options cerramos el select
 		 $sHTML.="</select>\n";
-		
-		return $sHTML;	
+
+		return $sHTML;
 	} // fin getHTMLCombo
 
 	/**
@@ -323,10 +331,10 @@ class Combo
 	{
 		$sHTML = "";    // el HTML q genera el Combo
 		$sAccion = "";	//accion q se ejecutara
-		
+
 		$this->sAccion = $sAction;
 		$this->setAction($this->sAccion);
-		// Creamos la cabecera del Combo		
+		// Creamos la cabecera del Combo
 	    $sHTML.=$this->setCabeceraCombo($this->sNombre,$sSize,$sClass,$this->sAccion);
 	    // si tenemos un primer opcion lo insertamos
 		if ($this->sDefault != "")
@@ -337,10 +345,10 @@ class Combo
 					$sHTML.=$this->addNewOptionBoolean($this->sDefault, true);
 		}
 			 $sHTML.="</select>\n";
-			
-		return $sHTML;	
+
+		return $sHTML;
 	} // fin getHTMLCombo
-	
+
 	/**
 	* Metodo q genera una nueva opcion para el Combo
 	* @param hOption		Hashtable con los datos de esta nueva opcion
@@ -353,9 +361,9 @@ class Combo
 	{
 		$sOption = "";		//Contiene la nueva opcion
 		$sAux = "";			//String auxiliar para comparar values
-		
+
 		$sOption.="\t<option style='color:" . $this->getOptionColor() . ";' value='";
-		
+
 		$sAux = $hOption[$sValue];
 		$sOption.=$sAux ."'";
 		// si coincide con el seleccionado lo ponemos cono selected
@@ -373,7 +381,7 @@ class Combo
 			}
 		}
 		$sOption.=">" . $hOption[$sDef] . "</option>\n";
-		
+
 		return $sOption;
 	} // fin de addNewOption
 
@@ -404,7 +412,7 @@ class Combo
 	function setOptionColor($sColor){
 		$this->sOptionColor = $sColor;
 	}
-	
+
 	/**
 	* Metodo q genera la cabecera del select
 	* @param sIdSelect			Identificador del Combo
@@ -416,14 +424,14 @@ class Combo
 	function setCabeceraCombo($sIdSelect,$sSize,$sClass, $sAction)
 	{
 		$sCabecera = "";	//Contiene la cabecera del select
-		$sCabecera.="<select name='$sIdSelect'";
+		$sCabecera.="<select id='$sIdSelect' name='$sIdSelect'";
 		if ($sSize != "")
 			$sCabecera.=" size='$sSize'";
 		if ($sClass != "")
 			$sCabecera.=" class='$sClass'";
 		if ($sAction != "")
-		    $sCabecera.=" $sAction";	
-		$sCabecera.=">\n";	
+		    $sCabecera.=" $sAction";
+		$sCabecera.=">\n";
 		return $sCabecera;
 	}	// fin de setCabeceraCombo
 
@@ -436,7 +444,7 @@ class Combo
 	*/
 	function getJSComboChange($cPadre, $sFormulario, $sFuncion)
 	{
-		$$sJS		= "";
+		$sJS		= "";
 		$sIdPadre	= "";
 		$sIdHijo	= "";
 		$sDescAux	= "";
@@ -444,16 +452,16 @@ class Combo
 		if ($sFuncion != "")
 			$sNomFunc = $sFuncion;
 		else $sNomFunc = $cPadre->getNombre();
-		
+
 		// introducimos la cabecera de la funcion JS con el nombre del combo
 		$sJS.="function cambia" . $sNomFunc  . "()\n{\n";
 		$sJS.="\tdocument." . $sFormulario . ".elements['" . $this->sNombre . "'].length=0;\n";
 		$sJS.="\tanadir('" . $this->sNombre . "', '" . $this->sDefault . "', '');\n";
-		$sJS.="\tdocument.forms[0].elements['" . $this->sNombre . "'].selectedIndex=0;\n"; 
+		$sJS.="\tdocument.forms[0].elements['" . $this->sNombre . "'].selectedIndex=0;\n";
 		$sJS.="\tvar sel = document." . $sFormulario . "." . $cPadre->getNombre() . ".options[document." . $sFormulario . "." . $cPadre->getNombre() . ".selectedIndex].value;\n";
 
 	    // datos del Combo padre
-		
+
 		$eAux = $cPadre->getDatos();
 		//recorremos el vector de datos del combo padre
 		$eAux->Move(0); //Posicionamos en el primer registro.
@@ -463,7 +471,7 @@ class Combo
 			$sIdPadre = $eAux->fields[strtoupper($cPadre->getIdKey())];
 			$sJS.="\tif (sel == '" . $sIdPadre . "') \n\t{ \n";
 			// cogemos los datos del combo hijo
-			$eAux2 = $this->vDatos; 	
+			$eAux2 = $this->vDatos;
 			//recorremos los datos del combo hijo
 			$eAux2->Move(0); //Posicionamos en el primer registro.
 			while (!$eAux2->EOF)
@@ -480,7 +488,7 @@ class Combo
 						$sDescAux = str_replace("'"," ",$sDescAux);
 					}
 					$sJS.="\t\tanadir('" . $this->sNombre . "','" . $sDescAux . "','" . $eAux2->fields[$this->sIdKey] . "');\n";
-				} 
+				}
 				$eAux2->MoveNext();
 			} //fin de while(eAux2...)
 			// cerramos la llave del if en JS
@@ -488,10 +496,10 @@ class Combo
 			$eAux->MoveNext();
 		} // fin de while (eAux.hasMoreElements())
 		$sJS.="}\n";
-		
-		return $sJS;	
+
+		return $sJS;
 	} // fin de getJSComboChange
-	
+
 	/**
 	* metodo q devuelve el String con la descripción de la selección del Combo
 	* @param sValor				Valor seleccionado por defecto
@@ -502,7 +510,7 @@ class Combo
 	{
 		$sDescripcion = "";   // La descripción del valor
 		$sAux = "";		//String auxiliar para comparar values
-    	// recorremos todos los datos del vector 
+    	// recorremos todos los datos del vector
 		$this->vDatos->Move(0); //Posicionamos en el primer registro.
 		while (!$this->vDatos->EOF)
 		{
@@ -514,18 +522,21 @@ class Combo
 			}
 			$this->vDatos->MoveNext();
     	}
-		return $sDescripcion;	
+		return $sDescripcion;
 	} // fin getDescripcionCombo*/
 
-	
+
 	function getDescripcionCombo($sValor)
 	{
 		$sDescripcion = "";   // La descripción del valor
 		$sAux = "";		//String auxiliar para comparar values
 		$cadena = explode(",",$sValor);
+		if (empty($this->vDatos)){
+			$this->vDatos 		= $this->consultaDatos();
+		}
 		if (is_array ($cadena)){
 			foreach ($cadena as $sValor) {
-				// recorremos todos los datos del vector 
+				// recorremos todos los datos del vector
 				$this->vDatos->Move(0); //Posicionamos en el primer registro.
 				while (!$this->vDatos->EOF)
 				{
@@ -541,7 +552,7 @@ class Combo
 			}// fin for
 			$sDescripcion = substr($sDescripcion,0,strlen($sDescripcion)-1);
 		}else{
-			// recorremos todos los datos del vector 
+			// recorremos todos los datos del vector
 			$this->vDatos->Move(0); //Posicionamos en el primer registro.
 			while (!$this->vDatos->EOF)
 			{
@@ -554,7 +565,49 @@ class Combo
 				$this->vDatos->MoveNext();
     		}
 		}//fin else
-		return $sDescripcion;	
+		return $sDescripcion;
+	} // fin getDescripcionCombo
+
+	function getDescripcionComboBR($sValor)
+	{
+		$sDescripcion = "";   // La descripción del valor
+		$sAux = "";		//String auxiliar para comparar values
+		$cadena = explode(",",$sValor);
+		if (empty($this->vDatos)){
+			$this->vDatos 		= $this->consultaDatos();
+		}
+		if (is_array ($cadena)){
+			foreach ($cadena as $sValor) {
+				// recorremos todos los datos del vector
+				$this->vDatos->Move(0); //Posicionamos en el primer registro.
+				while (!$this->vDatos->EOF)
+				{
+    				$sAux = $this->vDatos->fields[$this->sIdKey];
+					if ($sValor != "" && (strtoupper(trim($sValor)) == strtoupper(trim($sAux))))
+					{
+						$sDescripcion .=  $this->vDatos->fields[$this->sDescKey] . "<br /> " ;
+						break;
+					}
+					$this->vDatos->MoveNext();
+    			}
+				$sValor = "";
+			}// fin for
+			$sDescripcion = substr($sDescripcion,0,strlen($sDescripcion)-1);
+		}else{
+			// recorremos todos los datos del vector
+			$this->vDatos->Move(0); //Posicionamos en el primer registro.
+			while (!$this->vDatos->EOF)
+			{
+    			$sAux = $this->vDatos->fields[$this->sIdKey];
+				if ($sValor != "" && (strtoupper(trim($sValor)) == strtoupper(trim($sAux))))
+				{
+					$sDescripcion = $this->vDatos->fields[$this->sDescKey];
+					break;
+				}
+				$this->vDatos->MoveNext();
+    		}
+		}//fin else
+		return $sDescripcion;
 	} // fin getDescripcionCombo
 
 	/**
@@ -573,7 +626,7 @@ class Combo
 		$sAccion = "";	//accion q se ejecutara
 		if ($sAction != "")
 			$sAccion = $sAction;
-		
+
 		$this->setAction($sAccion);
 		// Creamos la cabecera del Combo
 		$sHTML.=$this->setCabeceraCombo($this->sNombre,$sSize,$sClass,$sAccion);
@@ -592,8 +645,11 @@ class Combo
 			$sHTML.=$sMoreOptions;
 		}
 	    // recogemos los nombres de las keys de las options
-		
+
        	// recorremos todos los datos del vector para introducirlos como options en el combo
+		if (empty($this->vDatos)){
+			$this->vDatos 		= $this->consultaDatos();
+		}
 		$this->vDatos->Move(0); //Posicionamos en el primer registro.
 		while (!$this->vDatos->EOF)
 		{
@@ -603,8 +659,8 @@ class Combo
 
 		 // una vez tenemos todos los options cerramos el select
 		 $sHTML.="</select>\n";
-		
-		return $sHTML;	
+
+		return $sHTML;
 	} // fin getHTMLComboMenu
 
 	/**
@@ -621,9 +677,9 @@ class Combo
 		$sAux = "";			//String auxiliar para comparar values
     	$sQuery = "";
 		$aux = $this->miconexion;
-		
+
 		$sOption.="\t<option style='color:" . $this->getOptionColor() . ";' value='";
-		
+
 		$sAux = $hOption[$sValue];
 		$sOption.=$sAux ."'";
 		// si coincide con el seleccionado lo ponemos cono selected
@@ -665,7 +721,7 @@ class Combo
 			$espacios .="&nbsp;&nbsp;";
 		}
 		$sOption.=">" . $espacios . $hOption[$sDef] . "</option>\n";
-		
+
 		return $sOption;
 	} // fin de addNewOptionMenu
 } // fin de la clase

@@ -1,4 +1,18 @@
 <?php
+
+if(!isset($counter) || $counter==0){
+	
+	if(isset($_POST['esZip']) && $_POST['esZip'] == true){
+		$dirGestor = constant("DIR_WS_GESTOR_HTTPS");
+		$documentRoot = constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
+	}else{
+		$dirGestor = constant("DIR_WS_GESTOR");
+		$documentRoot = constant("DIR_FS_DOCUMENT_ROOT");
+	}
+
+	global $dirGestor;
+	global $documentRoot;
+}
 		$comboTIPOS_INFORMES	= new Combo($conn,"fIdTipoInforme","idTipoInforme","nombre","Descripcion","tipos_informes","",constant("SLC_OPCION"),"codIdiomaIso2=" . $conn->qstr($_POST['fCodIdiomaIso2'], false),"","fecMod");
 		$sDescInforme = $comboTIPOS_INFORMES->getDescripcionCombo($_POST['fIdTipoInforme']);
 
@@ -19,15 +33,15 @@
 		$sHtmlFin	= '';
 		//$aux			= $this->conn;
 
-		$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+		$spath = (substr($documentRoot, -1, 1) != '/') ? $documentRoot . '/' : $documentRoot;
 
 		$sHtmlInicio='
 			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 				<html xmlns="http://www.w3.org/1999/xhtml">
 				<head>
 					<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-					<link rel="stylesheet" type="text/css" href="'.constant("DIR_WS_GESTOR").'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/resetCSS.css"/>
-					<link rel="stylesheet" type="text/css" href="'.constant("DIR_WS_GESTOR").'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/style.css"/>
+					<link rel="stylesheet" type="text/css" href="'.$dirGestor.'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/resetCSS.css"/>
+					<link rel="stylesheet" type="text/css" href="'.$dirGestor.'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/style.css"/>
 					<title>' . $cPruebas->getIdPrueba() . ' - ' . $_sBaremo . '</title>
 					<style type="text/css">
 					<!--
@@ -48,7 +62,7 @@
 		    				<td class="nombre">
 										<p class="textos">' . constant("STR_SR_A") . ' ' . $cCandidato->getNombre(). ' ' . $cCandidato->getApellido1(). ' ' .$cCandidato->getApellido2() .'</p>
 						    </td>
-						    <td class="logo"><img src="'.constant("DIR_WS_GESTOR").'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo-pequenio.jpg" title="logo"/></td>
+						    <td class="logo"><img src="'.$dirGestor.'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo-pequenio.jpg" title="logo"/></td>
 						    <td class="fecha">
 						        <p class="textos">' . date("d/m/Y") . '</p>
 						    </td>
@@ -83,8 +97,8 @@
 
 		$sHtml.= '
 			<div class="pagina portada">
-		    	<img src="' . constant("DIR_WS_GESTOR") . 'graf/prueba' . $cPruebas->getIdPrueba() . '/portada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
-		    	<h1 class="titulo"><img src="' . constant("DIR_WS_GESTOR") . 'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo.jpg" /></h1>';
+		    	<img src="' . $dirGestor . 'graf/prueba' . $cPruebas->getIdPrueba() . '/portada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
+		    	<h1 class="titulo"><img src="' . $dirGestor . 'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo.jpg" /></h1>';
 		$sHtml.= 		'<div id="txt_infome"><p>' . $sDescInforme . '</p></div>';
 		$sHtml.='
 				<div id="informe">
@@ -246,7 +260,7 @@
 														<font style="font-size: 14px;color: #000000;font-weight: bold;">PD = '.$iPDirecta.'</font>
 													</td>
 													<td width="81%" style="height:45px;border-left:2px solid #004080;">
-														<img src="'.constant('DIR_WS_GESTOR') . constant('DIR_WS_GRAF'). 'numeritosEstandar.jpg'.'" style="width:540px;">
+														<img src="'. $dirGestor . constant('DIR_WS_GRAF'). 'numeritosEstandar.jpg'.'" style="width:540px;">
 													</td>
 												</tr>
 												<tr>
@@ -254,7 +268,7 @@
 														<font style="font-size: 14px;color: #000000;font-weight: bold;">PC = '.$iPercentil.' %</font>
 													</td>
 													<td width="81%" style="height:40px;border-left:2px solid #004080;vertical-align:middle;">
-														<img src="'.constant('DIR_WS_GESTOR') . constant('DIR_WS_GRAF'). 'bodoque_gigante.jpg'.'" style="width:'.(($iPercentil*540)/100).'px;height:35px;">
+														<img src="'. $dirGestor . constant('DIR_WS_GRAF'). 'bodoque_gigante.jpg'.'" style="width:'.(($iPercentil*540)/100).'px;height:35px;">
 													</td>
 												</tr>
 											</table>
@@ -280,7 +294,7 @@
 
 		$sHtml.= '
 			<div class="pagina portada" id="contraportada">
-    			<img id="imgContraportada" src="' . constant("DIR_WS_GESTOR") . 'graf/contraportada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
+    			<img id="imgContraportada" src="' . $dirGestor . 'graf/contraportada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
 			</div>
 			<!--FIN DIV PAGINA-->
 		';
@@ -291,7 +305,7 @@
 		$replace = array('@', '.');
 //		$sNombre = $cCandidato->getMail() . "_" . $_POST['fIdEmpresa']. "_" .$_POST['fIdProceso'] . "_" . $cPruebas->getNombre();
 		$sDirImg="imgInformes/";
-		$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+		$spath = (substr($documentRoot, -1, 1) != '/') ? $documentRoot . '/' : $documentRoot;
 
 		$_fichero = $spath . $sDirImg . $sNombre . ".html";
 		//$cEntidad->chk_dir($spath . $sDirImg, 0777);

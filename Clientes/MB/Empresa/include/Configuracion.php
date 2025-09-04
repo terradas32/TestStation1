@@ -1,8 +1,8 @@
 <?php
-	$_HTTP_HOST = (empty($_SERVER["HTTP_HOST"])) ? "localhost" : $_SERVER["HTTP_HOST"];
-	$_DOCUMENT_ROOT = (empty($_SERVER["DOCUMENT_ROOT"])) ? "C:\\Datos\\xampp\\htdocs" : $_SERVER["DOCUMENT_ROOT"];
+	$_HTTP_HOST = (empty($_SERVER["HTTP_HOST"])) ? "test-station.com" : $_SERVER["HTTP_HOST"];
+	$_DOCUMENT_ROOT = (empty($_SERVER["DOCUMENT_ROOT"])) ? "/var/www/html" : $_SERVER["DOCUMENT_ROOT"];
 
-	define("HTTP_LINK_ACCESO", "http://mb.test-station.biz");
+	define("HTTP_LINK_ACCESO", "http://mb.test-station.com");
 	// Define the webserver and path parameters
 	// * DIR_FS_* Directorio físico (local/physical)
 	// * DIR_WS_* Directorio del servidor Web (virtual/URL)
@@ -10,7 +10,7 @@
 	define("HTTPS_SERVER", "https://" . $_HTTP_HOST . "/Clientes/MB/Empresa/");	//Siempre terminar en "/"
 	define("HTTP_SERVER_FRONT", "http://" . $_HTTP_HOST . "/Clientes/MB/");	//Siempre terminar en "/"
 	define("DIR_WS_GESTOR", "http://" . $_HTTP_HOST . "/Admin/");
-	define("DIR_ADODB", $_DOCUMENT_ROOT . "adodb/");
+	define("DIR_ADODB", $_DOCUMENT_ROOT . "/adodb/");
 	define("DIR_WS_GRAF", "graf/");
 	define("DIR_WS_INCLUDE", "include/");
 	define("DIR_WS_COM", constant("DIR_WS_INCLUDE") . "com/");
@@ -22,7 +22,7 @@
 	//Generación gráfica Libreria JPGRAPH
 	define("DIR_WS_JPGRAPH", constant("DIR_WS_COM") . "jpgraph/");
 	//Generación PDFLibreria HTML2PS
-	define("HTML2PS_DIR", $_DOCUMENT_ROOT . "html2ps_v2043/public_html/");
+	define("HTML2PS_DIR", $_DOCUMENT_ROOT . "/html2ps_v2043/public_html/");
 
 	//Formato de fecha de usuario
 	define("USR_FECHA", "d/m/Y");
@@ -31,8 +31,8 @@
 	define("USR_NUMDECIMALES", "2");
 
 	//Directorios físicos
-	define("DIR_FS_DOCUMENT_ROOT", $_DOCUMENT_ROOT . "Clientes/MB/Empresa/"); //Siempre terminar en "/"
-	define("DIR_FS_DOCUMENT_ROOT_ADMIN", $_DOCUMENT_ROOT . "Admin/"); //Siempre terminar en "/"
+	define("DIR_FS_DOCUMENT_ROOT", $_DOCUMENT_ROOT . "/Clientes/MB/Empresa/"); //Siempre terminar en "/"
+	define("DIR_FS_DOCUMENT_ROOT_ADMIN", $_DOCUMENT_ROOT . "/Admin/"); //Siempre terminar en "/"
 	//Fichero de log
 	define("DIR_FS_PATH_NAME_LOG", constant("DIR_FS_DOCUMENT_ROOT") . "errores.log");
 	define("DIR_FS_PATH_NAME_CORREO", constant("DIR_FS_DOCUMENT_ROOT") . "correos.log");
@@ -117,13 +117,20 @@
 	//Datos para la clase de envio de correo
 	define("MAILER","smtp"); //PUEDE SER mail O smtp
     //Host, nombre de servidor smtp
-    define("HOSTMAIL","mail.psicologosempresariales.es");
+    //define("HOSTMAIL","smtp.office365.com");
+    //define("PORTMAIL","587");    //25 o 587 normalmente
+    //define("MAIL_ENCRYPTION","tls");	//tls, ssl
+
+    define("HOSTMAIL","smtp.office365.com");
     define("PORTMAIL","587");    //25 o 587 normalmente
+    define("MAIL_ENCRYPTION","tls");	//tls, ssl
+	
     //usuario y password PARA EL ENVIO DE CORREO, TIENE Q SER UNA CUENTA VÁLIDA
-    define("MAILUSERNAME","PEASA@psicologosempresariales.es");
-    define("MAILPASSWORD","He1BdP34s4");
+    define("MAILUSERNAME","test-station@people-experts.com");
+    define("MAILPASSWORD","S!524012145210uw%");
+
 	//Email de contacto.
-	define("EMAIL_CONTACTO","PEASA@psicologosempresariales.es");
+	define("EMAIL_CONTACTO","test-station@people-experts.com");
 	define("PERSONA_CONTACTO","Contacta");
 
 	//Espacio de izquierda,contenido y derecha.
@@ -144,15 +151,23 @@
 
 	define("EMPRESA_PE", "3788");	//Código de la empresa Psicólogos Empresariales
 
-	 //Contantes de conexión a Base de Datos
-        define("DB_TYPE", "mysql");
-        define("DB_DATOS", "ts");
-        define("DB_HOST", "webcorporativa-2-cluster.cluster-cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
-        define("DB_USUARIO", "teststation");
-        define("DB_PASSWORD","nosferatu62");
+	//Contantes de conexión a Base de Datos
+	define("DB_TYPE", "mysql");
+	define("DB_DATOS", "ts");
+	define("DB_HOST", "webcorporativa2-instance.cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
+	define("DB_USUARIO", "teststation");
+	define("DB_PASSWORD","nosferatu62");
 	//FIN Contantes de conexión a Base de Datos
 
-		//Contantes de conexión a Base de Datos MS SQLSERVER
+	//Contantes de conexión a Base de Datos Desarrollo
+	//define("DB_TYPE", "mysql");
+	//define("DB_DATOS", "ts");
+	//define("DB_HOST", "all-db-pre-instance-1.cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
+	//define("DB_USUARIO", "peopleAdmin");
+	//define("DB_PASSWORD","?t6]SQ&6p!J~ZBy");
+	//FIN Contantes de conexión a Base de Datos
+
+	//Contantes de conexión a Base de Datos MS SQLSERVER
 	define("DB_DATOS_MS", "expertosonline");
 	define("DB_HOST_MS", "91.121.122.177");
 	define("DB_USUARIO_MS", "expertosonline");
@@ -179,18 +194,25 @@
 	define("DB_PASSWORD_AV","");
 	//FIN Contantes de conexión a plataforma ecases
 
-//Contantes de conexión a FTP plataforma Assessment
+	//Contantes de conexión a FTP plataforma Assessment
 	define("FTP_SERVER_AV", "expertos-pe-online.com");
 	define("FTP_REMOTE_DIR_AV", "/httpdocs/public/uploads/TS/");
 	define("FTP_USUARIO_AV", "expertospe");
 	define("FTP_PASSWORD_AV","1Tol7%8g");
-//FIN Contantes de conexión a FTP plataforma Assessment
+	//FIN Contantes de conexión a FTP plataforma Assessment
 
-//PRODUCCION Contantes de conexión a FTP plataforma Assessment
+	//PRODUCCION Contantes de conexión a FTP plataforma Assessment
 	// define("FTP_SERVER_AV", "people-experts.com");
 	// define("FTP_REMOTE_DIR_AV", "/public/uploads/TS/");
 	// define("FTP_USUARIO_AV", "assessmentpp");
 	// define("FTP_PASSWORD_AV","H31BdP3dr0");
-//FIN Contantes de conexión a FTP plataforma Assessment
+	//FIN Contantes de conexión a FTP plataforma Assessment
+
+	// Claves de codificacion de consultas SQL
+	define('EXCEL_ENC_KEY', hex2bin('d69220cb1499967ab971662c230fc49f')); // 32 bytes
+	define('EXCEL_HMAC_KEY', hex2bin('95fc924fa035df821fbc3049f1a5d2e1')); // 32 bytes
+
+	// Ventana de validez del token (segundos)
+	define('EXCEL_TOKEN_TTL', 300); // 5 minutos
 
 ?>

@@ -42,7 +42,7 @@ if($listaWeb_slider->recordCount() > 0){
 			$ImgName = basename($listaWeb_slider->fields['pathImagen']);
 			$sPathName = $listaWeb_slider->fields['pathImagen'];
 			$img=@getimagesize(constant("DIR_WS_GESTOR") . $sPathName);
-			$bIimg = (empty($img)) ? 0 : 1;
+			$bIimg = (empty($img)) ? 1 : 1;
 			if($bIimg){
 				$PathImg = constant("DIR_WS_GESTOR") . $sPathName	;
 				$urlEnlace = $listaWeb_slider->fields['urlDestino'];

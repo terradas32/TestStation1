@@ -18,7 +18,8 @@
 	<script language="javascript" type="text/javascript" src="codigo/comun.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/noback.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/jQuery1.4.2.js"></script>
-	<script src="https://cdn.tiny.cloud/1/19u4q91vla6r5niw2cs7kaymfs18v3j11oizctq52xltyrf4/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+	<!-- <script src="https://cdn.tiny.cloud/1/19u4q91vla6r5niw2cs7kaymfs18v3j11oizctq52xltyrf4/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script> -->
+	<script language="javascript" type="text/javascript" src="codigo/tinymce/tinymce.min.js"></script>
   <script>tinymce.init({ selector:'.tinymce' });</script>
 
 <script language="javascript" type="text/javascript">
@@ -118,7 +119,7 @@ else	$HELP="xx";
 				</tr>
 				<tr>
 					<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
-					<td nowrap="nowrap" width="140" class="negrob" valign="top"><label for="fNombre"><?php echo constant("STR_NOMBRE");?></label>&nbsp;</td>
+					<td nowrap="nowrap" width="140" class="negrob" valign="top"><label for="fNombre"><?php echo constant("STR_NOMBRE");?> AAA</label>&nbsp;</td>
 					<td><input type="text" id="fNombre" name="fNombre" value="<?php echo $cEntidad->getNombre();?>" class="obliga"  onchange="javascript:trim(this);" /></td>
 				</tr>
 				<tr>

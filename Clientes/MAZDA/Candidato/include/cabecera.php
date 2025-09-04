@@ -25,7 +25,7 @@ $cEmpresas->setIdEmpresa($_cEntidadCandidatoTK->getIdEmpresa());
 $cEmpresas = $cEmpresasDB->readEntidad($cEmpresas);
 $sLogo = '<img alt="' . constant("NOMBRE_EMPRESA") . '" src="' . constant("DIR_WS_GRAF") . 'logo.png" border="0" />';
 if ($cEmpresas->getPathLogo() != ""){
-	$size = @getimagesize(constant("DIR_WS_GESTOR") . $cEmpresas->getPathLogo());
+	$size = list($anchura, $altura) = @getimagesize(constant("DIR_WS_GESTOR") . $cEmpresas->getPathLogo());
 	$anchura=$size[0];
 	$altura=$size[1];
 	if ($altura > 85){
@@ -76,7 +76,8 @@ if ($cEmpresas->getPathLogo() != ""){
 		<div id="cabecera-izquierda">
 			<div id="cabecera-logo">
 			<h2>
-				<?php echo $sLogo;?>
+				<!-- <?php echo $sLogo;?> -->
+				<img height="70" alt="People Experts" src="https://test-station.com/Admin/graf/logo.jpg" border="0" />
 			</h2>
 			</div>
 		</div>

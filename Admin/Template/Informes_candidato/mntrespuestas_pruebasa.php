@@ -10,7 +10,6 @@
 		
 	$oConsumos = new Consumos();
 	$oConsumosDB = new ConsumosDB($conn);
-		
 	$oConsumos->setIdEmpresa($cEmpresa->getIdEmpresa());
 	$oConsumos->setIdProceso($cProceso->getIdProceso());
 	$oConsumos->setIdCandidato($cCandidato->getIdCandidato());
@@ -19,7 +18,6 @@
 	$oConsumos->setCodIdiomaInforme($cProceso_informes->getCodIdiomaInforme());
 	$oConsumos->setIdTipoInforme($cProceso_informes->getIdTipoInforme());
 	$sSQLConsumos = $oConsumosDB->readLista($oConsumos);
-//	echo $sSQLConsumos;
 	$rsConsumos = $conn->Execute($sSQLConsumos);
 	$n_descargas = $rsConsumos->recordCount();
 	if ($n_descargas > 0 ){
@@ -98,7 +96,7 @@ function abrirVentana(bImg, file){
 		
 		preurl = "view.php?bImg=" + bImg + "&File=" + file;
 		prename = "File";
-		var miv=window.open(preurl, prename,"height=150,width=150,status=no,toolbar=no,menubar=no,location=no,scrollbars=yes,resizable=yes");
+		var miv=window.open(preurl, prename,"");
 		miv.focus();
 	}else{
 		alert("Debe escoger una prueba, un baremo, un tipo de informe y un idioma.");
@@ -218,12 +216,14 @@ function cambiaInformes(){
 		MODO:"<?php echo constant('MNT_LISTAIDIOMAS')?>", 
 		sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>" });
 }
+
 function exporta(){
 
 	var f = document.forms[0];
 	var paginacargada = "Informes_candidato.php";
+	
 	if(f.fIdTipoInforme.value!="" && f.fIdPrueba.value!="" && f.fCodIdiomaIso2.value!="" && f.fIdBaremo.value!=""){
-		$("div#exportInforme").empty();  
+		$("div#exportInforme").empty();
 		$("div#exportInforme").load(paginacargada,{
 			fIdPrueba: f.fIdPrueba.value,
 			fIdTipoInforme: f.fIdTipoInforme.value,

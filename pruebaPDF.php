@@ -10,15 +10,18 @@
 
 
 // Incluimos la librerias necesarias
-require_once($_SERVER["DOCUMENT_ROOT"] . '/dompdf/autoload.inc.php');
+// require_once($_SERVER["DOCUMENT_ROOT"] . '/dompdf/autoload.inc.php');
+// 
+// 
+// require_once($_SERVER["DOCUMENT_ROOT"] . '/dompdf/lib/html5lib/Parser.php');
+// require_once($_SERVER["DOCUMENT_ROOT"] . '/dompdf/lib/php-font-lib/src/FontLib/Autoloader.php');
+// require_once($_SERVER["DOCUMENT_ROOT"] . '/dompdf/lib/php-svg-lib/src/autoload.php');
+// require_once($_SERVER["DOCUMENT_ROOT"] . '/dompdf/src/Autoloader.php');
+// require_once($_SERVER["DOCUMENT_ROOT"] . '/dompdf/src/FontMetrics.php');
+// Dompdf\Autoloader::register();
 
+require_once(constant('DOMPDF_VENDOR_DIR') . 'autoload.php');
 
-require_once($_SERVER["DOCUMENT_ROOT"] . '/dompdf/lib/html5lib/Parser.php');
-require_once($_SERVER["DOCUMENT_ROOT"] . '/dompdf/lib/php-font-lib/src/FontLib/Autoloader.php');
-require_once($_SERVER["DOCUMENT_ROOT"] . '/dompdf/lib/php-svg-lib/src/autoload.php');
-require_once($_SERVER["DOCUMENT_ROOT"] . '/dompdf/src/Autoloader.php');
-require_once($_SERVER["DOCUMENT_ROOT"] . '/dompdf/src/FontMetrics.php');
-Dompdf\Autoloader::register();
 // Reference the Dompdf namespace
 use Dompdf\Dompdf;
 use Dompdf\Options;

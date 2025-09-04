@@ -1,4 +1,9 @@
 <?php
+
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+
 header('Content-Type: text/html; charset=utf-8');
 header('Expires: Tue, 03 Jul 2001 06:00:00 GMT');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
@@ -23,17 +28,30 @@ $cEntidadIdiomas	= new Idiomas();  // Entidad
 $cEntidadIdiomas->setActivoBack(1);
 $sqlIdiomas = $cEntidadIdiomasDB->readLista($cEntidadIdiomas);
 $listaIdiomas = $conn->Execute($sqlIdiomas);
+
+$nonce = bin2hex(random_bytes(16));
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $sLang;?>" xml:lang="<?php echo $sLang;?>">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="WIZARD, WI2.2 www.negociainternet.com" />
+        <meta http-equiv="Content-Security-Policy" content="
+            style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; 
+            font-src 'self' data: https://fonts.gstatic.com; 
+            img-src 'self' https://maps.gstatic.com;
+            default-src 'self' https://test-station.com/codigo/jQuery1.4.2.js;
+            script-src 'self' https://test-station.com/codigo/jQuery1.4.2.js 'nonce-<?php echo $nonce; ?>' 'unsafe-inline';
+        ">
+
+
+
 <?php include('include/metatags.php');?>
 	<link rel="shortcut icon" href="favicon.ico" />
 	<link rel="stylesheet" href="estilos/estilos-comunes.css" type="text/css" />
-	<script type="text/javascript" src="codigo/jQuery1.4.2.js"></script>
-	<script type="text/javascript" src="codigo/jquery.tools.min.js"></script>
+	<script nonce="%{csp-nonce}" type="text/javascript" src="codigo/jQuery1.4.2.js"></script>
+	<script nonce="%{csp-nonce}" type="text/javascript" src="codigo/jquery.tools.min.js"></script>
 <!--[if lte IE 7]>
 <link rel="stylesheet" type="text/css" href="estilos/ie.css" />
 <![endif]-->
@@ -85,11 +103,11 @@ function cambiaIdioma(){
         </div><!-- Fin de accesos -->
     </div><!-- Fin de cuerpo -->
     <div id="banners">
-		<a href="http://pe-station.com/" target="_blank" title="Todas las herramientas on-line para los proyectos de RRHH"><img border="0" src="<?php echo constant("HTTP_SERVER");?>graf/pe_banner_780x184_06F.gif" alt="Todas las herramientas on-line para los proyectos de RRHH" title="Todas las herramientas on-line para los proyectos de RRHH" /></a>
+		<a href="https://www.people-experts.com" target="_blank" title="Todas las herramientas on-line para los proyectos de RRHH"><img border="0" src="<?php echo constant("HTTP_SERVER");?>graf/pe_banner_780x184_06F.gif" alt="Todas las herramientas on-line para los proyectos de RRHH" title="Todas las herramientas on-line para los proyectos de RRHH" /></a>
     </div><!-- Fin de banner -->
     <div id="pie">
-        <p class="dweb"><a href="http://www.azulpomodoro.com" target="_blank" title="<?php echo constant("STR_DISENO_DESARROLLO");?>"><?php echo constant("STR_DISENO_DESARROLLO");?></a></p>
-        <p class="copy dweb"><a href="https://www.people-experts.com" target="_blank" title="Expertos en personas"><?php echo constant("NOMBRE_EMPRESA");?></a> - <?php echo constant("STR_DERECHOS_RESERVADOS");?></p>
+        <!-- <p class="dweb"><a href="http://www.azulpomodoro.com" target="_blank" title="<?php echo constant("STR_DISENO_DESARROLLO");?>"><?php echo constant("STR_DISENO_DESARROLLO");?></a></p>
+         --><p class="copy dweb"><a href="https://www.people-experts.com" target="_blank" title="Expertos en personas"><?php echo constant("NOMBRE_EMPRESA");?></a> - <?php echo constant("STR_DERECHOS_RESERVADOS");?></p>
         <!-- <p class="copy dweb"><a href="<?php echo constant("HTTP_SERVER")?>legal.html" target="_blank" title="<?php echo constant("STR_AVISO_LEGAL");?>"><?php echo constant("STR_AVISO_LEGAL");?></a></p> -->
     </div><!-- Fin de pie -->
 </div><!-- Fin de la pagina -->

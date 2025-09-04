@@ -44,6 +44,9 @@ class Pruebas
 		var $bajaLog;
 		var $bajaLogHast;
 		var $necesitara;
+		var $num_preguntas_max_tri;
+		var $tarifa;
+		var $tarifaHast;
 		
 		var $fecAlta;
 		var $fecAltaHast;
@@ -89,6 +92,9 @@ class Pruebas
 		$this->bajaLog			= "";
 		$this->bajaLogHast			= "";
 		$this->necesitara			= "";
+		$this->num_preguntas_max_tri	= "";
+		$this->tarifa			= "";
+		$this->tarifaHast			= "";
 		
 		$this->fecAlta			= "";
 		$this->fecAltaHast			= "";
@@ -98,8 +104,8 @@ class Pruebas
 		$this->usuAltaHast			= "";
 		$this->usuMod			= "";
 		$this->usuModHast			= "";
-		$this->PKListaExcel		=	"idPrueba,codIdiomaIso2,codigo,nombre,descripcion,idTipoPrueba,idTipoRazonamiento,IdTipoNivel,observaciones,duracion,duracion2,bajaLog,fecAlta,fecMod,usuAlta,usuMod";
-		$this->DESCListaExcel	=	"Id  Prueba,Idioma,Código,Nombre,Descripción,Tipo Prueba,Razonamiento,Nivel,Observaciones,Duración,Duración 2,Baja Log,Fecha de Alta,Fecha de Modificación,Usuario de Alta,Usuario de Modificación";
+		$this->PKListaExcel		=	"idPrueba,codIdiomaIso2,codigo,nombre,descripcion,idTipoPrueba,idTipoRazonamiento,IdTipoNivel,observaciones,duracion,duracion2,tarifa,bajaLog,fecAlta,fecMod,usuAlta,usuMod";
+		$this->DESCListaExcel	=	"Id  Prueba,Idioma,Código,Nombre,Descripción,Tipo Prueba,Razonamiento,Nivel,Observaciones,Duración,Duración 2,tarifa,Baja Log,Fecha de Alta,Fecha de Modificación,Usuario de Alta,Usuario de Modificación";
 	}
 
 
@@ -307,7 +313,7 @@ class Pruebas
 	* @return varchar(255)
 	*/
 	function getDuracion(){
-		return $this->duracion;
+		return $this->duracion == "" ? 0 : $this->duracion;
 	}
 	/**
 	* Fija el contenido de la propiedad duracion
@@ -322,7 +328,7 @@ class Pruebas
 	* @return varchar(255)
 	*/
 	function getDuracion2(){
-		return $this->duracion2;
+		return $this->duracion2 == "" ? 0 : $this->duracion2;
 	}
 	/**
 	* Fija el contenido de la propiedad duracion
@@ -482,6 +488,53 @@ class Pruebas
 	 */
 	function setNecesitara($sCadena){
 		$this->necesitara = $sCadena;
+	}
+	
+	/**
+	 * Devuelve el contenido de la propiedad num_preguntas_max_tri
+	 * @return int(2)
+	 */
+	function getNum_preguntas_max_tri(){
+		return $this->num_preguntas_max_tri;
+	}
+	/**
+	 * Fija el contenido de la propiedad num_preguntas_max_tri
+	 * @param bajaLog
+	 * @return void
+	 */
+	function setNum_preguntas_max_tri($sCadena){
+		$this->num_preguntas_max_tri = $sCadena;
+	}
+	
+	/**
+	* Devuelve el contenido de la propiedad tarifa
+	* @return int(11)
+	*/
+	function getTarifa(){
+		return $this->tarifa;
+	}
+	/**
+	* Fija el contenido de la propiedad tarifa
+	* @param tarifa
+	* @return void
+	*/
+	function setTarifa($sCadena){
+		$this->tarifa = $sCadena;
+	}
+	/**
+	* Devuelve el contenido de la propiedad tarifaHast
+	* @return int(11)
+	*/
+	function getTarifaHast(){
+		return $this->tarifaHast;
+	}
+	/**
+	* Fija el contenido de la propiedad tarifaHast
+	* @param tarifa
+	* @return void
+	*/
+	function setTarifaHast($sCadena){
+		$this->tarifaHast = $sCadena;
 	}
 	/**
 	* Devuelve el contenido de la propiedad fecAlta

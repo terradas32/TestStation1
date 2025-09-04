@@ -5,14 +5,14 @@
 		<meta name="generator" content="WIZARD, WI2.2 www.azulpomodoro.com" />
 <?php include('include/metatags.php');?>
 	<link rel="shortcut icon" href="favicon.ico" />
-	<link media="screen" type="text/css" href="<?php echo constant("HTTP_SERVER");?>estilos/jquery.bxslider.css" rel="stylesheet" />
+	<link media="screen" type="text/css" href="<?php echo constant("HTTPS_SERVER");?>estilos/jquery.bxslider.css" rel="stylesheet" />
 	<link rel="stylesheet" href="estilos/estilos-comunes.css" type="text/css" />
 	<link rel="stylesheet" href="estilos/estilos-candidato.css" type="text/css" />
 	<script language="javascript" type="text/javascript" src="codigo/noback.js"></script>
     <script language="javascript" type="text/javascript" src="codigo/eventos.js"></script>
     <script language="javascript" type="text/javascript" src="codigo/jQuery1.4.2.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/jquery.tools.min.js"></script>
-	<script language="javascript" type="text/javascript" src="<?php echo constant("HTTP_SERVER");?>codigo/jquery-1.11.0.min.js"></script>
+	<script language="javascript" type="text/javascript" src="<?php echo constant("HTTPS_SERVER");?>codigo/jquery-1.11.0.min.js"></script>
 	<?php include_once('include/codigos.php');?>
 	<?php include_once 'include/codigosHome.php';?>	
 	<script type="text/javascript">
@@ -34,7 +34,7 @@
 	//<![CDATA[
 	function cambiaIdioma(){
 		var f=document.forms[0];
-		location.replace("<?php echo constant("HTTP_SERVER") ;?>?fLang=" + f.fIdiomas.value);
+		location.replace("<?php echo constant("HTTPS_SERVER") ;?>?fLang=" + f.fIdiomas.value);
 	}
 	//]]>
 	</script> 
@@ -50,7 +50,7 @@
     <div id="cuerpo">
         <div id="accesos" class="acc_cand">
 			<div class="cargaSlider">
-				<p style="text-align: center;"><img alt="Cargando" src="<?php echo constant('HTTP_SERVER')?>estilos/images/ajax-loader.png" /></p>
+				<p style="text-align: center;"><img alt="Cargando" src="<?php echo constant('HTTPS_SERVER')?>estilos/images/ajax-loader.png" /></p>
 				<script type="text/javascript">
 					$(function(){
 						cargaSlider();
@@ -90,8 +90,8 @@
         </div><!-- Fin de accesos -->
     </div><!-- Fin de cuerpo -->
     <div id="pie">
-        <p class="dweb"><a href="http://www.azulpomodoro.com" target="_blank" title="<?php echo constant("STR_DISENO_DESARROLLO");?>"><?php echo constant("STR_DISENO_DESARROLLO");?></a></p>
-        <p class="copy dweb"><a href="http://www.people-experts.com" target="_blank" title="Expertos en personas"><?php echo constant("NOMBRE_EMPRESA");?></a> - <?php echo constant("STR_DERECHOS_RESERVADOS");?></p>
+        <!-- <p class="dweb"><a href="http://www.azulpomodoro.com" target="_blank" title="<?php echo constant("STR_DISENO_DESARROLLO");?>"><?php echo constant("STR_DISENO_DESARROLLO");?></a></p>
+        --> <p class="copy dweb"><a href="http://www.people-experts.com" target="_blank" title="Expertos en personas"><?php echo constant("NOMBRE_EMPRESA");?></a> - <?php echo constant("STR_DERECHOS_RESERVADOS");?></p>
     </div><!-- Fin de pie -->
 </div><!-- Fin de la pagina -->
 <script type="text/javascript">// Script para Autocompletar "off" y que valide con la W3C

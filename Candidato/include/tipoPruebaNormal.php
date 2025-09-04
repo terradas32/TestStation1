@@ -210,4 +210,7 @@ if ($listItems->fields['enunciado'] !="")
 					cargaListening();
 				 });
 			</script>
-	
+
+<script>
+	MathJax.typeset();	
+</script>

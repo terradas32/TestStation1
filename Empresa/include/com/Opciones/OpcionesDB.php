@@ -314,7 +314,7 @@ class OpcionesDB
 	*************************************************************************/
 	function readEntidad($cEntidad)
 	{
-		$aux			= $this->conn;
+		$aux = $this->conn;
 	
 		$sql = "SELECT *  FROM opciones WHERE ";
 		$sql  .="codIdiomaIso2=" . $aux->qstr($cEntidad->getCodIdiomaIso2(), false) . " AND idPrueba=" . $aux->qstr($cEntidad->getIdPrueba(), false) . " AND idItem=" . $aux->qstr($cEntidad->getIdItem(), false) . " AND idOpcion=" . $aux->qstr($cEntidad->getIdOpcion(), false) . " ";

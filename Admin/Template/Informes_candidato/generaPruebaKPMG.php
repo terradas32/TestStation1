@@ -1,199 +1,22 @@
 <?php
-require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Proceso_pruebas/Proceso_pruebasDB.php");
-require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Proceso_pruebas/Proceso_pruebas.php");
-$cProceso_pruebasDB = new Proceso_pruebasDB($conn);
-$cProceso_pruebas = new Proceso_pruebas();
 
-	//Variables globales de cálculo
-	$iTotalItemsPruebas = 0;
-	$respuestasBlancas=0;
-	$puntuacion=0;
-	$puntuacion48=0;
-	$puntuacion58=0;
-	$iTotalItems48= 0;
-	$iTotalItems58=0;
-	$bPruebaRealizada48=false;
-	$bPruebaRealizada58=false;
+if(!isset($counter) || $counter==0){
+	
+	if(isset($_POST['esZip']) && $_POST['esZip'] == true){
+		$dirGestor = constant("DIR_WS_GESTOR_HTTPS");
+		$documentRoot = constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
+	}else{
+		$dirGestor = constant("DIR_WS_GESTOR");
+		$documentRoot = constant("DIR_FS_DOCUMENT_ROOT");
+	}
 
-	$iTotalVocabulario=0;
-	$vocabularioOK=0;
-	$vocabularioERROR=0;
-	$vocabularioBLANCO=0;
-
-	$iTotalGramatica=0;
-	$gramaticaOK=0;
-	$gramaticaERROR=0;
-	$gramaticaBLANCO=0;
-
-	$iTotalComprension=0;
-	$comprensionOK=0;
-	$comprensionERROR=0;
-	$comprensionBLANCO=0;
-
-	$iTotalComprensionHablada=0;
-	$comprensionHabladaOK=0;
-	$comprensionHabladaERROR=0;
-	$comprensionHabladaBLANCO=0;
-
-
-
-	// CÁLCULOS GLOBALES
-	$cRespuestas_pruebas_itemsBD = new Respuestas_pruebas_itemsDB($conn);
-	//----
-	$_idPrueba="48";
-	$cItems = new Items();
-
-	//-----
-	$cProceso_pruebas->setIdEmpresa($_POST['fIdEmpresa']);
-	$cProceso_pruebas->setIdProceso($_POST['fIdProceso']);
-	$cProceso_pruebas->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-	$cProceso_pruebas->setIdPrueba($_idPrueba);
-	$sqlProceso_pruebas = $cProceso_pruebasDB->readLista($cProceso_pruebas);
-	$listaProceso_pruebas48 = $conn->Execute($sqlProceso_pruebas);
-
-	if ($listaProceso_pruebas48->recordCount() > 0)
-	{
-		$bPruebaRealizada48=true;
-
-		$cItems->setIdPrueba($_idPrueba);
-		$cItems->setIdPruebaHast($_idPrueba);
-		$cItems->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-		$sqlItemsPrueba= $cItemsDB->readLista($cItems);
-		$listaItemsPrueba = $conn->Execute($sqlItemsPrueba);
-
-		$iTotalItems48 = $listaItemsPrueba->recordCount();
-		$iTotalItemsPruebas += $iTotalItems48;
-
-		$iTotalVocabulario = getTotalesTipoItem("'V','VC'", $_idPrueba);
-		$iTotalGramatica = getTotalesTipoItem("'G','GC'", $_idPrueba);
-		$iTotalComprension = getTotalesTipoItem("'VC','GC'", $_idPrueba);
-
-		$listaItemsPrueba->Move(0);
-		while(!$listaItemsPrueba->EOF){
-	  	$cRespuestas_pruebas_items = new Respuestas_pruebas_items();
-
-	  	$cRespuestas_pruebas_items->setIdEmpresa($_POST['fIdEmpresa']);
-			$cRespuestas_pruebas_items->setIdProceso($_POST['fIdProceso']);
-			$cRespuestas_pruebas_items->setIdCandidato($_POST['fIdCandidato']);
-			$cRespuestas_pruebas_items->setIdPrueba($_idPrueba);
-			$cRespuestas_pruebas_items->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-			$cRespuestas_pruebas_items->setIdItem($listaItemsPrueba->fields['idItem']);
-			$cRespuestas_pruebas_items = $cRespuestas_pruebas_itemsBD->readEntidad($cRespuestas_pruebas_items);
-			//		echo "->item::" . $listaItemsPrueba->fields['idItem'] . " - " . $cRespuestas_pruebas_items->getIdOpcion();
-			if ($cRespuestas_pruebas_items->getIdOpcion() != ""){
-				//Miramos la opcion de respuesta
-				$cOpcionRespuesta = new Opciones();
-				$cOpcionRespuesta->setIdItem($listaItemsPrueba->fields['idItem']);
-				$cOpcionRespuesta->setIdPrueba($listaItemsPrueba->fields['idPrueba']);
-				$cOpcionRespuesta->setIdOpcion($cRespuestas_pruebas_items->getIdOpcion());
-				$cOpcionRespuesta->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-				$cOpcionRespuesta = $cOpcionesDB->readEntidad($cOpcionRespuesta);
-
-				if ($listaItemsPrueba->fields['correcto'] == $cOpcionRespuesta->getCodigo()){
-					//echo "<br />" . $listaItemsPrueba->fields['tipoItem'] . " item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
-					setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "OK");
-					$puntuacion++;
-					$puntuacion48++;
-				}else{
-					if ($cRespuestas_pruebas_items->getIdOpcion() == ""){
-						//echo "<br />" . $listaItemsPrueba->fields['tipoItem'] . " BLANCAS:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
-						setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "BLANCO");
-						$respuestasBlancas++;
-					}else{
-						//echo "<br />" . $listaItemsPrueba->fields['tipoItem'] . " ERROR:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
-						setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "ERROR");
-					}
-				}
-			}else{
-				//echo "<br />**->" . $listaItemsPrueba->fields['tipoItem'] . " BLANCAS:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
-				setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "BLANCO");
-				$respuestasBlancas++;
-			}
-			$listaItemsPrueba->MoveNext();
-		}
-	}	//Fin de si está definida la prueba 48
-
-	//Prueba de Prueba Listening
-	$idPruebaListening = "58";
-	$cItems58 = new Items();
-	//-----
-	$cProceso_pruebas->setIdEmpresa($_POST['fIdEmpresa']);
-	$cProceso_pruebas->setIdProceso($_POST['fIdProceso']);
-	$cProceso_pruebas->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-	$cProceso_pruebas->setIdPrueba($idPruebaListening);
-	$sqlProceso_pruebas = $cProceso_pruebasDB->readLista($cProceso_pruebas);
-	$listaProceso_pruebas58 = $conn->Execute($sqlProceso_pruebas);
-
-	if ($listaProceso_pruebas58->recordCount() > 0)
-	{
-		$bPruebaRealizada58=true;
-
-		$iTotalComprensionHablada = getTotalesTipoItem("'HC'", $idPruebaListening);
-		$cItems58->setIdPrueba($idPruebaListening);
-		$cItems58->setIdPruebaHast($idPruebaListening);
-		$cItems58->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-		$sqlItemsPrueba= $cItemsDB->readLista($cItems58);
-		//echo "<br />" . $sqlItemsPrueba;
-		$listaItemsPrueba58 = $conn->Execute($sqlItemsPrueba);
-
-		$iTotalItems58 = $listaItemsPrueba58->recordCount();
-		$iTotalItemsPruebas += $iTotalItems58;
-
-		$listaItemsPrueba58->Move(0);
-		while(!$listaItemsPrueba58->EOF){
-			$cRespuestas_pruebas_items = new Respuestas_pruebas_items();
-
-			$cRespuestas_pruebas_items->setIdEmpresa($_POST['fIdEmpresa']);
-			$cRespuestas_pruebas_items->setIdProceso($_POST['fIdProceso']);
-			$cRespuestas_pruebas_items->setIdCandidato($_POST['fIdCandidato']);
-			$cRespuestas_pruebas_items->setIdPrueba($idPruebaListening);
-			$cRespuestas_pruebas_items->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-			$cRespuestas_pruebas_items->setIdItem($listaItemsPrueba58->fields['idItem']);
-			$cRespuestas_pruebas_items = $cRespuestas_pruebas_itemsBD->readEntidad($cRespuestas_pruebas_items);
-			//		echo "->item::" . $listaItemsPrueba58->fields['idItem'] . " - " . $cRespuestas_pruebas_items->getIdOpcion();
-			if ($cRespuestas_pruebas_items->getIdOpcion() != ""){
-				//Miramos la opcion de respuesta
-				$cOpcionRespuesta = new Opciones();
-				$cOpcionRespuesta->setIdItem($listaItemsPrueba58->fields['idItem']);
-				$cOpcionRespuesta->setIdPrueba($listaItemsPrueba58->fields['idPrueba']);
-				$cOpcionRespuesta->setIdOpcion($cRespuestas_pruebas_items->getIdOpcion());
-				$cOpcionRespuesta->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-				$cOpcionRespuesta = $cOpcionesDB->readEntidad($cOpcionRespuesta);
-
-				if ($listaItemsPrueba58->fields['correcto'] == $cOpcionRespuesta->getCodigo()){
-					//echo "<br />" . $listaItemsPrueba58->fields['tipoItem'] . " item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba58->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
-					setPuntuacionTipoTipoItem($listaItemsPrueba58->fields['tipoItem'], "OK");
-					$puntuacion++;
-					$puntuacion58++;
-				}else{
-					if ($cRespuestas_pruebas_items->getIdOpcion() == ""){
-						//echo "<br />" . $listaItemsPrueba58->fields['tipoItem'] . " BLANCAS:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba58->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
-						setPuntuacionTipoTipoItem($listaItemsPrueba58->fields['tipoItem'], "BLANCO");
-						$respuestasBlancas++;
-					}else{
-						//echo "<br />" . $listaItemsPrueba58->fields['tipoItem'] . " ERROR:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba58->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
-						setPuntuacionTipoTipoItem($listaItemsPrueba58->fields['tipoItem'], "ERROR");
-					}
-				}
-			}else{
-				//echo "<br />**->" . $listaItemsPrueba58->fields['tipoItem'] . " BLANCAS:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba58->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
-				setPuntuacionTipoTipoItem($listaItemsPrueba58->fields['tipoItem'], "BLANCO");
-				$respuestasBlancas++;
-			}
-			$listaItemsPrueba58->MoveNext();
-		}
-	}	//Fin de si está definida la prueba 58
-		// FIN  Prueba de Listening
-
-	//Preguntas erroneas
-	$erroneas = $iTotalItemsPruebas - $puntuacion - $respuestasBlancas;
-	//barra con el valor obtenido por el candidato
-	$factor= ($puntuacion*100)/$iTotalItemsPruebas;
-	$factor48= round(($puntuacion48*100)/$iTotalItems48);
-	$factor58= round(($puntuacion58*100)/$iTotalItems58);
+	global $dirGestor;
+	global $documentRoot;
 
 
 	function setPuntuacionTipoTipoItem($ti, $resultado){
+		global $dirGestor;
+		global $documentRoot;
 		global $vocabularioOK;
 		global $vocabularioERROR;
 		global $vocabularioBLANCO;
@@ -298,15 +121,15 @@ $cProceso_pruebas = new Proceso_pruebas();
 	$sHtmlFin	= '';
 	//$aux			= $this->conn;
 
-	$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+	$spath = (substr($documentRoot, -1, 1) != '/') ? $documentRoot . '/' : $documentRoot;
 
 	$sHtmlInicio='
 		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 			<html xmlns="http://www.w3.org/1999/xhtml">
 			<head>
 				<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-					<link rel="stylesheet" type="text/css" href="'.constant("DIR_WS_GESTOR").'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/resetCSS.css"/>
-					<link rel="stylesheet" type="text/css" href="'.constant("DIR_WS_GESTOR").'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/style.css"/>
+					<link rel="stylesheet" type="text/css" href="'.$dirGestor.'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/resetCSS.css"/>
+					<link rel="stylesheet" type="text/css" href="'.$dirGestor.'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/style.css"/>
 					<title>' . $cPruebas->getIdPrueba() . ' - ' . $_sBaremo . '</title>
 					<style type="text/css">
 					<!--
@@ -328,7 +151,7 @@ $sHtmlFin .='
 										<p class="textos">' . constant("STR_SR_A") . ' ' . $cCandidato->getNombre(). ' ' . $cCandidato->getApellido1(). ' ' .$cCandidato->getApellido2() .'</p>
 						    </td>
 						    <td class="logo">
-						    	<img src="'.constant("DIR_WS_GESTOR").'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo-pequenio.jpg" title="logo"/>
+						    	<img src="'.$dirGestor.'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo-pequenio.jpg" title="logo"/>
 						    </td>
 						    <td class="fecha">
 						        <p class="textos">' . date("d/m/Y") . '</p>
@@ -364,8 +187,8 @@ $sHtmlFin .='
 		//PORTADA
 		$sHtml.= '
 			<div class="pagina portada">
-		    	<img src="' . constant("DIR_WS_GESTOR").'graf/prueba' . $cPruebas->getIdPrueba() . '/portada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
-		    	<h1 class="titulo"><img src="' . constant("DIR_WS_GESTOR").'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo.jpg" /></h1>';
+		    	<img src="' . $dirGestor.'graf/prueba' . $cPruebas->getIdPrueba() . '/portada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
+		    	<h1 class="titulo"><img src="' . $dirGestor .'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo.jpg" /></h1>';
 		$sHtml.= 		'<div id="txt_infome"><p>' . $sDescInforme . '</p></div>';
 		$sHtml.='
 				<div id="informe">
@@ -537,7 +360,7 @@ $sHtmlFin .='
 												$sHtml.='</font>
     									</td>
     									<td width="81%" style="height:45px;border-left:2px solid #004080;">
-    										<img src="'.constant('DIR_WS_GESTOR') . constant('DIR_WS_GRAF'). 'numeritosEstandar.jpg'.'" style="width: 498px;">
+    										<img src="'. $dirGestor . constant('DIR_WS_GRAF'). 'numeritosEstandar.jpg'.'" style="width: 498px;">
     									</td>
     								</tr>
     								<tr>
@@ -545,7 +368,7 @@ $sHtmlFin .='
     										<font style="font-size: 14px;color: #000000;font-weight: bold;"></font>
     									</td>
     									<td width="81%" style="height:40px;border-left:2px solid #004080;vertical-align:middle;">
-    										<img src="' . constant('DIR_WS_GESTOR') . constant('DIR_WS_GRAF'). 'bodoque_gigante.jpg'.'" style="width:' . str_replace(",", ".",(($factor48*498)/100)) . 'px;height:35px;">
+    										<img src="' . $dirGestor . constant('DIR_WS_GRAF'). 'bodoque_gigante.jpg'.'" style="width:' . str_replace(",", ".",(($factor48*498)/100)) . 'px;height:35px;">
     									</td>
     								</tr>
     							</table>
@@ -603,7 +426,7 @@ $sHtmlFin .='
                         $sHtml.='</font>
                       </td>
                       <td width="81%" style="height:45px;border-left:2px solid #004080;">
-                        <img src="'.constant('DIR_WS_GESTOR') . constant('DIR_WS_GRAF'). 'numeritosEstandar.jpg'.'" style="width: 498px;">
+                        <img src="'. $dirGestor . constant('DIR_WS_GRAF'). 'numeritosEstandar.jpg'.'" style="width: 498px;">
                       </td>
                     </tr>
                     <tr>
@@ -611,7 +434,7 @@ $sHtmlFin .='
                         <font style="font-size: 14px;color: #000000;font-weight: bold;"></font>
                       </td>
                       <td width="81%" style="height:40px;border-left:2px solid #004080;vertical-align:middle;">
-                        <img src="' . constant('DIR_WS_GESTOR') . constant('DIR_WS_GRAF'). 'bodoque_gigante.jpg'.'" style="width:' . str_replace(",", ".",(($factor58*498)/100)) . 'px;height:35px;">
+                        <img src="' . $dirGestor . constant('DIR_WS_GRAF'). 'bodoque_gigante.jpg'.'" style="width:' . str_replace(",", ".",(($factor58*498)/100)) . 'px;height:35px;">
                       </td>
                     </tr>
                   </table>
@@ -924,7 +747,7 @@ $sHtml.= '
 //--------------------------------------------------------------------------------------------------------------------------------------
 		$sHtml.= '
 			<div class="pagina portada" id="contraportada">
-    			<img id="imgContraportada" src="' . constant("DIR_WS_GESTOR") . 'graf/contraportada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
+    			<img id="imgContraportada" src="' . $dirGestor . 'graf/contraportada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
 			</div>
 			<!--FIN DIV PAGINA-->
 		';
@@ -936,7 +759,7 @@ if (!isset($NOGenerarFICHERO_INFORME))
 		$replace = array('@', '.');
 //		$sNombre = $cCandidato->getMail() . "_" . $_POST['fIdEmpresa']. "_" .$_POST['fIdProceso'] . "_" .$_POST['fIdTipoInforme'] . "_" . $cPruebas->getNombre();
 		$sDirImg="imgInformes/";
-		$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+		$spath = (substr($documentRoot, -1, 1) != '/') ? $documentRoot . '/' : $documentRoot;
 
 		$_fichero = $spath . $sDirImg . $sNombre . ".html";
 		//$cEntidad->chk_dir($spath . $sDirImg, 0777);
@@ -966,6 +789,8 @@ if (!isset($NOGenerarFICHERO_INFORME))
 	}
 
 	function getTotalesTipoItem($tipos, $idPrueba){
+		global $dirGestor;
+		global $documentRoot;
 		global $conn;
 		$iCuantos=0;
 		$sql = "SELECT count(*) AS cuantos FROM items WHERE idPrueba=" . $idPrueba . " AND tipoItem IN (" . $tipos . ")";
@@ -978,4 +803,200 @@ if (!isset($NOGenerarFICHERO_INFORME))
 		}
 		return $iCuantos;
 	}
+
+}
+require_once($documentRoot . constant("DIR_WS_COM") . "Proceso_pruebas/Proceso_pruebasDB.php");
+require_once($documentRoot . constant("DIR_WS_COM") . "Proceso_pruebas/Proceso_pruebas.php");
+$cProceso_pruebasDB = new Proceso_pruebasDB($conn);
+$cProceso_pruebas = new Proceso_pruebas();
+
+	//Variables globales de cálculo
+	$iTotalItemsPruebas = 0;
+	$respuestasBlancas=0;
+	$puntuacion=0;
+	$puntuacion48=0;
+	$puntuacion58=0;
+	$iTotalItems48= 0;
+	$iTotalItems58=0;
+	$bPruebaRealizada48=false;
+	$bPruebaRealizada58=false;
+
+	$iTotalVocabulario=0;
+	$vocabularioOK=0;
+	$vocabularioERROR=0;
+	$vocabularioBLANCO=0;
+
+	$iTotalGramatica=0;
+	$gramaticaOK=0;
+	$gramaticaERROR=0;
+	$gramaticaBLANCO=0;
+
+	$iTotalComprension=0;
+	$comprensionOK=0;
+	$comprensionERROR=0;
+	$comprensionBLANCO=0;
+
+	$iTotalComprensionHablada=0;
+	$comprensionHabladaOK=0;
+	$comprensionHabladaERROR=0;
+	$comprensionHabladaBLANCO=0;
+
+
+
+	// CÁLCULOS GLOBALES
+	$cRespuestas_pruebas_itemsBD = new Respuestas_pruebas_itemsDB($conn);
+	//----
+	$_idPrueba="48";
+	$cItems = new Items();
+
+	//-----
+	$cProceso_pruebas->setIdEmpresa($_POST['fIdEmpresa']);
+	$cProceso_pruebas->setIdProceso($_POST['fIdProceso']);
+	$cProceso_pruebas->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+	$cProceso_pruebas->setIdPrueba($_idPrueba);
+	$sqlProceso_pruebas = $cProceso_pruebasDB->readLista($cProceso_pruebas);
+	$listaProceso_pruebas48 = $conn->Execute($sqlProceso_pruebas);
+
+	if ($listaProceso_pruebas48->recordCount() > 0)
+	{
+		$bPruebaRealizada48=true;
+
+		$cItems->setIdPrueba($_idPrueba);
+		$cItems->setIdPruebaHast($_idPrueba);
+		$cItems->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+		$sqlItemsPrueba= $cItemsDB->readLista($cItems);
+		$listaItemsPrueba = $conn->Execute($sqlItemsPrueba);
+
+		$iTotalItems48 = $listaItemsPrueba->recordCount();
+		$iTotalItemsPruebas += $iTotalItems48;
+
+		$iTotalVocabulario = getTotalesTipoItem("'V','VC'", $_idPrueba);
+		$iTotalGramatica = getTotalesTipoItem("'G','GC'", $_idPrueba);
+		$iTotalComprension = getTotalesTipoItem("'VC','GC'", $_idPrueba);
+
+		$listaItemsPrueba->Move(0);
+		while(!$listaItemsPrueba->EOF){
+	  	$cRespuestas_pruebas_items = new Respuestas_pruebas_items();
+
+	  	$cRespuestas_pruebas_items->setIdEmpresa($_POST['fIdEmpresa']);
+			$cRespuestas_pruebas_items->setIdProceso($_POST['fIdProceso']);
+			$cRespuestas_pruebas_items->setIdCandidato($_POST['fIdCandidato']);
+			$cRespuestas_pruebas_items->setIdPrueba($_idPrueba);
+			$cRespuestas_pruebas_items->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+			$cRespuestas_pruebas_items->setIdItem($listaItemsPrueba->fields['idItem']);
+			$cRespuestas_pruebas_items = $cRespuestas_pruebas_itemsBD->readEntidad($cRespuestas_pruebas_items);
+			//		echo "->item::" . $listaItemsPrueba->fields['idItem'] . " - " . $cRespuestas_pruebas_items->getIdOpcion();
+			if ($cRespuestas_pruebas_items->getIdOpcion() != ""){
+				//Miramos la opcion de respuesta
+				$cOpcionRespuesta = new Opciones();
+				$cOpcionRespuesta->setIdItem($listaItemsPrueba->fields['idItem']);
+				$cOpcionRespuesta->setIdPrueba($listaItemsPrueba->fields['idPrueba']);
+				$cOpcionRespuesta->setIdOpcion($cRespuestas_pruebas_items->getIdOpcion());
+				$cOpcionRespuesta->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+				$cOpcionRespuesta = $cOpcionesDB->readEntidad($cOpcionRespuesta);
+
+				if ($listaItemsPrueba->fields['correcto'] == $cOpcionRespuesta->getCodigo()){
+					//echo "<br />" . $listaItemsPrueba->fields['tipoItem'] . " item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
+					setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "OK");
+					$puntuacion++;
+					$puntuacion48++;
+				}else{
+					if ($cRespuestas_pruebas_items->getIdOpcion() == ""){
+						//echo "<br />" . $listaItemsPrueba->fields['tipoItem'] . " BLANCAS:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
+						setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "BLANCO");
+						$respuestasBlancas++;
+					}else{
+						//echo "<br />" . $listaItemsPrueba->fields['tipoItem'] . " ERROR:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
+						setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "ERROR");
+					}
+				}
+			}else{
+				//echo "<br />**->" . $listaItemsPrueba->fields['tipoItem'] . " BLANCAS:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
+				setPuntuacionTipoTipoItem($listaItemsPrueba->fields['tipoItem'], "BLANCO");
+				$respuestasBlancas++;
+			}
+			$listaItemsPrueba->MoveNext();
+		}
+	}	//Fin de si está definida la prueba 48
+
+	//Prueba de Prueba Listening
+	$idPruebaListening = "58";
+	$cItems58 = new Items();
+	//-----
+	$cProceso_pruebas->setIdEmpresa($_POST['fIdEmpresa']);
+	$cProceso_pruebas->setIdProceso($_POST['fIdProceso']);
+	$cProceso_pruebas->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+	$cProceso_pruebas->setIdPrueba($idPruebaListening);
+	$sqlProceso_pruebas = $cProceso_pruebasDB->readLista($cProceso_pruebas);
+	$listaProceso_pruebas58 = $conn->Execute($sqlProceso_pruebas);
+
+	if ($listaProceso_pruebas58->recordCount() > 0)
+	{
+		$bPruebaRealizada58=true;
+
+		$iTotalComprensionHablada = getTotalesTipoItem("'HC'", $idPruebaListening);
+		$cItems58->setIdPrueba($idPruebaListening);
+		$cItems58->setIdPruebaHast($idPruebaListening);
+		$cItems58->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+		$sqlItemsPrueba= $cItemsDB->readLista($cItems58);
+		//echo "<br />" . $sqlItemsPrueba;
+		$listaItemsPrueba58 = $conn->Execute($sqlItemsPrueba);
+
+		$iTotalItems58 = $listaItemsPrueba58->recordCount();
+		$iTotalItemsPruebas += $iTotalItems58;
+
+		$listaItemsPrueba58->Move(0);
+		while(!$listaItemsPrueba58->EOF){
+			$cRespuestas_pruebas_items = new Respuestas_pruebas_items();
+
+			$cRespuestas_pruebas_items->setIdEmpresa($_POST['fIdEmpresa']);
+			$cRespuestas_pruebas_items->setIdProceso($_POST['fIdProceso']);
+			$cRespuestas_pruebas_items->setIdCandidato($_POST['fIdCandidato']);
+			$cRespuestas_pruebas_items->setIdPrueba($idPruebaListening);
+			$cRespuestas_pruebas_items->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+			$cRespuestas_pruebas_items->setIdItem($listaItemsPrueba58->fields['idItem']);
+			$cRespuestas_pruebas_items = $cRespuestas_pruebas_itemsBD->readEntidad($cRespuestas_pruebas_items);
+			//		echo "->item::" . $listaItemsPrueba58->fields['idItem'] . " - " . $cRespuestas_pruebas_items->getIdOpcion();
+			if ($cRespuestas_pruebas_items->getIdOpcion() != ""){
+				//Miramos la opcion de respuesta
+				$cOpcionRespuesta = new Opciones();
+				$cOpcionRespuesta->setIdItem($listaItemsPrueba58->fields['idItem']);
+				$cOpcionRespuesta->setIdPrueba($listaItemsPrueba58->fields['idPrueba']);
+				$cOpcionRespuesta->setIdOpcion($cRespuestas_pruebas_items->getIdOpcion());
+				$cOpcionRespuesta->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+				$cOpcionRespuesta = $cOpcionesDB->readEntidad($cOpcionRespuesta);
+
+				if ($listaItemsPrueba58->fields['correcto'] == $cOpcionRespuesta->getCodigo()){
+					//echo "<br />" . $listaItemsPrueba58->fields['tipoItem'] . " item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba58->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
+					setPuntuacionTipoTipoItem($listaItemsPrueba58->fields['tipoItem'], "OK");
+					$puntuacion++;
+					$puntuacion58++;
+				}else{
+					if ($cRespuestas_pruebas_items->getIdOpcion() == ""){
+						//echo "<br />" . $listaItemsPrueba58->fields['tipoItem'] . " BLANCAS:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba58->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
+						setPuntuacionTipoTipoItem($listaItemsPrueba58->fields['tipoItem'], "BLANCO");
+						$respuestasBlancas++;
+					}else{
+						//echo "<br />" . $listaItemsPrueba58->fields['tipoItem'] . " ERROR:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba58->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
+						setPuntuacionTipoTipoItem($listaItemsPrueba58->fields['tipoItem'], "ERROR");
+					}
+				}
+			}else{
+				//echo "<br />**->" . $listaItemsPrueba58->fields['tipoItem'] . " BLANCAS:: item::" . $cRespuestas_pruebas_items->getIdItem() . " -> Correcto:: " . $listaItemsPrueba58->fields['correcto'] . " Opción respuesta::" . $cOpcionRespuesta->getCodigo();
+				setPuntuacionTipoTipoItem($listaItemsPrueba58->fields['tipoItem'], "BLANCO");
+				$respuestasBlancas++;
+			}
+			$listaItemsPrueba58->MoveNext();
+		}
+	}	//Fin de si está definida la prueba 58
+		// FIN  Prueba de Listening
+
+	//Preguntas erroneas
+	$erroneas = $iTotalItemsPruebas - $puntuacion - $respuestasBlancas;
+	//barra con el valor obtenido por el candidato
+	$factor= ($puntuacion*100)/$iTotalItemsPruebas;
+	$factor48= round(($puntuacion48*100)/$iTotalItems48);
+	$factor58= round(($puntuacion58*100)/$iTotalItems58);
+
+
 ?>

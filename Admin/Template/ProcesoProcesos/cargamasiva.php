@@ -19,7 +19,7 @@
 		<td colspan="3" style="height:10px;" >&nbsp;</td>
 	</tr>
 	<tr>
-		<td colspan="3" style="height:10px;" >Puede importar cualquier tipo de fichero <strong>CSV</strong> (Archivo de texto delimitado por comas), seleccione el fichero que desea utilizar y pulse <b>Añadir</b>. Le proporcionamos un ejemplo de fichero de carga pulse: <a href="<?php echo constant("HTTP_SERVER") . "ejemplo.csv";?>" class="naranja">ejemplo.csv</a></td>
+		<td colspan="3" style="height:10px;" >Puede importar cualquier tipo de fichero <strong>CSV</strong> (Archivo de texto delimitado por comas), seleccione el fichero que desea utilizar y pulse <b>Añadir</b>. Le proporcionamos un ejemplo de fichero de carga pulse: <a href="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? constant("HTTPS_SERVER") : constant("HTTP_SERVER")) . "ejemplo.csv";?>" class="naranja">ejemplo.csv</a></td>
 	</tr>
 	<tr>
 		<td colspan="3" align="center"><input type="button" class="botones" id="bid-ok" name="fBtnOk" value="<?php echo constant("STR_ANIADIR");?>" onclick="aniadecandidatomasivo();"/></td>

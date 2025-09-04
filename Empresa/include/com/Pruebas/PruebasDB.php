@@ -442,16 +442,23 @@ class PruebasDB
 					$cEntidad->setNombre($arr['nombre']);
 					$cEntidad->setDescripcion($arr['descripcion']);
 					$cEntidad->setIdTipoPrueba($arr['idTipoPrueba']);
+					$cEntidad->setIdTipoRazonamiento($arr['idTipoRazonamiento']);
+					$cEntidad->setIdTipoNivel($arr['idTipoNivel']);
+					
 					$cEntidad->setObservaciones($arr['observaciones']);
 					$cEntidad->setDuracion($arr['duracion']);
+					$cEntidad->setDuracion2($arr['duracion2']);
 					$cEntidad->setLogoPrueba($arr['logoPrueba']);
 					$cEntidad->setCapturaPantalla($arr['capturaPantalla']);
 					$cEntidad->setCabecera($arr['cabecera']);
 					$cEntidad->setPreguntasPorPagina($arr['preguntasPorPagina']);
 					$cEntidad->setEstiloOpciones($arr['estiloOpciones']);
 					$cEntidad->setPermiteBlancos($arr['permiteBlancos']);
-										
+					$cEntidad->setTarifa($arr['tarifa']);					
 					$cEntidad->setBajaLog($arr['bajaLog']);
+					$cEntidad->setNecesitara($arr['necesitara']);
+					$cEntidad->setNum_preguntas_max_tri($arr['num_preguntas_max_tri']);
+					
 					$cEntidad->setFecAlta($arr['fecAlta']);
 					$cEntidad->setFecMod($arr['fecMod']);
 					$cEntidad->setUsuAlta($arr['usuAlta']);
@@ -514,15 +521,32 @@ class PruebasDB
 			$and = true;
 			$sql .="idTipoPrueba=" . $aux->qstr($cEntidad->getIdTipoPrueba(), false);
 		}
+		
+		if ($cEntidad->getIdTipoRazonamiento() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="idTipoRazonamiento=" . $aux->qstr($cEntidad->getIdTipoRazonamiento(), false);
+		}
+		if ($cEntidad->getIdTipoNivel() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="idTipoNivel=" . $aux->qstr($cEntidad->getIdTipoNivel(), false);
+		}
+		
 		if ($cEntidad->getObservaciones() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
 			$sql .="UPPER(observaciones) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getObservaciones() . "%") . ")";
 		}
-		if ($cEntidad->getDuracion() != ""){
+		if ($cEntidad->getDuracion() != "" && $cEntidad->getDuracion() != 0){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
 			$sql .="UPPER(duracion) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDuracion() . "%") . ")";
+		}
+		if ($cEntidad->getDuracion2() != "" && $cEntidad->getDuracion2() != 0){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="UPPER(duracion2) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDuracion2() . "%") . ")";
 		}
 		if ($cEntidad->getLogoPrueba() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -560,7 +584,21 @@ class PruebasDB
 			$and = true;
 			$sql .="UPPER(permiteBlancos) = UPPER(" . $aux->qstr("" . $cEntidad->getPermiteBlancos() . "") . ")";
 		}
-		
+		if ($cEntidad->getNecesitara() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="UPPER(necesitara) = UPPER(" . $aux->qstr("" . $cEntidad->getNecesitara() . "") . ")";
+		}
+		if ($cEntidad->getTarifa() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="tarifa>=" . $aux->qstr($cEntidad->getTarifa(), false);
+		}
+		if ($cEntidad->getTarifaHast() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="tarifa<=" . $aux->qstr($cEntidad->getTarifaHast(), false);
+		}
 		if ($cEntidad->getBajaLog() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
@@ -610,7 +648,7 @@ class PruebasDB
 		$this->sSQL=$sql;
 		return $sql;
 	}
-	
+
 	/*************************************************************************
 	* Lista en la base de datos recogiendo la información
 	* recibida por la entidad, Este metodo se utiliza para búsquedas
@@ -655,15 +693,32 @@ class PruebasDB
 			$and = true;
 			$sql .="idTipoPrueba=" . $aux->qstr($cEntidad->getIdTipoPrueba(), false);
 		}
+		
+		if ($cEntidad->getIdTipoRazonamiento() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="idTipoRazonamiento=" . $aux->qstr($cEntidad->getIdTipoRazonamiento(), false);
+		}
+		if ($cEntidad->getIdTipoNivel() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="idTipoNivel=" . $aux->qstr($cEntidad->getIdTipoNivel(), false);
+		}
+		
 		if ($cEntidad->getObservaciones() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
 			$sql .="UPPER(observaciones) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getObservaciones() . "%") . ")";
 		}
-		if ($cEntidad->getDuracion() != ""){
+		if ($cEntidad->getDuracion() != "" && $cEntidad->getDuracion() != 0){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
 			$sql .="UPPER(duracion) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDuracion() . "%") . ")";
+		}
+		if ($cEntidad->getDuracion2() != "" && $cEntidad->getDuracion2() != 0){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="UPPER(duracion2) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDuracion2() . "%") . ")";
 		}
 		if ($cEntidad->getLogoPrueba() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -701,7 +756,21 @@ class PruebasDB
 			$and = true;
 			$sql .="UPPER(permiteBlancos) = UPPER(" . $aux->qstr("" . $cEntidad->getPermiteBlancos() . "") . ")";
 		}
-		
+		if ($cEntidad->getNecesitara() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="UPPER(necesitara) = UPPER(" . $aux->qstr("" . $cEntidad->getNecesitara() . "") . ")";
+		}
+		if ($cEntidad->getTarifa() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="tarifa>=" . $aux->qstr($cEntidad->getTarifa(), false);
+		}
+		if ($cEntidad->getTarifaHast() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="tarifa<=" . $aux->qstr($cEntidad->getTarifaHast(), false);
+		}
 		if ($cEntidad->getBajaLog() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;

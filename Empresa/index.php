@@ -214,7 +214,7 @@ if (isset($_POST['fGo'])){
         					$_POST['sTK'] = $token;
         					$_POST["MODO"] = "0";
 
-        					include('bienvenida.php');
+        					include('bienvenidaBI.php');
             			}else{
         					$strMensaje = '* ' . constant("ERR_NO_AUTORIZADO");
         				}

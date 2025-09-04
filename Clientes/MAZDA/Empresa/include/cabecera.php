@@ -89,8 +89,9 @@ if (empty($_POST["fHijos"]))
 		</div>
 		<div id="cabecera-izquierda">
 			<div id="cabecera-logo">
-           <h2><?php if ($_cEntidadUsuarioTK->getPathLogo() != ""){
-           		$size = @getimagesize(constant("DIR_WS_GESTOR") . $_cEntidadUsuarioTK->getPathLogo());
+           <h2>
+			<!-- <?php if ($_cEntidadUsuarioTK->getPathLogo() != ""){
+           		$size = list($anchura, $altura) = @getimagesize(constant("DIR_WS_GESTOR") . $_cEntidadUsuarioTK->getPathLogo());
 				$anchura=$size[0];
 				$altura=$size[1];
 				if ($altura > 85){
@@ -100,7 +101,10 @@ if (empty($_POST["fHijos"]))
 				echo '<img title="' . $_cEntidadUsuarioTK->getNombre() . '" alt="' . $_cEntidadUsuarioTK->getNombre() . '" src="' . constant("DIR_WS_GESTOR") . $_cEntidadUsuarioTK->getPathLogo() . '" height="' . $altura . '" />';
 			}else{
 				echo $_cEntidadUsuarioTK->getNombre();
-			}?>
+			}?> -->
+
+			<img height="70" alt="People Experts" src="https://test-station.com/Admin/graf/logo.jpg" border="0" />
+
 			</h2>
 			</div>
 

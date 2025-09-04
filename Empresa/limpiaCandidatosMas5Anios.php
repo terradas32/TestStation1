@@ -47,6 +47,7 @@
 
         $sqlCandidatos  = "SELECT * FROM candidatos WHERE ";
         $sqlCandidatos .= " fecMod < " . $conn->qstr($Start_Date_Time_Hast, false);
+        $sqlCandidatos .= " AND idEmpresa IN (5073,5093,5094,5111,5565,5566,5567,5568,5569,5570,5571,5572,5573,5574,5575,5576,5577,5578,5579,5580,5581,5582,5583,5584,5585,5586,5587,5588,5589,5601,5602,5712)";
         $sqlCandidatos .= " ORDER BY fecMod ASC LIMIT 0,1000";
         echo("<br>SQL:: " . $sqlCandidatos);
         echo("<br>PROCESANDO:: " . date('d/m/Y H:i:s'));

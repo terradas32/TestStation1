@@ -57,7 +57,7 @@ class Peticiones_donglesDB
 		$sql .= $aux->qstr($cEntidad->getIdEmpresa(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getIdEmpresaReceptora(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getNDongles(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getEstado(), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getEstado()), false) . ",";
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->qstr($cEntidad->getUsuAlta(), false) . ",";
@@ -154,7 +154,7 @@ class Peticiones_donglesDB
 		//$sql .= $aux->qstr($cEntidad->getIdEmpresaReceptora(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getUsuAlta(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getNDongles(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getEstado(), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getEstado()), false) . ",";
 		$sql .= $aux->qstr($sConcepto, false) . ",";
 
 		$sql .= $aux->sysTimeStamp . ",";
@@ -235,7 +235,7 @@ class Peticiones_donglesDB
 			//$sql .= $aux->qstr($cEntidad->getIdEmpresaReceptora(), false) . ",";
 			$sql .= $aux->qstr($cEntidad->getUsuAlta(), false) . ",";
 			$sql .= $aux->qstr("-" . $cEntidad->getNDongles(), false) . ",";
-			$sql .= $aux->qstr($cEntidad->getEstado(), false) . ",";
+			$sql .= $aux->qstr(intval($cEntidad->getEstado()), false) . ",";
 			$sql .= $aux->qstr($sConcepto, false) . ",";
 
 			$sql .= $aux->sysTimeStamp . ",";
@@ -338,7 +338,7 @@ class Peticiones_donglesDB
 		$sql .= "idEmpresa=" . $aux->qstr($cEntidad->getIdEmpresa(), false) . ", ";
 		$sql .= "idEmpresaReceptora=" . $aux->qstr($cEntidad->getIdEmpresaReceptora(), false) . ", ";
 		$sql .= "nDongles=" . $aux->qstr($cEntidad->getNDongles(), false) . ", ";
-		$sql .= "estado=" . $aux->qstr($cEntidad->getEstado(), false) . ", ";
+		$sql .= "estado=" . $aux->qstr(intval($cEntidad->getEstado()), false) . ", ";
 		$sql .= "fecMod=" . $aux->sysTimeStamp . ",";
 		$sql .= "usuMod=" . $aux->qstr($cEntidad->getUsuMod(), false) ;
 		$sql .= " WHERE ";
@@ -859,6 +859,7 @@ class Peticiones_donglesDB
             )
         );
 		try {
+
 			//Server settings
 			//$mail->SMTPDebug = 2; 					                //Enable verbose debug output
 			$mail->isSMTP();                                        //Send using SMTP                  
@@ -866,7 +867,7 @@ class Peticiones_donglesDB
 			$mail->SMTPAuth   = true;                               //Enable SMTP authentication
 			$mail->Username = constant("MAILUSERNAME");             //SMTP username
 			$mail->Password = constant("MAILPASSWORD");             //SMTP password
-			$mail->SMTPSecure = 'tls';							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+			$mail->SMTPSecure = constant("MAIL_ENCRYPTION");							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
 			$mail->Port      = constant("PORTMAIL");                                //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
 			$mail->CharSet = 'utf-8';
@@ -875,7 +876,7 @@ class Peticiones_donglesDB
 
 			//Con la propiedad Mailer le indicamos que vamos a usar un
 			//servidor smtp
-			$mail->Mailer = $mail->Mailer = constant("MAILER");;
+			$mail->Mailer = constant("MAILER");
 
 			//Asignamos a Host el nombre de nuestro servidor smtp
 			$mail->Host = constant("HOSTMAIL");
@@ -890,14 +891,15 @@ class Peticiones_donglesDB
 			//Indicamos cual es nuestra dirección de correo y el nombre que
 			//queremos que vea el usuario que lee nuestro correo
 			//$mail->From = $cEmpresaPadre->getMail();
-			$mail->From = constant("MAILUSERNAME");
+			$mail->From = constant("EMAIL_CONTACTO");
 			$mail->AddReplyTo($cEmpresaPadre->getMail(), $cEmpresaPadre->getNombre());
 			$mail->FromName = $cEmpresaPadre->getNombre();
+				$nomEmpresa = $cEmpresaPadre->getNombre(); 
 
 			//Asignamos asunto y cuerpo del mensaje
 			//El cuerpo del mensaje lo ponemos en formato html, haciendo
 			//que se vea en negrita
-			$mail->Subject = $sSubject;
+			$mail->Subject = $nomEmpresa . " - " . $sSubject;
 			$mail->Body = $sBody;
 
 			//Definimos AltBody por si el destinatario del correo no admite
@@ -947,7 +949,7 @@ class Peticiones_donglesDB
 			// Borro las direcciones de destino establecidas anteriormente
 			$mail->ClearAddresses();
 		} catch (PHPMailer\PHPMailer\Exception $e) {
-			echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";exit;
+			echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}, {$mail}";exit;
 		}
 	    return $exito;
 	}
@@ -1015,7 +1017,7 @@ class Peticiones_donglesDB
 			$mail->SMTPAuth   = true;                               //Enable SMTP authentication
 			$mail->Username = constant("MAILUSERNAME");             //SMTP username
 			$mail->Password = constant("MAILPASSWORD");             //SMTP password
-			$mail->SMTPSecure = 'tls';							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+			$mail->SMTPSecure = constant("MAIL_ENCRYPTION");							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
 			$mail->Port      = constant("PORTMAIL");                                //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
 			$mail->CharSet = 'utf-8';
@@ -1024,7 +1026,8 @@ class Peticiones_donglesDB
 
 			//Con la propiedad Mailer le indicamos que vamos a usar un
 			//servidor smtp
-			$mail->Mailer = $mail->Mailer = constant("MAILER");;
+			//$mail->Mailer = constant("MAILER");
+			$mail->Mailer = constant("MAILER");
 
 			//Asignamos a Host el nombre de nuestro servidor smtp
 			$mail->Host = constant("HOSTMAIL");
@@ -1038,13 +1041,15 @@ class Peticiones_donglesDB
 
 			//Indicamos cual es nuestra dirección de correo y el nombre que
 			//queremos que vea el usuario que lee nuestro correo
-			$mail->From = $cEmpresaSolicita->getMail();
+			//$mail->From = $cEmpresaSolicita->getMail();
+			$mail->From = constant("EMAIL_CONTACTO");
 			$mail->FromName = $cEmpresaSolicita->getNombre();
+				$nomEmpresa = $cEmpresaSolicita->getNombre();
 
 			//Asignamos asunto y cuerpo del mensaje
 			//El cuerpo del mensaje lo ponemos en formato html, haciendo
 			//que se vea en negrita
-			$mail->Subject = $sSubject;
+			$mail->Subject = $nomEmpresa . " - " . $sSubject;
 			$mail->Body = $sBody;
 
 			//Definimos AltBody por si el destinatario del correo no admite
@@ -1105,7 +1110,8 @@ class Peticiones_donglesDB
 
 			$exito = $mail->Send();
 		} catch (PHPMailer\PHPMailer\Exception $e) {
-			echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";exit;
+			echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+			exit;
 		}
 	    return $exito;
 	}

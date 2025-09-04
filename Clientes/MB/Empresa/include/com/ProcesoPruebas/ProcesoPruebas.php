@@ -216,7 +216,7 @@ class ProcesoPruebas
 	* @return varchar(255)
 	*/
 	function getDuracion(){
-		return $this->duracion;
+		return $this->duracion == "" ? 0 : $this->duracion;
 	}
 	/**
 	* Fija el contenido de la propiedad duracion

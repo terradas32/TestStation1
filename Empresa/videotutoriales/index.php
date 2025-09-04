@@ -5,6 +5,8 @@ header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 header('Cache-Control: post-check=0, pre-check=0', false);
 header('Pragma: no-cache');
 
+$nonce = bin2hex(random_bytes(16));
+
 if (!defined ("DIR_FS_DOCUMENT_ROOT")){
         require_once("../include/Configuracion.php");
 }
@@ -78,7 +80,7 @@ body,html{width:auto; height:auto; margin: 0; padding: 0; }
 
 					foreach($the_array as $val){
 						$info = pathinfo($val);
-						echo "<li><a class=\"enlacesidiomas\" target=\"_blank\" href=\"" . rawurlencode($val) . "\">" . $info['filename'] . "</a></li>";
+						echo "<li><a class=\"enlacesidiomas\" target=\"_blank\" href=\"".$sLang ."/" . rawurlencode($val) . "\">" . $info['filename'] . "</a></li>";
 					}
 					?>
 					</ul>

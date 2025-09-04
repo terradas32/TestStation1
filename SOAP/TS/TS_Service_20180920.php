@@ -1967,7 +1967,7 @@ $mail->Debugoutput = 'html';
 		//Indicamos cual es nuestra dirección de correo y el nombre que
 		//queremos que vea el usuario que lee nuestro correo
 		//$mail->From = $cEmpresa->getMail();
-		$mail->From = constant("MAILUSERNAME");
+		$mail->From = constant("EMAIL_CONTACTO");
 		$mail->AddReplyTo($cEmpresa->getMail(), $cEmpresa->getNombre());
 		$mail->FromName = $cEmpresa->getNombre();
 

@@ -1,4 +1,5 @@
 <?php
+
 header('Content-Type: text/html; charset=utf-8');
 header('Expires: Tue, 03 Jul 2001 06:00:00 GMT');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
@@ -38,7 +39,7 @@ ob_start();
 	require_once(constant("DIR_WS_COM") . "Combo.php");
 
 
-include_once ('include/conexion.php');
+	include_once ('include/conexion.php');
 
 	require_once(constant("DIR_WS_INCLUDE") . "SeguridadTemplate.php");
 
@@ -50,12 +51,12 @@ include_once ('include/conexion.php');
     $cCandidato = new Candidatos();
     $cCandidato  = $_cEntidadCandidatoTK;
 
-		//Sacamos la información del proceso
-		$cProcesosDB	= new ProcesosDB($conn);
-		$cProcesos	= new Procesos();
-		$cProcesos->setIdEmpresa($cCandidato->getIdEmpresa());
-		$cProcesos->setIdProceso($cCandidato->getIdProceso());
-		$cProcesos = $cProcesosDB->readEntidad($cProcesos);
+	//Sacamos la información del proceso
+	$cProcesosDB	= new ProcesosDB($conn);
+	$cProcesos	= new Procesos();
+	$cProcesos->setIdEmpresa($cCandidato->getIdEmpresa());
+	$cProcesos->setIdProceso($cCandidato->getIdProceso());
+	$cProcesos = $cProcesosDB->readEntidad($cProcesos);
 
     $cProceso_pruebas = new Proceso_pruebas();
     $cProceso_pruebasDB = new Proceso_pruebasDB($conn);
@@ -74,7 +75,7 @@ include_once ('include/conexion.php');
 
 	$aPreguntasPorPagina = explode("-", $sPreguntasPorPagina);
 	$iPreguntasPorPagina = count($aPreguntasPorPagina);
-//	echo  $iPreguntasPorPagina;exit;
+
 	$bMultiPagina = false;
 	if ($iPreguntasPorPagina > 1){
 		//Quiere decir que le llegan en formato 5-6-5-5-5-4-6-4 por ejemplo las preguntas por página
@@ -135,20 +136,287 @@ include_once ('include/conexion.php');
     $sqlProcPruebas = $cProceso_pruebasDB->readLista($cProceso_pruebas);
     $listaProcesosPruebas = $conn->Execute($sqlProcPruebas);
 
-    $cItemListar = new Items();
-    $cItemListar->setIdPrueba($_POST['fIdPrueba']);
-    $cItemListar->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
-    $cItemListar->setOrderBy("orden");
-    $cItemListar->setOrder("ASC");
-    if ($_POST['fIdPrueba'] == "84"){	//MB CCT
-    	$cItemListar->setTipoItem($cCandidato->getEspecialidadMB());
-    }
+	$cItemListar = new Items();
+	$oItemDB = new ItemsDB($conn);
+
+	$cItemListar->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
+	$sTRIError= "";
+	$extension=".csv";
+	$filename = constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . "imgItems/" . $cPruebas->getCodIdiomaIso2() . '_' . $cPruebas->getIdTipoRazonamiento() . $extension;
+
+	$sIndex_tri = "";
+	$sFinalizaTRI="";
+	if ($cPruebas->getIdTIpoPrueba() == "20"){
+		$cItemListar->setIdTipoRazonamiento($cPruebas->getIdTipoRazonamiento());
+		$cItemListar->setOrderBy("id");
+		$cItemListar->setOrder("ASC");
+		//TRI Comprobamos que tenemos los ficheros de TRI
+		if (!file_exists($filename)){
+			if (!generaTRIFile($cItemListar, $cItemsDB, $filename)){
+				$sTRIError .= "<br /><b>Error 404 cargando preguntas \"R\" tipo: ". basename($filename, $extension) . "</b>";
+				$sTRIError .= "<br />";
+				$sTRIError .= "<br />";
+				$sTRIError .= "<br />Contacte con quien le ha proporcionado el acceso.";
+				echo $sTRIError;
+				exit;
+			}
+		}
+		
+		//Miramos Si hay que llamar o ya hemos llamado al script de R
+		$sSQL = 'SELECT * FROM tri_init_items WHERE
+				idEmpresa   = ' . $_POST['fIdEmpresa'] . 
+			' AND idProceso   = ' . $_POST['fIdProceso'] .
+			' AND idCandidato = ' . $_POST['fIdCandidato'] .
+			' AND idPrueba    = ' . $_POST['fIdPrueba'] . ' ORDER BY orden ASC';
+
+		$rsiniciado_tri = $conn->Execute($sSQL);
+		if ($rsiniciado_tri->recordCount() <= 0)
+		{
+			//No hay items asignados, NO hemos llamado al script inicial, le llamamos
+			$response = array();
+			$aParams = array();
+			$tipo_razonamiento = $cPruebas->getIdTipoRazonamiento();
+			$aParams[0] = "\"" . $filename . "\"";
+			$aParams[1] = $tipo_razonamiento;
+			$sRcommand = "Rscript " . constant("DIR_FS_DOCUMENT_ROOT") . "TRI/initItem.r " . implode(" ", $aParams);
+			exec($sRcommand, $response);
+			$init_items = array();
+			if (!empty($response)){	
+				$sResponse = str_replace("[1] ", "", trim($response[1]));
+				$sResponse = str_replace("[1]", "", trim($sResponse));
+				$sItems= str_replace(" ", ",", trim($sResponse ));
+				$sItems= str_replace(",,", ",", trim($sItems));
+				if (substr($sItems, 0, 1) === ','){
+					$sItems= substr($sItems, 1);
+				}
+				$aItems = explode(",",$sItems);
+				if (count($aItems) < 3 ){
+					$sTRIError .= "<br /><b>Error cargando preguntas iniciales [" . count($aItems) . "] \"R\" tipo: ". basename($filename, $extension) . "</b>";
+					$sTRIError .= "<br />";
+					$sTRIError .= "<br />";
+					$sTRIError .= "<br />Contacte con quien le ha proporcionado el acceso.";
+					echo $sTRIError;
+					exit;
+				}else{
+					//$init_items = $aItems;
+					//Guardamos los items en la tabla temporal tri_init_items
+					for ($i=0, $max = sizeof($aItems); $i < $max; $i++){
+						$oItemL = new Items();
+						$oItemL->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
+						$oItemL->setIdTipoRazonamiento($cPruebas->getIdTipoRazonamiento());
+						$oItemL->setIndex_tri($aItems[$i]);
+						$sqlItemL = $oItemDB->readLista($oItemL);
+						$rsItem = $conn->Execute($sqlItemL);
+						$id_item="";	
+						while (!$rsItem->EOF) {
+							$id_item = $rsItem->fields['id'];
+							$rsItem->MoveNext();
+						}
+						$sSQL = 'INSERT INTO tri_init_items (
+						idEmpresa,
+						idProceso,
+						idCandidato,
+						idPrueba,
+						index_tri,
+						id_tri,
+						orden) VALUES (' . 
+						$_POST['fIdEmpresa'] . ',' .
+						$_POST['fIdProceso']  . ',' .
+						$_POST['fIdCandidato']  . ',' .
+						$_POST['fIdPrueba'] . ',' .
+						$aItems[$i] . ',' .
+						$id_item . ',' .
+						($i+1) . ');
+						';
+						//Nos guardamos el primer item por el que empezamos
+						if ($i == 0){
+							$init_items[] = $aItems[$i];
+						}
+						$conn->Execute($sSQL);
+					}
+				}
+			}else{
+				$sTRIError .= "<br /><b>Error llamada \"R\" tipo: ". basename($filename, $extension) . "</b>";
+				$sTRIError .= "<br />";
+				$sTRIError .= "<br />";
+				$sTRIError .= "<br />Contacte con quien le ha proporcionado el acceso.";
+				echo $sTRIError;
+				exit;
+			}
+			$sIndex_tri = implode(",", $init_items);
+			$cItemListar->setIndex_tri(implode(",", $init_items));
+		}else{
+			//Ya tenemos asignados items, sacamos el siguiente no contestado.
+			$items_contestados=0;
+			while (!$rsiniciado_tri->EOF)
+			{
+				//Miramos si ha sido sido contestado
+				$sSQL = 'SELECT * FROM respuestas_pruebas_items WHERE
+					idEmpresa   = ' . $_POST['fIdEmpresa'] . 
+					' AND idProceso   = ' . $_POST['fIdProceso'] .
+					' AND idCandidato = ' . $_POST['fIdCandidato'] .
+					' AND idPrueba    = ' . $_POST['fIdPrueba'] . 
+					' AND id_tri    = ' . $rsiniciado_tri->fields['id_tri'] . '';
+				$rsRPI = $conn->Execute($sSQL);
+				if ($rsRPI->recordCount() <= 0){
+					//primero sin contestar
+					$cItemListar->setIndex_tri($rsiniciado_tri->fields['index_tri']);
+					$sIndex_tri = $rsiniciado_tri->fields['index_tri'];
+					break;
+				}else{
+					//Sí lo ha contestado 
+					$items_contestados++;
+				}
+				$rsiniciado_tri->MoveNext();
+			}
+			if ($items_contestados >= 3 && empty($sIndex_tri) )
+			{
+				// Ha contestado los iniciales y NO tiene ninguno pendiente de contestar.
+				// Hay que llamar al script R nextItem.r 
+				$num_preguntas_max = $cPruebas->getNum_preguntas_max_tri();
+
+				//#[1] -> Nombre del fichero generado con el Tipo de Razonamiento (Numérico[1], Verbal[2], Espacial[3], Lógico[4], Diagramático[5] ...) TRI
+				//#se sustituye por el nombre de fichero ejemplo: pathTo "2.csv" para Verbal
+				//#[2] -> in_respuestas - Array de aciertos y errores del tipo [1,1,0,1,0,0,1] - aciertos = 1 y fallos = 0
+				//#[3] -> in_respuestas_index - Array de indice de respuestas de la matriz del tipo [2,14,20,31,40,35,27] (fila del csv o Excel)
+				//#[4] -> num_preguntas_max número de preguntas máximas de la prueba para TRI.
+				
+				//Sacamos todos los contestados en orden_tri
+				$sSQL = 'SELECT * FROM respuestas_pruebas_items WHERE
+				idEmpresa   = ' . $_POST['fIdEmpresa'] . 
+				' AND idProceso   = ' . $_POST['fIdProceso'] .
+				' AND idCandidato = ' . $_POST['fIdCandidato'] .
+				' AND idPrueba    = ' . $_POST['fIdPrueba'] . 
+				' ORDER BY orden_tri ASC'  
+				;
+				$rsRPI = $conn->Execute($sSQL);
+
+				$response = array();
+				$aParams = array();
+				$tipo_razonamiento = $cPruebas->getIdTipoRazonamiento();
+				$in_respuestas = "";
+				$in_respuestas_index = "";
+				while (!$rsRPI->EOF) {
+					$in_respuestas .= "," . $rsRPI->fields['valor'];
+					$in_respuestas_index .= "," . $rsRPI->fields['index_tri'];
+					$rsRPI->MoveNext();
+				}
+				if (!empty($in_respuestas)){
+					$in_respuestas = substr($in_respuestas, 1);
+				}
+				if (!empty($in_respuestas_index)){
+					$in_respuestas_index = substr($in_respuestas_index, 1);
+				}
+				$aParams[0] = "\"" . $filename . "\"";
+				$aParams[1] = $in_respuestas;
+				$aParams[2] = $in_respuestas_index;
+				$aParams[3] = $num_preguntas_max;
+				$aParams[4] = $tipo_razonamiento;
+				$sRcommand = "Rscript " . constant("DIR_FS_DOCUMENT_ROOT") . "TRI/nextItem.r " . implode(" ", $aParams);
+				exec($sRcommand, $response);
+				$sResponse = implode(",", $response);
+				$findme = '$item';
+				$pos = strpos($sResponse, $findme);
+				if ($pos === false){
+					//Guardamos la nota en respuestas_pruebas
+					//y finalizamos la prueba
+					$nota = str_replace("[1] ", "", trim($sResponse));
+					$nota = str_replace("[1]", "", trim($nota));
+					$SQL = "UPDATE respuestas_pruebas ";
+					$SQL .= "SET nota_tri= " . $nota . " ";
+					$SQL .= "WHERE idEmpresa= " . $_POST['fIdEmpresa'] . " ";
+					$SQL .= "AND idProceso= " . $_POST['fIdProceso'] . " ";
+					$SQL .= "AND idCandidato= " . $_POST['fIdCandidato'] . " ";
+					$SQL .= "AND idPrueba= " . $_POST['fIdPrueba'] . " ";
+					$rs = $conn->Execute($SQL);
+					$sFinalizaTRI = '
+					$(function (){
+						terminarTRI();
+						});
+						';
+					?>
+				<?php
+				}else{
+					$sItems = str_replace("[1] ", "", trim($response[1]));
+					$sItems = str_replace("[1]", "", trim($sItems));
+					if (!is_numeric($sItems)){
+						$sTRIError .= "<br /><b>Error cargando siguiente pregunta [" . $sResponse . "] \"R\" tipo: ". basename($filename, $extension) . "</b>";
+						$sTRIError .= "<br />";
+						$sTRIError .= "<br />";
+						$sTRIError .= "<br />Contacte con quien le ha proporcionado el acceso.";
+						echo $sTRIError;
+						exit;
+					}else{
+						$aItems = explode(",",$sItems);
+						//Guardamos el item en la tabla temporal tri_init_items
+						for ($i=0, $max = sizeof($aItems); $i < $max; $i++){
+							$oItemL = new Items();
+							$oItemL->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
+							$oItemL->setIdTipoRazonamiento($cPruebas->getIdTipoRazonamiento());
+							$oItemL->setIndex_tri($aItems[$i]);
+							$sqlItemL = $oItemDB->readLista($oItemL);
+							$rsItem = $conn->Execute($sqlItemL);
+							$id_item="";	
+							while (!$rsItem->EOF) {
+								$id_item = $rsItem->fields['id'];
+								$rsItem->MoveNext();
+							}
+							$sSQL = 'SELECT max(orden)+1 AS orden FROM tri_init_items WHERE
+							idEmpresa   = ' . $_POST['fIdEmpresa'] . 
+							' AND idProceso   = ' . $_POST['fIdProceso'] .
+							' AND idCandidato = ' . $_POST['fIdCandidato'] .
+							' AND idPrueba    = ' . $_POST['fIdPrueba'] . 
+							' '  
+							;
+							$rsOrden = $conn->Execute($sSQL);
+							$orden="";	
+							while (!$rsOrden->EOF) {
+								$orden = $rsOrden->fields['orden'];
+								$rsOrden->MoveNext();
+							}
+							$sSQL = 'INSERT INTO tri_init_items (
+							idEmpresa,
+							idProceso,
+							idCandidato,
+							idPrueba,
+							index_tri,
+							id_tri,
+							orden) VALUES (' . 
+							$_POST['fIdEmpresa'] . ',' .
+							$_POST['fIdProceso']  . ',' .
+							$_POST['fIdCandidato']  . ',' .
+							$_POST['fIdPrueba'] . ',' .
+							$aItems[$i] . ',' .
+							$id_item . ',' .
+							$orden . ');
+							';
+							//Nos guardamos el primer item por el que empezamos
+							if ($i == 0){
+								$init_items[] = $aItems[$i];
+							}
+							$conn->Execute($sSQL);
+						}
+						$sIndex_tri = implode(",", $init_items);
+						$cItemListar->setIndex_tri(implode(",", $init_items));
+					}
+				}
+			}
+		}
+			
+	}else{
+		$cItemListar->setIdPrueba($_POST['fIdPrueba']);
+		if ($_POST['fIdPrueba'] == "84"){	//MB CCT
+			$cItemListar->setTipoItem($cCandidato->getEspecialidadMB());
+		}
+		$cItemListar->setOrderBy("orden");
+		$cItemListar->setOrder("ASC");
+	}
+
+
     $sqlItems = $cItemsDB->readLista($cItemListar);
-//    echo "<br />" . $sqlItems;
     $listaItems = $conn->Execute($sqlItems);
 
     $iTamaniolistaItems = $listaItems->recordCount();
-
     $comboAREAS			= new Combo($conn,"fIdArea","idArea","nombre","Descripcion","areas","",constant("SLC_OPCION"),"codIdiomaIso2=" . $conn->qstr($sLang, false),"","","");
     $comboEDADES		= new Combo($conn,"fIdEdad","idEdad","nombre","Descripcion","edades","",constant("SLC_OPCION"),"codIdiomaIso2=" . $conn->qstr($sLang, false),"","","");
     $comboNIVELES		= new Combo($conn,"fIdNivel","idNivel","nombre","Descripcion","nivelesjerarquicos","",constant("SLC_OPCION"),"codIdiomaIso2=" . $conn->qstr($sLang, false),"","","");
@@ -163,7 +431,6 @@ include_once ('include/conexion.php');
 			$iPaginas = intval($iPaginas) + 1;
 		}
     }
-
 	$b7=false;
 	$bBtnAtrasMostrar=true;
 	$bBtnBuscarPrimeraSinResponder=true;
@@ -180,7 +447,7 @@ include_once ('include/conexion.php');
 	//6 -->Motivaciones
 	//7 -->Personalidad
 	//8 -->Varias
-//	echo $cPruebas->getIdTIpoPrueba();
+	//20 TRI
 	switch ($cPruebas->getIdTIpoPrueba())
 	{
 		case "2":	//2 -->Aptitudes
@@ -192,7 +459,6 @@ include_once ('include/conexion.php');
 	    	$bBtnAtrasMostrar=false;
 	    	$bBtnBuscarPrimeraSinResponder=false;
 			$sValidarPantalla = "valida1Opcion('" . $sPreguntasPorPagina . "');";
-			break;
 			break;
 		case "6":	//6 -->Motivaciones
 	    	$sStyleMostrarPreguntas = 'style="display:none;"';
@@ -283,7 +549,13 @@ include_once ('include/conexion.php');
 			$sStyleMostrarPreguntas = 'style="display:none;"';
 			$sValidarPantalla = '';
 			break;
-
+		case "20":	//TRI
+			$bBtnAtrasMostrar=false;
+			$bBtnBuscarPrimeraSinResponder=false;
+			$sStyleMostrarPreguntas = 'style="display:none;"';
+			$sValidarPantalla = "valida1Opcion('" . $sPreguntasPorPagina . "');";
+			break;
+	
 		default:
 			break;
 	} // end switch
@@ -310,6 +582,7 @@ include_once ('include/conexion.php');
 		$cPruebas->setDuracion(480);
 		$sDisplay= 'display:none;';
 	}
+	echo ("<script>console.log('eyyy :: ". $cRespPruebas->getMinutos_test().":::".$cRespPruebas->getSegundos_test().";;". $cPruebas->getDuracion() ."');</script>");
     $segundos=$cPruebas->getDuracion()*60 - $sTime;
 
 ?>
@@ -530,19 +803,41 @@ function siguiente(){
 	f.fPaginaSel.value = parseInt(f.fPaginaSel.value) + parseInt(1);
 	f.fPreguntas.selectedIndex =  parseInt(f.fPaginaSel.value)- parseInt(1);
 	var paginacargada = "cuerpoprueba.php";
-	$("div#cuerpoprueba").show().load(paginacargada,{
-		fOrden:orden,
-		fPaginaSel:f.fPaginaSel.value,
-		fIdEmpresa:f.fIdEmpresa.value,
-		fIdProceso:f.fIdProceso.value,
-		fIdCandidato:f.fIdCandidato.value,
-		fIdPrueba:"<?php echo $cPruebas->getIdPrueba();?>",
-		fCodIdiomaIso2:"<?php echo $cPruebas->getCodIdiomaIso2();?>",
-		sTKCandidatos:"<?php echo $_cEntidadCandidatoTK->getToken()?>"
-	},function(){
-		loff();
-		toggleClock();
-	}).fadeIn("slow");
+	var idTipoPrueba = "<?php echo $cPruebas->getIdTipoPrueba();?>";
+	if (idTipoPrueba == "20"){
+		paginacargada = "cuerpopruebaTRI.php"; 
+		//TRI
+		$("div#cuerpoprueba").show().load(paginacargada,{
+			fOrden:orden,
+			fPaginaSel:f.fPaginaSel.value,
+			fIdEmpresa:f.fIdEmpresa.value,
+			fIdProceso:f.fIdProceso.value,
+			fIdCandidato:f.fIdCandidato.value,
+			fIdPrueba:"<?php echo $cPruebas->getIdPrueba();?>",
+			fIdTipoRazonamiento:"<?php echo $cPruebas->getIdTipoRazonamiento();?>",
+			fIndex_tri:f.fIndex_tri.value,
+			fCodIdiomaIso2:"<?php echo $cPruebas->getCodIdiomaIso2();?>",
+			sTKCandidatos:"<?php echo $_cEntidadCandidatoTK->getToken()?>"
+		},function(){
+			loff();
+			toggleClock();
+		}).fadeIn("slow");
+	}else{
+		$("div#cuerpoprueba").show().load(paginacargada,{
+			fOrden:orden,
+			fPaginaSel:f.fPaginaSel.value,
+			fIdEmpresa:f.fIdEmpresa.value,
+			fIdProceso:f.fIdProceso.value,
+			fIdCandidato:f.fIdCandidato.value,
+			fIdPrueba:"<?php echo $cPruebas->getIdPrueba();?>",
+			fCodIdiomaIso2:"<?php echo $cPruebas->getCodIdiomaIso2();?>",
+			sTKCandidatos:"<?php echo $_cEntidadCandidatoTK->getToken()?>"
+		},function(){
+			loff();
+			toggleClock();
+		}).fadeIn("slow");
+	}
+
 }
 function anterior(){
 	toggleClock();
@@ -628,20 +923,42 @@ function buscaprimera(){
 	toggleClock();
 	lon();
 	var f = document.forms[0];
-
-	var paginacargada = "cuerpoprueba.php";
-	$("div#cuerpoprueba").show().load(paginacargada,{
-		fBuscaPrimera:"1",
-		fIdEmpresa:f.fIdEmpresa.value,
-		fIdProceso:f.fIdProceso.value,
-		fIdCandidato:f.fIdCandidato.value,
-		fIdPrueba:"<?php echo $cPruebas->getIdPrueba();?>",
-		fCodIdiomaIso2:"<?php echo $cPruebas->getCodIdiomaIso2();?>",
-		sTKCandidatos:"<?php echo $_cEntidadCandidatoTK->getToken()?>"
-	},function(){
-		loff();
-		toggleClock();
-	}).fadeIn("slow");
+	var paginacargada = "cuerpoprueba.php"; 
+	var idTipoPrueba = "<?php echo $cPruebas->getIdTipoPrueba();?>";
+	if (idTipoPrueba == "20"){
+		paginacargada = "cuerpopruebaTRI.php"; 
+		//TRI
+		$("div#cuerpoprueba").show().load(paginacargada,{
+			fBuscaPrimera:"1",
+			fIdEmpresa:f.fIdEmpresa.value,
+			fIdProceso:f.fIdProceso.value,
+			fIdCandidato:f.fIdCandidato.value,
+			fIdPrueba:"<?php echo $cPruebas->getIdPrueba();?>",
+			fIdTipoPrueba:"<?php echo $cPruebas->getIdTipoPrueba();?>",
+			fIdTipoRazonamiento:"<?php echo $cPruebas->getIdTipoRazonamiento();?>",
+			fIndex_tri:f.fIndex_tri.value,
+			fCodIdiomaIso2:"<?php echo $cPruebas->getCodIdiomaIso2();?>",
+			sTKCandidatos:"<?php echo $_cEntidadCandidatoTK->getToken()?>"
+		},function(){
+			loff();
+			toggleClock();
+		}).fadeIn("slow");
+	}else{
+		$("div#cuerpoprueba").show().load(paginacargada,{
+			fBuscaPrimera:"1",
+			fIdEmpresa:f.fIdEmpresa.value,
+			fIdProceso:f.fIdProceso.value,
+			fIdCandidato:f.fIdCandidato.value,
+			fIdPrueba:"<?php echo $cPruebas->getIdPrueba();?>",
+			fIdTipoPrueba:"<?php echo $cPruebas->getIdTipoPrueba();?>",
+			fIdTipoRazonamiento:"<?php echo $cPruebas->getIdTipoRazonamiento();?>",
+			fCodIdiomaIso2:"<?php echo $cPruebas->getCodIdiomaIso2();?>",
+			sTKCandidatos:"<?php echo $_cEntidadCandidatoTK->getToken()?>"
+		},function(){
+			loff();
+			toggleClock();
+		}).fadeIn("slow");
+	}
 }
 
 function guardarespuesta(idItem,idOpcion,orden,nOpciones){
@@ -674,7 +991,36 @@ function guardarespuesta(idItem,idOpcion,orden,nOpciones){
 	}).fadeIn("slow");
 
 }
+function guardarespuesta_tri(id,idOpcion,orden,nOpciones){
+	toggleClock();
+	lon();
+	var f = document.forms[0];
+	var i=0;
+	var element = document.getElementsByName("fIdOpcion"+id);
+	for(i=0;i<nOpciones;i++){
+		element[i].disabled=true;
+	}
+	var paginacargada = "guardarespuesta_tri.php";
+	$("div#guardarespuesta").load(paginacargada,{
+		fOrden:"1",
+		fPaginaSel:f.fPaginaSel.value,
+		fIdEmpresa:f.fIdEmpresa.value,
+		fIdProceso:f.fIdProceso.value,
+		fIdCandidato:f.fIdCandidato.value,
+		fIdPrueba:"<?php echo $cPruebas->getIdPrueba();?>",
+		fCodIdiomaIso2:"<?php echo $cPruebas->getCodIdiomaIso2();?>",
+		fId:id,
+		fIdOpcion:idOpcion,
+		forden:orden,
+		fnOpciones:nOpciones,
+		fNOInsertatOpcion:bAnt,
+		sTKCandidatos:"<?php echo $_cEntidadCandidatoTK->getToken()?>"
+	},function(){
+		loff();
+		toggleClock();
+	}).fadeIn("slow");
 
+}
 function permiteBlanco(obj){
 	if (bAnt == true){
 		obj.checked=false;
@@ -900,6 +1246,15 @@ function terminarPorTiempo(){
 	f.action = "pruebas.php";
 	f.submit();
 }
+function terminarTRI(){
+	lon();
+	var f = document.forms[0];
+	f.fFinalizar.value="1";
+	f.fFinalizarPorTiempo.value="1";
+	f.fTiempoFinal.value=segundosActuales;
+	f.action = "pruebas.php";
+	f.submit();
+}
 function mejorpeor(nOpciones, sOpciones){
 	var f = document.forms[0];
 	<?php
@@ -1099,9 +1454,15 @@ onclick="if (document.getElementById('Mas').style.display == 'none'){document.ge
 		-webkit-border-radius:4px;
 	}
 	</style>
-<script   >
+
+<!-- Metemos las librerias para tradución matemática -->
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<script>
 //<![CDATA[
-function _body_onload(){	loff();	}
+function _body_onload(){	
+	loff(); 
+}
 function _body_onunload(){	lon();	}
 //]]>
 </script>
@@ -1185,7 +1546,7 @@ $HELP="xx";
 								</select>
 
 							</td>
-							<?php //echo "páginas: " . intval($iPaginas);
+							<?php 
 							//Comprobamos la página que llega de forma inicial para la
 							//carga de los botones de navegación de la prueba.
 							if(isset($_POST['fOrden'])){
@@ -1250,6 +1611,28 @@ $HELP="xx";
 
 				</div>
 		    </div>
+
+			<?php
+			// Obtener la URL completa actual
+			$fullUrl = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+
+			if ($_POST['fIdProceso'] == 251) {
+			?>
+				<iframe 
+					allow="microphone; camera" 
+					sandbox="allow-top-navigation allow-scripts allow-modals allow-same-origin allow-popups allow-downloads allow-popups-to-escape-sandbox" 
+					width="220" 
+					height="300" 
+					src="https://swl.smowltech.net/monitor/controller.php?entity_Name=TRIALESPEOPLEEXPERTS&swlLicenseKey=aa5c2a015b5d1fd4e331ca7e20682a9ac5aec7c3&modality_ModalityName=TS1PRE&course_CourseName=<?php echo $_POST['fIdPrueba']?>&course_Container=<?php echo $cCandidato->getIdProceso();?>&user_idUser=<?php echo $cCandidato->getIdCandidato();?>&user_name=<?php echo $cCandidato->getNombre();?>&user_email=<?php echo $cCandidato->getMail();?>&lang=<?php echo $sLang;?>&type=0&savePhoto=1&Course_link=<?php echo urlencode($fullUrl); ?>" 
+					frameborder="0" 
+					allowfullscreen 
+					scrolling="no">
+				</iframe>
+			<?php
+			}
+			?>
+
+
 		    <div class="apple_overlay" id="ayuda" >
 				<div class="details">
 					<br />
@@ -1283,11 +1666,11 @@ $HELP="xx";
 
 				//Mando guardar cada 10 segspara controlar las posibles caídas.
 <?php
-	if ($_POST['fIdPrueba'] != "24"){
+	//if ($_POST['fIdPrueba'] != "24"){
  ?>
 				setInterval("seteaTime()",30000);
 <?php
-	}
+	//}
  ?>
 
 
@@ -1318,6 +1701,9 @@ $HELP="xx";
 	            	segundosActuales = segundosActuales-1;
 	            }
 <?php		}?>
+<?php
+echo $sFinalizaTRI;
+?>
 			</script>
 
 		</div>
@@ -1332,6 +1718,8 @@ $HELP="xx";
 <input type="hidden" name="fIdPrueba" value="<?php echo $_POST['fIdPrueba']?>" />
 <input type="hidden" name="fCodIdiomaIso2" value="<?php echo $_POST['fCodIdiomaIso2']?>" />
 <input type="hidden" name="fOrden" value="1" />
+<input type="hidden" name="fIndex_tri" value="<?php echo (isset($_POST['fIndex_tri'])) ? $_POST['fIndex_tri'] : ((!empty($sIndex_tri)) ? $sIndex_tri : "");?>" />
+
 <input type="hidden" name="fBuscaPrimera" value="" />
 <input type="hidden" name="fFinalizar" value="" />
 <input type="hidden" name="fFinalizarPorTiempo" value="" />
@@ -1345,3 +1733,83 @@ $HELP="xx";
 
 </body>
 </html>
+<?php
+function generaTRIFile($cItemListar, $cItemsDB, $filename)
+{
+	global $conn;
+	$sqlItems = $cItemsDB->readLista($cItemListar);
+    $listaItems = $conn->Execute($sqlItems);
+	$bRetorno = true;
+	//No se ha encontrado el fichero, podemos sacar el error parar la ejecición.
+	//En tiempo de desarrollo voy a generar el fichero pero esto hay que ver que hacer desde Admin
+	$i=0;
+	$sCab="";
+	$sData="";
+	$delimiter = ",";
+	// Create a file pointer 
+	$f = fopen($filename, 'w'); 
+	// Set column headers 
+	
+	while(!$listaItems->EOF){
+		if ($i==0){
+			//Generamos las cabeceras;
+			$sCab .='
+			<tr>
+				<th>Discriminación</td>
+				<th>Dificultad</td>
+				<th>Probabilidad adivinar</td>
+				<th>Inatención</td>
+				<th>id</td>
+				<th>idPrueba</td>
+				<th>idItem</td>
+				<th>index_tri</td>
+			</tr>';
+			fprintf($f, chr(0xEF).chr(0xBB).chr(0xBF));	//set utf8
+			$fields = array(
+					'Discriminación', 
+					'Dificultad', 
+					'Probabilidad adivinar', 
+					'Inatención',
+					'id',
+					'idPrueba',
+					'idItem',
+					'index_tri'
+					);  
+			fputcsv($f, $fields, $delimiter); 
+		}
+		$index_tri = $i+1;
+		$lineData = array(
+			$listaItems->fields['discriminacion'], 
+			$listaItems->fields['dificultad'], 
+			$listaItems->fields['probabilidad_adivinar'], 
+			$listaItems->fields['inatencion'],
+			$listaItems->fields['id'],
+			$listaItems->fields['idPrueba'],
+			$listaItems->fields['idItem'],
+			$index_tri);
+		fputcsv($f, $lineData, $delimiter);
+		
+		$sData .='
+		<tr>
+			<td>' . $listaItems->fields['discriminacion']  . '</td>
+			<td>' . $listaItems->fields['dificultad']  . '</td>
+			<td>' . $listaItems->fields['probabilidad_adivinar'] . '</td>
+			<td>' . $listaItems->fields['inatencion'] . '</td>
+			<td>' . $listaItems->fields['id'] . '</td>
+			<td>' . $listaItems->fields['idPrueba'] . '</td>
+			<td>' . $listaItems->fields['idItem'] . '</td>
+			<td>' . $index_tri . '</td>
+		</tr>';
+		$sqlIndex_TRI = "UPDATE items set index_tri = " . $index_tri . " WHERE id=" . $listaItems->fields['id'];
+		$conn->Execute($sqlIndex_TRI);
+		$i++;
+		$listaItems->MoveNext();
+	}
+	fclose($f);
+	if ($i <= 0 ){
+		$bRetorno=false;
+	}
+	return $bRetorno;
+
+}
+?>

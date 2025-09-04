@@ -332,6 +332,7 @@ class Usuarios_accesosDB
 		$sql="";
 		$and = false;
 		$sql.="SELECT * FROM wi_usuarios_accesos ";
+
 		if ($cEntidad->getIdAcceso() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;

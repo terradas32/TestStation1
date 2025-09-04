@@ -1,5 +1,5 @@
 <?php
-	$_DOCUMENT_ROOT = (empty($_SERVER["DOCUMENT_ROOT"])) ? 'C:\Inetpub\vhosts\test-station.biz\httpdocs' : $_SERVER["DOCUMENT_ROOT"];
+	$_DOCUMENT_ROOT = (empty($_SERVER["DOCUMENT_ROOT"])) ? 'C:\Inetpub\vhosts\test-station.com\httpdocs' : $_SERVER["DOCUMENT_ROOT"];
 	// Define the webserver and path parameters
 	// * DIR_FS_* Directorio físico (local/physical)
 	// * DIR_WS_* Directorio del servidor Web (virtual/URL)
@@ -94,13 +94,20 @@
 	//Datos para la clase de envio de correo
 	define("MAILER","smtp"); //PUEDE SER mail O smtp
     //Host, nombre de servidor smtp
-    define("HOSTMAIL","mail.psicologosempresariales.es");
+    //define("HOSTMAIL","smtp.office365.com");
+    //define("PORTMAIL","587");    //25 o 587 normalmente
+    //define("MAIL_ENCRYPTION","tls");	//tls, ssl
+
+    define("HOSTMAIL","smtp.office365.com");
     define("PORTMAIL","587");    //25 o 587 normalmente
+    define("MAIL_ENCRYPTION","tls");	//tls, ssl
+	
     //usuario y password PARA EL ENVIO DE CORREO, TIENE Q SER UNA CUENTA VÁLIDA
-    define("MAILUSERNAME","PEASA@psicologosempresariales.es");
-    define("MAILPASSWORD","He1BdP34s4");
+    define("MAILUSERNAME","test-station@people-experts.com");
+    define("MAILPASSWORD","S!524012145210uw%");
+
 	//Email de contacto.
-	define("EMAIL_CONTACTO","PEASA@psicologosempresariales.es");
+	define("EMAIL_CONTACTO","test-station@people-experts.com");
 	define("PERSONA_CONTACTO","Contacta");
 
 	//Espacio de izquierda,contenido y derecha.
@@ -121,11 +128,11 @@
 
 	define("EMPRESA_PE", "3788");	//Código de la empresa Psicologos Empresariales
 
-	 //Contantes de conexión a Base de Datos
-        define("DB_TYPE", "mysql");
-        define("DB_DATOS", "ts");
-        define("DB_HOST", "webcorporativa-2-cluster.cluster-cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
-        define("DB_USUARIO", "teststation");
-        define("DB_PASSWORD","nosferatu62");
+	//Contantes de conexión a Base de Datos
+	define("DB_TYPE", "mysql");
+	define("DB_DATOS", "ts");
+	define("DB_HOST", "webcorporativa2-instance.cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
+	define("DB_USUARIO", "teststation");
+	define("DB_PASSWORD","nosferatu62");
 	//FIN Contantes de conexión a Base de Datos
 ?>

@@ -1,14 +1,30 @@
 <?php
 	require_once(constant("DIR_WS_COM") . "Pruebas/PruebasDB.php");
 	require_once(constant("DIR_WS_COM") . "Pruebas/Pruebas.php");
-
+	$sItemsXPagina = $sPreguntasPorPagina;
 	$sItemEspecial = 1;
-	if (!empty($_POST["fPaginaSel"]) && $_POST["fPaginaSel"] > 1){
-//		echo "<br />//-->fPaginaSel::" . $_POST["fPaginaSel"];
+	$aPreguntasPorPagina = explode("-", $sPreguntasPorPagina);
+	$iPreguntasPorPagina = count($aPreguntasPorPagina);
+    
+
+	if (!empty($_POST["fPaginaSel"]) && $_POST["fPaginaSel"] > 1) {
+		if ($iPreguntasPorPagina > 1) {
+			$sItemsXPagina = $aPreguntasPorPagina[$_POST["fPaginaSel"]-1];
+		} else {
+			$sItemsXPagina = $sPreguntasPorPagina;
+		}	
+		//echo "<br />//-->fPaginaSel::" . $_POST["fPaginaSel"];
 		$iPaginaActual=$_POST["fPaginaSel"];
 	}else{
-		$iPaginaActual = intval($OrdenHast/$sPreguntasPorPagina);
+		if ($iPreguntasPorPagina > 1) {
+			$sItemsXPagina = $aPreguntasPorPagina[$_POST["fPaginaSel"]-1];
+			$iPaginaActual = intval($OrdenHast/$aPreguntasPorPagina[$_POST["fPaginaSel"]-1]);
+		} else {
+			$iPaginaActual = intval($OrdenHast/$sPreguntasPorPagina);
+		}
 	}
+		
+
 //	echo "<br />//-->Pa--::" . $iPaginaActual;
 	switch ($_POST['fIdPrueba'])
 	{
@@ -161,7 +177,7 @@
 								$sChecked = 'checked="checked"';
 							}
 							?>
-							<input type="radio" <?php echo $sChecked;?> name="fIdOpcion<?php echo $listaOpciones->fields['descripcion'];?>" value="<?php echo $listaOpciones->fields['codigo'] . "@" . $listaOpciones->fields['idOpcion']?>" id="opcion<?php echo $listaOpciones->fields['codigo']. "@" . $listItems->fields['idItem']?>" onclick="javascript:guardarespuestatipo7('<?php echo $listItems->fields['idItem'];?>','<?php echo $listaOpciones->fields['idOpcion']?>','<?php echo $listItems->fields['orden'];?>',<?php echo $sPreguntasPorPagina?>,this,<?php echo $cItems->getOrden()?>,<?php echo ($cItems->getOrden() + $sPreguntasPorPagina)-1?>,'<?php echo $sOpciones;?>');" />
+							<input type="radio" <?php echo $sChecked;?> name="fIdOpcion<?php echo $listaOpciones->fields['descripcion'];?>" value="<?php echo $listaOpciones->fields['codigo'] . "@" . $listaOpciones->fields['idOpcion']?>" id="opcion<?php echo $listaOpciones->fields['codigo']. "@" . $listItems->fields['idItem']?>" onclick="javascript:guardarespuestatipo7('<?php echo $listItems->fields['idItem'];?>','<?php echo $listaOpciones->fields['idOpcion']?>','<?php echo $listItems->fields['orden'];?>',<?php echo $sItemsXPagina?>,this,<?php echo $cItems->getOrden()?>,<?php echo ($cItems->getOrden() + $sItemsXPagina)-1?>,'<?php echo $sOpciones;?>');" />
 						</td>
 
 				<?php		$i++;
@@ -172,3 +188,7 @@
 <?php $listItems->MoveNext();
 	}?>
 	</table>
+
+<script>
+	MathJax.typeset();	
+</script>

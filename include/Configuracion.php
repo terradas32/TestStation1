@@ -2,10 +2,10 @@
 	// Define the webserver and path parameters
 	// * DIR_FS_* Directorio físico (local/physical)
 	// * DIR_WS_* Directorio del servidor Web (virtual/URL)
-	define("HTTP_SERVER", "https://" . $_SERVER["HTTP_HOST"] . "/");	//Siempre terminar en "/"
+	define("HTTP_SERVER", "http://" . $_SERVER["HTTP_HOST"] . "/");	//Siempre terminar en "/"
 	define("HTTPS_SERVER", "https://" . $_SERVER["HTTP_HOST"] . "/");	//Siempre terminar en "/"
 	define("DIR_WS_GESTOR", "Admin/");
-	define("DIR_ADODB", $_SERVER["DOCUMENT_ROOT"] . "/_adodb/");
+	define("DIR_ADODB", $_SERVER["DOCUMENT_ROOT"] . "/adodb/");
 	define("DIR_WS_GRAF", "graf/");
 	define("DIR_WS_INCLUDE", "include/");
 	define("DIR_WS_COM", constant("DIR_WS_INCLUDE") . "com/");
@@ -85,17 +85,22 @@
 	define("DEFAULT_FIRMA","Negocia Internet");
 
 	//Datos para la clase de envio de correo
-    define("MAILER","smtp"); //PUEDE SER mail O smtp
-  //Host, nombre de servidor smtp
-    define("HOSTMAIL","email-smtp.eu-west-3.amazonaws.com");
+	define("MAILER","smtp"); //PUEDE SER mail O smtp
+    //Host, nombre de servidor smtp
+    //define("HOSTMAIL","smtp.office365.com");
+    //define("PORTMAIL","587");    //25 o 587 normalmente
+    //define("MAIL_ENCRYPTION","tls");	//tls, ssl
+
+    define("HOSTMAIL","smtp.office365.com");
     define("PORTMAIL","587");    //25 o 587 normalmente
     define("MAIL_ENCRYPTION","tls");	//tls, ssl
-  //usuario y password PARA EL ENVIO DE CORREO, TIENE Q SER UNA CUENTA VÁLIDA
-    define("MAILUSERNAME","AKIAZQYBBGX6FKUJR4ON");
-    define("MAILPASSWORD","BM7HU83cQOY6poPRQeVCyb0g3K8mb63ZSZRtThYofIgh");
+	
+    //usuario y password PARA EL ENVIO DE CORREO, TIENE Q SER UNA CUENTA VÁLIDA
+    define("MAILUSERNAME","test-station@people-experts.com");
+    define("MAILPASSWORD","S@171566425340ah");
 	//Email de contacto.
-  	define("EMAIL_CONTACTO","info@test-station.com");
-  	define("PERSONA_CONTACTO","Contacta");
+	define("EMAIL_CONTACTO","test-station@people-experts.com");
+	define("PERSONA_CONTACTO","Contacta");
 
 	//Espacio de izquierda,contenido y derecha.
 	define("SP_IZQUIERDA","26");
@@ -117,8 +122,8 @@
 	//Contantes de conexión a Base de Datos
 	define("DB_TYPE", "mysql");
 	define("DB_DATOS", "ts");
-	define("DB_HOST", "webcorporativa-2-cluster.cluster-cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
-	define("DB_USUARIO", "teststation");
-	define("DB_PASSWORD","nosferatu62");
+	define("DB_HOST", "all-db-pre-instance-1.cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
+	define("DB_USUARIO", "peopleAdmin");
+	define("DB_PASSWORD","?t6]SQ&6p!J~ZBy");
 	//FIN Contantes de conexión a Base de Datos
 ?>

@@ -789,6 +789,8 @@ include_once ('include/conexion.php');
 					$pager->setRows(constant("CNF_LINEAS_PAGINA"));
 				}
 				$lista=$pager->getRS();
+				//var_dump("3", $cEntidadDB);
+				//die;
 				include('Template/ProcesoPruebas/mntpruebasl.php');
 				break;
 			}else{
@@ -847,7 +849,6 @@ include_once ('include/conexion.php');
 					break;	
 				}
 				if(isset($_POST['fEjemplo']) && $_POST['fEjemplo']==1){
-					//echo "entra";
 					$cEjemplos = readListaEjemplos($cEjemplos);
 					if (isset($_POST["fReordenar"]) &&  !empty($_POST["fReordenar"])){
 						$bInit=true;
@@ -933,6 +934,7 @@ include_once ('include/conexion.php');
 		$cEntidad->setPreguntasPorPagina((isset($_POST["fPreguntasPorPagina"])) ? $_POST["fPreguntasPorPagina"] : "");
 		$cEntidad->setEstiloOpciones((isset($_POST["fEstiloOpciones"])) ? $_POST["fEstiloOpciones"] : "");
 		$cEntidad->setNecesitara((isset($_POST["fNecesitara"])) ? $_POST["fNecesitara"] : "");
+		$cEntidad->setTarifa((isset($_POST["fTarifa"])) ? $_POST["fTarifa"] : "");
 		$cEntidad->setBajaLog((isset($_POST["fBajaLog"])) ? $_POST["fBajaLog"] : "");
 		$cEntidad->setFecAlta((isset($_POST["fFecAlta"])) ? $_POST["fFecAlta"] : "");
 		$cEntidad->setFecMod((isset($_POST["fFecMod"])) ? $_POST["fFecMod"] : "");
@@ -967,6 +969,8 @@ include_once ('include/conexion.php');
 		$cEntidad->setPreguntasPorPagina((isset($_POST["LSTPreguntasPorPagina"])) ? $_POST["LSTPreguntasPorPagina"] : "");
 		$cEntidad->setEstiloOpciones((isset($_POST["LSTEstiloOpciones"])) ? $_POST["LSTEstiloOpciones"] : "");
 		$cEntidad->setNecesitara((isset($_POST["LSTNecesitara"])) ? $_POST["LSTNecesitara"] : "");
+		$cEntidad->setTarifa((isset($_POST["LSTTarifa"])) ? $_POST["LSTTarifa"] : "");
+		$cEntidad->setTarifaHast((isset($_POST["LSTTarifaHast"])) ? $_POST["LSTTarifaHast"] : "");
 		
 		$cEntidad->setBajaLog((isset($_POST["LSTBajaLog"]) && $_POST["LSTBajaLog"] != "") ? $_POST["LSTBajaLog"] : "");	$cEntidad->setBusqueda(constant("STR_BAJA_LOG"), (isset($_POST["LSTBajaLog"]) && $_POST["LSTBajaLog"] != "" ) ? $_POST["LSTBajaLog"] : "");
 		$cEntidad->setBajaLogHast((isset($_POST["LSTBajaLogHast"]) && $_POST["LSTBajaLogHast"] != "") ? $_POST["LSTBajaLogHast"] : "");	$cEntidad->setBusqueda(constant("STR_BAJA_LOG") . " " . constant("STR_HASTA"), (isset($_POST["LSTBajaLogHast"]) && $_POST["LSTBajaLogHast"] != "" ) ? $_POST["LSTBajaLogHast"] : "");

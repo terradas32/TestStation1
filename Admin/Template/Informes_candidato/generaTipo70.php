@@ -1,4 +1,16 @@
 <?php
+if(!isset($counter) || $counter==0){
+	if(isset($_POST['esZip']) && $_POST['esZip'] == true){
+		$dirGestor = constant("DIR_WS_GESTOR_HTTPS");
+		$documentRoot = constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
+	}else{
+		$dirGestor = constant("DIR_WS_GESTOR");
+		$documentRoot = constant("DIR_FS_DOCUMENT_ROOT");
+	}
+
+	global $dirGestor;
+	global $documentRoot;
+}
 	/**
 	* Informe para las pruebas de tipo TRI (Teoría de respuesta al ítem)
 	**/
@@ -34,15 +46,15 @@
 		$sHtmlFin	= '';
 		//$aux			= $this->conn;
 
-		$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+		$spath = (substr($dirGestor, -1, 1) != '/') ? $dirGestor . '/' : $dirGestor;
 
 		$sHtmlInicio='
 			<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 				<html xmlns="http://www.w3.org/1999/xhtml">
 				<head>
 					<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-					<link rel="stylesheet" type="text/css" href="'.constant("DIR_WS_GESTOR").'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/resetCSS.css"/>
-					<link rel="stylesheet" type="text/css" href="'.constant("DIR_WS_GESTOR").'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/style.css"/>
+					<link rel="stylesheet" type="text/css" href="'.$dirGestor.'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/resetCSS.css"/>
+					<link rel="stylesheet" type="text/css" href="'.$dirGestor.'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/style.css"/>
 					<title>' . $cPruebas->getIdPrueba() . ' - ' . $_sBaremo . '</title>
 					<style type="text/css">
 					<!--
@@ -64,7 +76,7 @@
 										<p class="textos">' . constant("STR_SR_A") . ' ' . $cCandidato->getNombre(). ' ' . $cCandidato->getApellido1(). ' ' .$cCandidato->getApellido2() .'</p>
 						    </td>
 						    <td class="logo">' . $cPruebas->getNombre() . '
-						    <!-- <img src="'.constant("DIR_WS_GESTOR").'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo-pequenio.jpg" title="logo"/> -->
+						    <!-- <img src="'.$dirGestor.'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo-pequenio.jpg" title="logo"/> -->
 						    </td>
 						    <td class="fecha">
 						        <p class="textos">' . date("d/m/Y") . '</p>
@@ -100,8 +112,8 @@
 
 		$sHtml.= '
 			<div class="pagina portada">
-		    	<img src="' . constant("DIR_WS_GESTOR") . 'graf/prueba' . $cPruebas->getIdPrueba() . '/portada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
-		    	<h1 class="titulo"><img src="' . constant("DIR_WS_GESTOR") . 'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo.jpg" /></h1>';
+		    	<img src="' . $dirGestor . 'graf/prueba' . $cPruebas->getIdPrueba() . '/portada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
+		    	<h1 class="titulo"><img src="' . $dirGestor . 'estilosInformes/prueba' . $cPruebas->getIdPrueba() . '/img/logo.jpg" /></h1>';
 		$sHtml.= 		'<div id="txt_nombre_infome"><p>' . $cPruebas->getNombre() . '</p></div>';
 		$sHtml.= 		'<div id="txt_infome"><p>' . $sDescInforme . '</p></div>';
 		$sHtml.= 		'<div id="txt_puntos_infome"><p>' . str_repeat(".", 40) . '</p></div>';
@@ -111,7 +123,7 @@
 					<p class="textos"><strong>' . constant("STR_FECHA_INFORME") . ':</strong><br />' . $cUtilidades->PrintDate(date("Y-m-d"), $_POST['fCodIdiomaIso2']) . '</p>
 				</div>
 				<div id="ts">
-					<img src="' . constant("DIR_WS_GESTOR") . 'graf/TS.jpg" />
+					<img src="' . $dirGestor . 'graf/TS.jpg" />
 				</div>
 
 		    	<!-- <h2 id="copy">Copyright 2011, PSICÓLOGOS EMPRESARIALES S.A.</h2> -->
@@ -316,7 +328,7 @@
 														<font style="font-size: 14px;color: #000000;font-weight: bold;">PD = '.$iPDirecta.'</font>
 													</td>
 													<td width="81%" style="height:45px;border-left:2px solid #6e6e6e;">
-														<img src="'.constant('DIR_WS_GESTOR') . constant('DIR_WS_GRAF'). 'numeritosEstandar.jpg'.'" style="width:540px;">
+														<img src="'. $dirGestor . constant('DIR_WS_GRAF'). 'numeritosEstandar.jpg'.'" style="width:540px;">
 													</td>
 												</tr>
 												<tr>
@@ -324,7 +336,7 @@
 														<font style="font-size: 14px;color: #000000;font-weight: bold;">PC = '.$iPercentil.' %</font>
 													</td>
 													<td width="81%" style="height:40px;border-left:2px solid #6e6e6e;vertical-align:middle;">
-														<img src="'.constant('DIR_WS_GESTOR') . constant('DIR_WS_GRAF'). 'bodoque_gigante.jpg'.'" style="width:'.(($iPercentil*540)/100).'px;height:35px;">
+														<img src="'. $dirGestor . constant('DIR_WS_GRAF'). 'bodoque_gigante.jpg'.'" style="width:'.(($iPercentil*540)/100).'px;height:35px;">
 													</td>
 												</tr>
 											</table>
@@ -730,7 +742,7 @@
 
 		$sHtml.= '
 			<div class="pagina portada" id="contraportada">
-    			<img id="imgContraportada" src="' . constant("DIR_WS_GESTOR") . 'graf/contraportada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
+    			<img id="imgContraportada" src="' . $dirGestor . 'graf/contraportada.jpg" alt="Psicólogos Empresariales" title="Psicólogos Empresariales" />
 			</div>
 			<!--FIN DIV PAGINA-->
 		';
@@ -741,7 +753,7 @@
 		$replace = array('@', '.');
 //		$sNombre = $cCandidato->getMail() . "_" . $_POST['fIdEmpresa']. "_" .$_POST['fIdProceso'] . "_" . $cPruebas->getNombre();
 		$sDirImg="imgInformes/";
-		$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+		$spath = (substr($documentRoot, -1, 1) != '/') ? $documentRoot . '/' : $documentRoot;
 
 		$_fichero = $spath . $sDirImg . $sNombre . ".html";
 		//$cEntidad->chk_dir($spath . $sDirImg, 0777);

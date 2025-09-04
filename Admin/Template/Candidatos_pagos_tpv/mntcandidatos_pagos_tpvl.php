@@ -4,6 +4,18 @@
     }else{
     	require_once("include/SeguridadTemplate.php");
     }
+
+	$clave = obtenerClavePlantilla();
+	$payload = [
+		'sql'   => $sql,
+		'nombre'=> $clave,
+		'ts'    => time(),
+		'nonce' => bin2hex(random_bytes(8)),
+	];
+
+	$token = excel_encrypt_payload($payload, EXCEL_ENC_KEY);
+	$sig   = excel_sign($token, EXCEL_HMAC_KEY);
+	$urlExcel = 'sqlToExcel.php?fSQLtoEXCEL='.base64_encode($token).'&signature='.base64_encode($sig);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $sLang;?>" xml:lang="<?php echo $sLang;?>">
@@ -504,7 +516,8 @@ $aBuscador= $cEntidad->getBusqueda();
 	<input type="hidden" name="fIdEmpresa" value="" />
 	<input type="hidden" name="ORIGEN" value="<?php echo constant("MNT_LISTAR");?>" />
 	<input type="hidden" name="fReordenar" value="" />
-	<input type="hidden" name="fSQLtoEXCEL" value="<?php echo base64_encode($sql . constant("CHAR_SEPARA") . "candidatos_pagos_tpv");?>" />
+	<input type="hidden" name="signature" value="<?php echo(base64_encode($sig)); ?>" />
+	<input type="hidden" name="fSQLtoEXCEL" value="<?php echo(base64_encode($token)); ?>" />
 	<input type="hidden" name="LSTIdRecargaHast" value="<?php echo (isset($_POST['LSTIdRecargaHast'])) ? $cUtilidades->validaXSS($_POST['LSTIdRecargaHast']) : "";?>" />
 	<input type="hidden" name="LSTIdRecarga" value="<?php echo (isset($_POST['LSTIdRecarga'])) ? $cUtilidades->validaXSS($_POST['LSTIdRecarga']) : "";?>" />
 	<input type="hidden" name="LSTIdEmpresaHast" value="<?php echo (isset($_POST['LSTIdEmpresaHast'])) ? $cUtilidades->validaXSS($_POST['LSTIdEmpresaHast']) : "";?>" />

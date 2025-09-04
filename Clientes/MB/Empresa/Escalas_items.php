@@ -188,10 +188,7 @@ include_once ('include/conexion.php');
 			break;
 		case constant("MNT_CARGAITEMS"):
 			$bPinta=false;
-//			echo "entra <br />";
-//			echo "idPrueba: " . $_POST['idPrueba'];
-//			echo "idEscala: " . $_POST['idEscala'];
-//			echo "idBloque: " . $_POST['idBloque'];
+
 			if(isset($_POST['idPrueba']) && $_POST['idPrueba'] !="" && isset($_POST['idEscala']) && $_POST['idEscala'] !="" && isset($_POST['idBloque']) && $_POST['idBloque'] !=""){
 				$cItems = new Items();
 				$cItems->setIdPrueba($_POST['idPrueba']);

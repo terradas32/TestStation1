@@ -54,6 +54,7 @@ class Utilidades
 	function validaXSS($sCadena)
 	{ 
         //$sCadena = htmlspecialchars($sCadena, ENT_QUOTES, "UTF-8");
+		$sCadena = $this->fixArrayToString($sCadena);
 		$sCadena = htmlentities($sCadena, ENT_QUOTES, "UTF-8");
         return $sCadena;
     }
@@ -66,6 +67,7 @@ class Utilidades
 	function validaXSS_EDITOR($sCadena)
 	{ 		
 		//$sCadena = htmlspecialchars($sCadena, ENT_QUOTES, "UTF-8");
+		$sCadena = $this->fixArrayToString($sCadena);
 		$sCadena = htmlentities($sCadena, ENT_QUOTES, "UTF-8");
         return $sCadena;
     }
@@ -145,5 +147,20 @@ class Utilidades
     }
     return (array)$aPosicion;
 }
+
+	
+/*
+ * Soluciona el tratamiento como fatal error del paso de Array a la funcion nativa htmlentities
+ * a partir de PHP 8
+ */
+
+ function fixArrayToString(string | array $string) : string
+ {
+	if (gettype($string)==='array'){
+
+		$string = (count($string) > 0) ? strval($string[0]) : "";
+	}
+	return $string;
+ }
 }//Fin de la Clase Utilidades
 ?>

@@ -29,7 +29,7 @@ ob_start();
 	require_once(constant("DIR_WS_COM") . "Baremos_empresas/Baremos_empresas.php");
 
 include_once ('include/conexion.php');
-
+	//var_dump(constant("DIR_WS_COM"));
 	require_once(constant("DIR_WS_INCLUDE") . "SeguridadTemplate.php");
 
 	$cUtilidades	= new Utilidades();
@@ -79,6 +79,7 @@ include_once ('include/conexion.php');
 		$sHijos = $_POST["fHijos"];
 	}
 
+	$comboCLIENTES	= new	Combo($conn,"fIdCliente","idEmpresa",$conn->Concat("nombre"),"Descripcion","clientes","","","","","");
 	$comboDENTRO_DE	= new	Combo($conn,"fDentroDe","orden",$conn->Concat("'" . constant("STR_DENTRO_DE") . "'", "' - '", "nombre"),"Descripcion","empresas","","","idEmpresa IN(" . $sHijos . ")","","orden");
 	$comboDESPUES_DE	= new	Combo($conn,"fDespuesDe","orden",$conn->Concat("'" . constant("STR_DESPUES_DE") . "'", "' - '", "nombre"),"Descripcion","empresas","","- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -","idEmpresa IN(" . $sHijos . ")","","orden");
 	$comboDESCUENTAMATRIZ 	= new	Combo($conn,"fDescuentaMatriz","idEmpresa","nombre","Descripcion","empresas",""," ","idEmpresa IN(" . $sHijos . ")","","orden");
@@ -88,7 +89,7 @@ include_once ('include/conexion.php');
 	$comboPRUEBASGROUP	= new Combo($conn,"fIdPrueba","idPrueba","nombre","Descripcion","pruebas","","","bajaLog=0","","","idprueba");
 	$comboTIPOS_TPV	= new Combo($conn,"fIdtipoTpv","idTipoTpv","descripcion","Descripcion","tipos_tpv","",constant("SLC_OPCION"),"bajaLog=0","","","idTipoTpv");
 
-	//echo('modo:' . $_POST['MODO']);
+	// echo('modo:' . $_POST['MODO']);
 
 	if (!isset($_POST['MODO'])){
 		session_start();
@@ -100,6 +101,7 @@ include_once ('include/conexion.php');
 	{
 		case constant("MNT_ALTA"):
 			$cEntidad	= readEntidad($cEntidad);
+			$cEntidad->setIdCliente($_POST["fIdCliente"]);
 			$newId	= $cEntidadDB->insertar($cEntidad);
 
 			$cEntidadTPV->setIdEmpresa($newId);
@@ -110,13 +112,29 @@ include_once ('include/conexion.php');
 				$newIdTpv = $cEntidadTPVDB->insertar($cEntidadTPV);
 			}
 			if (!empty($newId)){
+				//Miramos si hay que copiarlo en cliente
+				if (!empty($_POST["fEsCliente"])){
+					//Copiamos a la tabla clientes
+					$sSQL = "DELETE FROM clientes WHERE idEmpresa=" . $newId;
+					//echo "<br />" . $sSQL;
+					$conn->Execute($sSQL);
+
+					$sSQL = "UPDATE empresas SET idCliente=" . $cEntidad->getIdCliente() . " WHERE idEmpresa=" . $newId;
+					//echo "<br />" . $sSQL;
+					$conn->Execute($sSQL);
+
+					$sSQL = "INSERT INTO clientes (idEmpresa, nombre, pathLogo, mail, fecAlta, fecMod, usuAlta, usuMod, power_bi_token, power_bi_active, power_bi_token_fit, power_bi_active_fit) ";
+					$sSQL .="SELECT idEmpresa, nombre, pathLogo, mail, now(), now(), 0, 0, power_bi_token, power_bi_active, power_bi_token_fit, power_bi_active_fit FROM `empresas` WHERE `idEmpresa`=" . $newId;
+					//echo "<br />" . $sSQL;
+					$conn->Execute($sSQL);
+				}
 				//Si da de alta la empresa, la ponemos en el string de asignación de id para el usr
 				//Tener en cuenta que la última siempre es la logada
 				if ($_POST["fHijos"]){
 					$_POST["fHijos"]=  $newId . "," . $_POST["fHijos"];
 					$sHijos = $_POST["fHijos"];
 				}
-//				$cEntidad = readLista($cEntidad);
+				// $cEntidad = readLista($cEntidad);
 				if ($cEntidad->getIdEmpresa() == ""){
 						$cEntidad->setIdEmpresa($sHijos);
 				}
@@ -147,18 +165,23 @@ include_once ('include/conexion.php');
 					$sqlEscalas = $cEscalasItemsDB->readLista($cEscalasItems);
 					$listaEscalas = $conn->Execute($sqlEscalas);
 					//echo $sqlEscalas . "<br />";
-					if($listaEscalas->recordCount() > 0){
-						$_idBloque="-1";	$_idEscala="-1";
-					}else{
-						$_idBloque="0";	$_idEscala="0";
-					}
+					//if($listaEscalas->recordCount() > 0){
+					//	$_idBloque="-1";	$_idEscala="-1";
+					//}else{
+					//	$_idBloque="0";	$_idEscala="0";
+					//}
 					$cBaremos = new Baremos();
 					$cBaremos->setIdPrueba($rsPRUEBASGROUP->fields[$sAsIdPRUEBASGROUP]);
-					$cBaremos->setIdEscala($_idEscala);
-					$cBaremos->setIdEscalaHast($_idEscala);
-					$cBaremos->setIdBloque($_idBloque);
-					$cBaremos->setIdBloqueHast($_idBloque);
-					$sqlBaremos= $cBaremosDB->readLista($cBaremos);
+					//$cBaremos->setIdEscala($_idEscala);
+					//$cBaremos->setIdEscalaHast($_idEscala);
+					//$cBaremos->setIdBloque($_idBloque);
+					//$cBaremos->setIdBloqueHast($_idBloque);
+					//$sqlBaremos= $cBaremosDB->readLista($cBaremos);
+					if($listaEscalas->recordCount() > 0){
+						$sqlBaremos= $cBaremosDB->readListaPersonalidad($cBaremos);
+					}else{
+						$sqlBaremos= $cBaremosDB->readLista($cBaremos);
+					}
 					//echo $sqlBaremos . "<br />";
 					$listaBaremos = $conn->Execute($sqlBaremos);
 					$k=0;
@@ -209,7 +232,7 @@ include_once ('include/conexion.php');
 				//echo "<br> FIN";exit;
 				//Fin de revisar baremos para la empresa
 
-//////////////////////////////////////////////////////////////////
+				//////////////////////////////////////////////////////////////////
 				/*
 				 * Aunque en este comunicado no se utilice datos de:
 				 * PROCESO, CANDIDATO, PRUEBA, RESPUESTAS_PRUEBAS
@@ -272,7 +295,7 @@ include_once ('include/conexion.php');
 						error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
 					}
 				}
-///////////////////////////////////////////////////////////////////
+				///////////////////////////////////////////////////////////////////
 
 			?><script language="javascript" type="text/javascript">alert("<?php echo constant("CONF_ALTA") . $newId;?>\n<?php echo $cEntidadDB->ver_errores();?>");</script><?php
 				if ($_POST['ORIGEN'] == constant("MNT_LISTAR"))
@@ -312,6 +335,7 @@ include_once ('include/conexion.php');
 			break;
 		case constant("MNT_MODIFICAR"):
 			$cEntidad = readEntidad($cEntidad);
+			$cEntidad->setIdCliente($_POST["fIdCliente"]);
 			$cEntidadTPV->setIdEmpresa($cEntidad->getIdEmpresa());
 			$cEntidadTPV->setIdTipoTpv($cEntidad->getIdTipoTpv());
 			if ($cEntidadTPV->getIdEmpresa() != "" && $cEntidadTPV->getIdTipoTpv() != ""){
@@ -331,6 +355,22 @@ include_once ('include/conexion.php');
 			quitaImg($cEntidad, $cEntidadDB);
 			if ($cEntidadDB->modificar($cEntidad))
 			{
+				//Miramos si hay que copiarlo en cliente
+				if (!empty($_POST["fEsCliente"])){
+					//Copiamos a la tabla clientes
+					$sSQL = "DELETE FROM clientes WHERE idEmpresa=" . $cEntidad->getIdEmpresa();
+					//echo "<br />" . $sSQL;
+					$conn->Execute($sSQL);
+
+					$sSQL = "UPDATE empresas SET idCliente=" . $cEntidad->getIdCliente() . " WHERE idEmpresa=" . $cEntidad->getIdEmpresa();
+					//echo "<br />" . $sSQL;
+					$conn->Execute($sSQL);
+
+					$sSQL = "INSERT INTO clientes (idEmpresa, nombre, pathLogo, mail, fecAlta, fecMod, usuAlta, usuMod, power_bi_token, power_bi_active, power_bi_token_fit, power_bi_active_fit) ";
+					$sSQL .="SELECT idEmpresa, nombre, pathLogo, mail, now(), now(), 0, 0, power_bi_token, power_bi_active, power_bi_token_fit, power_bi_active_fit FROM `empresas` WHERE `idEmpresa`=" . $cEntidad->getIdEmpresa();
+					//echo "<br />" . $sSQL;
+					$conn->Execute($sSQL);
+				}
 				/**
 				 * Reviso los baremos a los que tiene acceso esta Empresa
 				 */
@@ -354,20 +394,25 @@ include_once ('include/conexion.php');
 					$cEscalasItems->setIdPruebaHast($rsPRUEBASGROUP->fields[$sAsIdPRUEBASGROUP]);
 					$sqlEscalas = $cEscalasItemsDB->readLista($cEscalasItems);
 					$listaEscalas = $conn->Execute($sqlEscalas);
-//					echo $sqlEscalas . "<br />";
-					if($listaEscalas->recordCount() > 0){
-						$_idBloque="-1";	$_idEscala="-1";
-					}else{
-						$_idBloque="0";	$_idEscala="0";
-					}
+					// echo $sqlEscalas . "<br />";
+					//if($listaEscalas->recordCount() > 0){
+					//	$_idBloque="-1";	$_idEscala="-1";
+					//}else{
+					//	$_idBloque="0";	$_idEscala="0";
+					//}
 					$cBaremos = new Baremos();
 					$cBaremos->setIdPrueba($rsPRUEBASGROUP->fields[$sAsIdPRUEBASGROUP]);
-					$cBaremos->setIdEscala($_idEscala);
-					$cBaremos->setIdEscalaHast($_idEscala);
-					$cBaremos->setIdBloque($_idBloque);
-					$cBaremos->setIdBloqueHast($_idBloque);
-					$sqlBaremos= $cBaremosDB->readLista($cBaremos);
-//					echo $sqlBaremos . "<br />";
+					//$cBaremos->setIdEscala($_idEscala);
+					//$cBaremos->setIdEscalaHast($_idEscala);
+					//$cBaremos->setIdBloque($_idBloque);
+					//$cBaremos->setIdBloqueHast($_idBloque);
+					//$sqlBaremos= $cBaremosDB->readLista($cBaremos);
+					if($listaEscalas->recordCount() > 0){
+						$sqlBaremos= $cBaremosDB->readListaPersonalidad($cBaremos);
+					}else{
+						$sqlBaremos= $cBaremosDB->readLista($cBaremos);
+					}
+					// echo $sqlBaremos . "<br />";
 					$listaBaremos = $conn->Execute($sqlBaremos);
 					$k=0;
 					while(!$listaBaremos->EOF){
@@ -568,15 +613,11 @@ include_once ('include/conexion.php');
 
 		$cEntidad->setUmbral_aviso((isset($_POST["fUmbral_aviso"])) ? $_POST["fUmbral_aviso"] : "");
 
-<<<<<<< HEAD
 		$cEntidad->setpower_bi_token((isset($_POST["fpower_bi_token"])) ? $_POST["fpower_bi_token"] : "");
 		$cEntidad->setpower_bi_active((isset($_POST["fpower_bi_active"])) ? $_POST["fpower_bi_active"] : "");
 		$cEntidad->setpower_bi_token_fit((isset($_POST["fpower_bi_token_fit"])) ? $_POST["fpower_bi_token_fit"] : "");
-		$cEntidad->settexto_fit_comp((isset($_POST["texto_fit_comp"])) ? $_POST["texto_fit_comp"] : "");
 		$cEntidad->setpower_bi_active_fit((isset($_POST["fpower_bi_active_fit"])) ? $_POST["fpower_bi_active_fit"] : "");
 
-=======
->>>>>>> ef67b2adad35376e7004f53c2ad7cef5f1096846
 		$cEntidad->setIdsPruebas((isset($_POST["fIdsPruebas"])) ? $_POST["fIdsPruebas"] : "");
 		$cEntidad->setIdsPruebasAleatorias((isset($_POST["fIdsPruebasAleatorias"])) ? $_POST["fIdsPruebasAleatorias"] : "");
 		//echo "pp::" . $_POST["fEdad"];exit;
@@ -763,7 +804,7 @@ include_once ('include/conexion.php');
 			$mail->SMTPAuth   = true;                               //Enable SMTP authentication
 			$mail->Username = constant("MAILUSERNAME");             //SMTP username
 			$mail->Password = constant("MAILPASSWORD");             //SMTP password
-			$mail->SMTPSecure = 'tls';							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+			$mail->SMTPSecure = constant("MAIL_ENCRYPTION");							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
 			$mail->Port      = constant("PORTMAIL");                                //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
 
@@ -775,7 +816,7 @@ include_once ('include/conexion.php');
 
 			//Con la propiedad Mailer le indicamos que vamos a usar un
 			//servidor smtp
-			$mail->Mailer = $mail->Mailer = constant("MAILER");;
+			$mail->Mailer = constant("MAILER");
 
 			//Asignamos a Host el nombre de nuestro servidor smtp
 			$mail->Host = constant("HOSTMAIL");
@@ -790,13 +831,14 @@ include_once ('include/conexion.php');
 			//Indicamos cual es nuestra dirección de correo y el nombre que
 			//queremos que vea el usuario que lee nuestro correo
 			//$mail->From = $cEmpresaFROM->getMail();
-			$mail->From = constant("MAILUSERNAME");
+			$mail->From = constant("EMAIL_CONTACTO");
 			$mail->AddReplyTo($cEmpresaFROM->getMail(), $cEmpresaFROM->getNombre());
 			$mail->FromName = $cEmpresaFROM->getNombre();
+			$nomEmpresa = $cEmpresaFROM->getNombre();
 			//Asignamos asunto y cuerpo del mensaje
 			//El cuerpo del mensaje lo ponemos en formato html, haciendo
 			//que se vea en negrita
-			$mail->Subject = $sSubject;
+			$mail->Subject = $nomEmpresa . " - " . $sSubject;
 			$mail->Body = $sBody;
 
 			//Definimos AltBody por si el destinatario del correo no admite

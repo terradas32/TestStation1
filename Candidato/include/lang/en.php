@@ -13,7 +13,6 @@ define("MSG_SE_HA_ENVIADO_LA_NUEVA_CONTRASENA_A_SU_CORREO"  , "A new password ha
 define("MSG_SU_NUEVA_CONTRASENA_ES"  , "Your new password is:");
 define("MSG_UD_HA_SOLICITADO_LA_RESTAURACIÓN_DE_SU_CONTRASENA"  , "You have requested your password to be restored.");
 define("MSG_SI_ESTA_DE_ACUERDO_PULSE_EL_SIGUIENTE_ENLACE"  , "If you agree, follow the link below");
-
 define("MSG_BIENVENIDA", "Welcome to the Management platform.");
 define("MSG_BIENVENIDA_COMENZAR", "To begin select an option from the menu on the left.");
 define( "MSG_AVISO_LEGAL_P1", <<<'EOT'

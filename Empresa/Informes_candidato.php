@@ -185,7 +185,6 @@ include_once ('include/conexion.php');
 	$comboWI_USUARIOS	= new Combo($conn,"fUsuAlta","idUsuario","nombre","Descripcion","wi_usuarios","",constant("SLC_OPCION"),"","","fecMod");
 	$comboTIPOS_INFORMES	= new Combo($conn,"fIdTipoInforme","idTipoInforme","nombre","Descripcion","tipos_informes","",constant("SLC_OPCION"),"codIdiomaIso2=" . $conn->qstr(constant("LENGUAJEDEFECTO"), false),"","fecMod");
 //	echo('modo:' . $_POST['MODO']);
-//exit;
 
 	if (!isset($_POST["MODO"])){
 		session_start();
@@ -478,9 +477,9 @@ include_once ('include/conexion.php');
 				$sqlEscalas_items= $cEscalas_itemsDB->readLista($cEscalas_items);
 				$rsEscalas_items = $conn->Execute($sqlEscalas_items);
 				//////////////////////
-				if($rsEscalas_items->recordCount() > 0){
-					$bPintaBaremo=false;
-				}
+				//if($rsEscalas_items->recordCount() > 0){
+				//	$bPintaBaremo=false;
+				//}
 				$cBaremos	= new Baremos();
 				//Revisamos los baremos que tiene activos la Empresa
 				if ($bPintaBaremo)
@@ -508,9 +507,12 @@ include_once ('include/conexion.php');
 
 				$cBaremos->setIdPrueba($_POST['fIdPrueba']);
 				$cBaremos->setIdPruebaHast($_POST['fIdPrueba']);
-
-				$sqlBaremos= $cBaremosDB->readLista($cBaremos);
-				//echo "<br />" . $sqlBaremos;exit;
+				if($rsEscalas_items->recordCount() > 0){
+					$sqlBaremos= $cBaremosDB->readListaPersonalidad($cBaremos);
+				}else{
+					$sqlBaremos= $cBaremosDB->readLista($cBaremos);
+				}
+				//$sqlBaremos= $cBaremosDB->readLista($cBaremos);
 				$listaBaremos = $conn->Execute($sqlBaremos);
 			}
 			include('Template/Informes_candidato/listabaremos.php');

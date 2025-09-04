@@ -122,8 +122,8 @@ class EmpresasDB
 		$sql .= "idEmpresa" . ",";
 		$sql .= "nombre" . ",";
 		$sql .= "cif" . ",";
-		$sql .= (trim($cEntidad->getUsuario()) != "") ? "usuario" . "," : "";
-	  	$sql .= (trim($cEntidad->getPassword()) != "") ? "password" . "," : "";
+		$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? "usuario" . "," : "";
+	  	$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password" . "," : "";
 		$sql .= "mail" . ",";
 		$sql .= "mail2" . ",";
 		$sql .= "mail3" . ",";
@@ -168,8 +168,8 @@ class EmpresasDB
 		$sql .= $aux->qstr($newId, false) . ",";
 		$sql .= $aux->qstr($cEntidad->getNombre(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getCif(), false) . ",";
-		$sql .= (trim($cEntidad->getUsuario()) != "") ? $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
-    $sql .= (trim($cEntidad->getPassword()) != "") ? $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+		$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
+    $sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 		$sql .= $aux->qstr($cEntidad->getMail(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getMail2(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getMail3(), false) . ",";
@@ -218,10 +218,65 @@ class EmpresasDB
 			error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
 			return 0;
 		}else{
+			require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambiosDB.php");
+			require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambios.php");
+			$cEntidadHistorico_cambiosDB	= new Historico_cambiosDB($aux); 
+			$cEntidadHistorico_cambios		= new Historico_cambios();  
+			require_once(constant("DIR_WS_COM") . "Usuarios/UsuariosDB.php");
+			require_once(constant("DIR_WS_COM") . "Usuarios/Usuarios.php");
+			$_cEntidadUsuariosDB	= new UsuariosDB($aux);
+			$_cEntidadUsuarios		= new Usuarios();
+			$_cEntidadUsuarios->setIdUsuario($cEntidad->getUsuAlta());
+			$_cEntidadUsuariosDB->readEntidad($_cEntidadUsuarios);
+			$cEntidadHistorico_cambios->setFuncionalidad(basename($_SERVER['PHP_SELF']));
+			$cEntidadHistorico_cambios->setModo(constant("MNT_ALTA"));
+			$cEntidadHistorico_cambios->setQuery($sql);
+			$cEntidadHistorico_cambios->setIp($_SERVER['REMOTE_ADDR']);
+			$cEntidadHistorico_cambios->setIdUsuario($_cEntidadUsuarios->getIdUsuario());
+			$cEntidadHistorico_cambios->setIdUsuarioTipo($_cEntidadUsuarios->getIdUsuarioTipo());
+			$cEntidadHistorico_cambios->setLogin($_cEntidadUsuarios->getLogin());
+			$cEntidadHistorico_cambios->setNombre($_cEntidadUsuarios->getNombre());
+			$cEntidadHistorico_cambios->setApellido1($_cEntidadUsuarios->getApellido1());
+			$cEntidadHistorico_cambios->setApellido2($_cEntidadUsuarios->getApellido2());
+			$cEntidadHistorico_cambios->setEmail($_cEntidadUsuarios->getEmail());
+			$cEntidadHistorico_cambios->setUsuAlta($cEntidad->getUsuAlta());
+			$cEntidadHistorico_cambios->setUsuMod($cEntidad->getUsuMod());
+			$HistId	= $cEntidadHistorico_cambiosDB->insertar($cEntidadHistorico_cambios);
+			if (empty($HistId)){
+				$this->msg_Error	= array();
+				$sTypeError	=	date('d/m/Y H:i:s') . " Error [GUARDANDO HISTORICO][" . constant("MNT_ALTA") . "][UsuariosDB]";
+				$this->msg_Error[]	= $sTypeError;
+				error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+				header('Location: ' . constant("HTTP_SERVER") . 'index.php');
+				exit;
+			}
 			//Miramos si la empresa es de uso público
 			if ($cEntidad->getPublico() != ""){
 			}
 		}
+
+		//Actualizacion el idCliente con el mismo que tiene el Padre
+		$sql  ="SELECT * FROM empresas WHERE idEmpresa =" . $cEntidad->getIdPadre();
+		$rs = $aux->Execute($sql);
+		
+		$client_id="";
+		while ($arr = $rs->FetchRow()){
+			$client_id = $arr['idCliente'];
+		}
+		if (!empty($client_id)){
+			$sql  ="UPDATE empresas SET idCliente = " . $client_id;
+			$sql  .=" WHERE idEmpresa=" . $newId;
+
+			if($aux->Execute($sql) === false){
+				$retorno=false;
+				$this->msg_Error	= array();
+				$sTypeError	=	date('d/m/Y H:i:s') . " Error SQL [" . constant("MNT_ALTA") . "][EmpresasDB]";
+				$this->msg_Error[]	= $sTypeError;
+				error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+			}
+		}
+		
+
 		require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_perfiles/Empresas_perfiles.php");
 		require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_perfiles/Empresas_perfilesDB.php");
 
@@ -326,8 +381,8 @@ class EmpresasDB
 			$sql = "UPDATE empresas SET ";
 			$sql .= "nombre=" . $aux->qstr($cEntidad->getNombre(), false) . ", ";
 			$sql .= "cif=" . $aux->qstr($cEntidad->getCif(), false) . ", ";
-	  		$sql .= (trim($cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
-	  		$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+	  		$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
+	  		$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 			$sql .= "mail=" . $aux->qstr($cEntidad->getMail(), false) . ", ";
 			$sql .= "mail2=" . $aux->qstr($cEntidad->getMail2(), false) . ", ";
 			$sql .= "mail3=" . $aux->qstr($cEntidad->getMail3(), false) . ", ";
@@ -343,8 +398,8 @@ class EmpresasDB
 			$sql .= "Timezone=" . $aux->qstr($cEntidad->getTimezone(), false) . ", ";
 			$sql .= "direccion=" . $aux->qstr($cEntidad->getDireccion(), false) . ", ";
 
-			$sql .= (trim($cEntidad->getTlfContacto()) != "") ? "tlfContacto=" . $aux->qstr($cEntidad->getTlfContacto(), false) . "," : "";
-			$sql .= (trim($cEntidad->getPersonaContacto()) != "") ? "personaContacto=" . $aux->qstr($cEntidad->getPersonaContacto(), false) . "," : "";
+			$sql .= (trim(is_null($cEntidad->getTlfContacto()) ? "" : $cEntidad->getTlfContacto()) != "") ? "tlfContacto=" . $aux->qstr($cEntidad->getTlfContacto(), false) . "," : "";
+			$sql .= (trim(is_null($cEntidad->getPersonaContacto()) ? "" : $cEntidad->getPersonaContacto()) != "") ? "personaContacto=" . $aux->qstr($cEntidad->getPersonaContacto(), false) . "," : "";
 
 			$sql .= "umbral_aviso=" . $aux->qstr($cEntidad->getUmbral_aviso(), false) . ", ";
 			$sql .= "idsPruebas=" . $aux->qstr($cEntidad->getIdsPruebas(), false) . ", ";
@@ -376,6 +431,38 @@ class EmpresasDB
 				$this->msg_Error[]	= $sTypeError;
 				error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
 			}else{
+				require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambiosDB.php");
+				require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambios.php");
+				$cEntidadHistorico_cambiosDB	= new Historico_cambiosDB($aux);  // Entidad DB Historico_cambios
+				$cEntidadHistorico_cambios		= new Historico_cambios();  // Entidad Historico_cambios
+				require_once(constant("DIR_WS_COM") . "Usuarios/UsuariosDB.php");
+				require_once(constant("DIR_WS_COM") . "Usuarios/Usuarios.php");
+				$_cEntidadUsuariosDB	= new UsuariosDB($aux);
+				$_cEntidadUsuarios		= new Usuarios();
+				$_cEntidadUsuarios->setIdUsuario($cEntidad->getUsuAlta());
+				$_cEntidadUsuariosDB->readEntidad($_cEntidadUsuarios);
+				$cEntidadHistorico_cambios->setFuncionalidad(basename($_SERVER['PHP_SELF']));
+				$cEntidadHistorico_cambios->setModo(constant("MNT_MODIFICAR"));
+				$cEntidadHistorico_cambios->setQuery($sql);
+				$cEntidadHistorico_cambios->setIp($_SERVER['REMOTE_ADDR']);
+				$cEntidadHistorico_cambios->setIdUsuario($_cEntidadUsuarios->getIdUsuario());
+				$cEntidadHistorico_cambios->setIdUsuarioTipo($_cEntidadUsuarios->getIdUsuarioTipo());
+				$cEntidadHistorico_cambios->setLogin($_cEntidadUsuarios->getLogin());
+				$cEntidadHistorico_cambios->setNombre($_cEntidadUsuarios->getNombre());
+				$cEntidadHistorico_cambios->setApellido1($_cEntidadUsuarios->getApellido1());
+				$cEntidadHistorico_cambios->setApellido2($_cEntidadUsuarios->getApellido2());
+				$cEntidadHistorico_cambios->setEmail($_cEntidadUsuarios->getEmail());
+				$cEntidadHistorico_cambios->setUsuAlta($cEntidad->getUsuAlta());
+				$cEntidadHistorico_cambios->setUsuMod($cEntidad->getUsuMod());
+				$HistId	= $cEntidadHistorico_cambiosDB->insertar($cEntidadHistorico_cambios);
+				if (empty($HistId)){
+					$this->msg_Error	= array();
+					$sTypeError	=	date('d/m/Y H:i:s') . " Error [GUARDANDO HISTORICO][" . constant("MNT_ALTA") . "][UsuariosDB]";
+					$this->msg_Error[]	= $sTypeError;
+					error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+					header('Location: ' . constant("HTTP_SERVER") . 'index.php');
+					exit;
+				}
 				//Miramos si la empresa es de uso público
 				if ($cEntidad->getPublico() != ""){
 				}else{
@@ -473,8 +560,8 @@ class EmpresasDB
 							$sql .= "pathLogo=" . $aux->qstr($cEntidad->getPathLogo(), false) . ", ";
 						$sql .= "nombre=" . $aux->qstr($cEntidad->getNombre(), false) . ", ";
 						$sql .= "cif=" . $aux->qstr($cEntidad->getCif(), false) . ", ";
-				  		$sql .= (trim($cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
-				  		$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+				  		$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
+				  		$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 						$sql .= "mail=" . $aux->qstr($cEntidad->getMail(), false) . ", ";
 						$sql .= "mail2=" . $aux->qstr($cEntidad->getMail2(), false) . ", ";
 						$sql .= "mail3=" . $aux->qstr($cEntidad->getMail3(), false) . ", ";
@@ -490,8 +577,8 @@ class EmpresasDB
 						$sql .= "Timezone=" . $aux->qstr($cEntidad->getTimezone(), false) . ", ";
 						$sql .= "direccion=" . $aux->qstr($cEntidad->getDireccion(), false) . ", ";
 
-						$sql .= (trim($cEntidad->getTlfContacto()) != "") ? "tlfContacto=" . $aux->qstr($cEntidad->getTlfContacto(), false) . "," : "";
-						$sql .= (trim($cEntidad->getPersonaContacto()) != "") ? "personaContacto=" . $aux->qstr($cEntidad->getPersonaContacto(), false) . "," : "";
+						$sql .= (trim(is_null($cEntidad->getTlfContacto()) ? "" : $cEntidad->getTlfContacto()) != "") ? "tlfContacto=" . $aux->qstr($cEntidad->getTlfContacto(), false) . "," : "";
+						$sql .= (trim(is_null($cEntidad->getPersonaContacto()) ? "" : $cEntidad->getPersonaContacto()) != "") ? "personaContacto=" . $aux->qstr($cEntidad->getPersonaContacto(), false) . "," : "";
 
 						$sql .= "umbral_aviso=" . $aux->qstr($cEntidad->getUmbral_aviso(), false) . ", ";
 						$sql .= "idsPruebas=" . $aux->qstr($cEntidad->getIdsPruebas(), false) . ", ";
@@ -537,6 +624,40 @@ class EmpresasDB
 						$this->msg_Error[]	= $sTypeError;
 						error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
 					}
+					else{
+						require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambiosDB.php");
+						require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambios.php");
+						$cEntidadHistorico_cambiosDB	= new Historico_cambiosDB($aux);  // Entidad DB Historico_cambios
+						$cEntidadHistorico_cambios		= new Historico_cambios();  // Entidad Historico_cambios
+						require_once(constant("DIR_WS_COM") . "Usuarios/UsuariosDB.php");
+						require_once(constant("DIR_WS_COM") . "Usuarios/Usuarios.php");
+						$_cEntidadUsuariosDB	= new UsuariosDB($aux);
+						$_cEntidadUsuarios		= new Usuarios();
+						$_cEntidadUsuarios->setIdUsuario($cEntidad->getUsuAlta());
+						$_cEntidadUsuariosDB->readEntidad($_cEntidadUsuarios);
+						$cEntidadHistorico_cambios->setFuncionalidad(basename($_SERVER['PHP_SELF']));
+						$cEntidadHistorico_cambios->setModo(constant("MNT_MODIFICAR"));
+						$cEntidadHistorico_cambios->setQuery($sql);
+						$cEntidadHistorico_cambios->setIp($_SERVER['REMOTE_ADDR']);
+						$cEntidadHistorico_cambios->setIdUsuario($_cEntidadUsuarios->getIdUsuario());
+						$cEntidadHistorico_cambios->setIdUsuarioTipo($_cEntidadUsuarios->getIdUsuarioTipo());
+						$cEntidadHistorico_cambios->setLogin($_cEntidadUsuarios->getLogin());
+						$cEntidadHistorico_cambios->setNombre($_cEntidadUsuarios->getNombre());
+						$cEntidadHistorico_cambios->setApellido1($_cEntidadUsuarios->getApellido1());
+						$cEntidadHistorico_cambios->setApellido2($_cEntidadUsuarios->getApellido2());
+						$cEntidadHistorico_cambios->setEmail($_cEntidadUsuarios->getEmail());
+						$cEntidadHistorico_cambios->setUsuAlta($cEntidad->getUsuAlta());
+						$cEntidadHistorico_cambios->setUsuMod($cEntidad->getUsuMod());
+						$HistId	= $cEntidadHistorico_cambiosDB->insertar($cEntidadHistorico_cambios);
+						if (empty($HistId)){
+							$this->msg_Error	= array();
+							$sTypeError	=	date('d/m/Y H:i:s') . " Error [GUARDANDO HISTORICO][" . constant("MNT_ALTA") . "][UsuariosDB]";
+							$this->msg_Error[]	= $sTypeError;
+							error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+							header('Location: ' . constant("HTTP_SERVER") . 'index.php');
+							exit;
+						}
+					}
 //****************************
 					if ($i == 0){
 						//Miramos si la empresa es de uso público
@@ -579,8 +700,8 @@ class EmpresasDB
 					$sql .= "pathLogo=" . $aux->qstr($cEntidad->getPathLogo(), false) . ", ";
 				$sql .= "nombre=" . $aux->qstr($cEntidad->getNombre(), false) . ", ";
 				$sql .= "cif=" . $aux->qstr($cEntidad->getCif(), false) . ", ";
-	  			$sql .= (trim($cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
-	  			$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+	  			$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
+	  			$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 				$sql .= "mail=" . $aux->qstr($cEntidad->getMail(), false) . ", ";
 				$sql .= "mail2=" . $aux->qstr($cEntidad->getMail2(), false) . ", ";
 				$sql .= "mail3=" . $aux->qstr($cEntidad->getMail3(), false) . ", ";
@@ -596,8 +717,8 @@ class EmpresasDB
 				$sql .= "Timezone=" . $aux->qstr($cEntidad->getTimezone(), false) . ", ";
 				$sql .= "direccion=" . $aux->qstr($cEntidad->getDireccion(), false) . ", ";
 
-				$sql .= (trim($cEntidad->getTlfContacto()) != "") ? "tlfContacto=" . $aux->qstr($cEntidad->getTlfContacto(), false) . "," : "";
-				$sql .= (trim($cEntidad->getPersonaContacto()) != "") ? "personaContacto=" . $aux->qstr($cEntidad->getPersonaContacto(), false) . "," : "";
+				$sql .= (trim(is_null($cEntidad->getTlfContacto()) ? "" : $cEntidad->getTlfContacto()) != "") ? "tlfContacto=" . $aux->qstr($cEntidad->getTlfContacto(), false) . "," : "";
+				$sql .= (trim(is_null($cEntidad->getPersonaContacto()) ? "" : $cEntidad->getPersonaContacto()) != "") ? "personaContacto=" . $aux->qstr($cEntidad->getPersonaContacto(), false) . "," : "";
 
 				$sql .= "umbral_aviso=" . $aux->qstr($cEntidad->getUmbral_aviso(), false) . ", ";
 				$sql .= "idsPruebas=" . $aux->qstr($cEntidad->getIdsPruebas(), false) . ", ";
@@ -626,6 +747,38 @@ class EmpresasDB
 					$this->msg_Error[]	= $sTypeError;
 					error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
 				}else{
+					require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambiosDB.php");
+					require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambios.php");
+					$cEntidadHistorico_cambiosDB	= new Historico_cambiosDB($aux);  // Entidad DB Historico_cambios
+					$cEntidadHistorico_cambios		= new Historico_cambios();  // Entidad Historico_cambios
+					require_once(constant("DIR_WS_COM") . "Usuarios/UsuariosDB.php");
+					require_once(constant("DIR_WS_COM") . "Usuarios/Usuarios.php");
+					$_cEntidadUsuariosDB	= new UsuariosDB($aux);
+					$_cEntidadUsuarios		= new Usuarios();
+					$_cEntidadUsuarios->setIdUsuario($cEntidad->getUsuAlta());
+					$_cEntidadUsuariosDB->readEntidad($_cEntidadUsuarios);
+					$cEntidadHistorico_cambios->setFuncionalidad(basename($_SERVER['PHP_SELF']));
+					$cEntidadHistorico_cambios->setModo(constant("MNT_MODIFICAR"));
+					$cEntidadHistorico_cambios->setQuery($sql);
+					$cEntidadHistorico_cambios->setIp($_SERVER['REMOTE_ADDR']);
+					$cEntidadHistorico_cambios->setIdUsuario($_cEntidadUsuarios->getIdUsuario());
+					$cEntidadHistorico_cambios->setIdUsuarioTipo($_cEntidadUsuarios->getIdUsuarioTipo());
+					$cEntidadHistorico_cambios->setLogin($_cEntidadUsuarios->getLogin());
+					$cEntidadHistorico_cambios->setNombre($_cEntidadUsuarios->getNombre());
+					$cEntidadHistorico_cambios->setApellido1($_cEntidadUsuarios->getApellido1());
+					$cEntidadHistorico_cambios->setApellido2($_cEntidadUsuarios->getApellido2());
+					$cEntidadHistorico_cambios->setEmail($_cEntidadUsuarios->getEmail());
+					$cEntidadHistorico_cambios->setUsuAlta($cEntidad->getUsuAlta());
+					$cEntidadHistorico_cambios->setUsuMod($cEntidad->getUsuMod());
+					$HistId	= $cEntidadHistorico_cambiosDB->insertar($cEntidadHistorico_cambios);
+					if (empty($HistId)){
+						$this->msg_Error	= array();
+						$sTypeError	=	date('d/m/Y H:i:s') . " Error [GUARDANDO HISTORICO][" . constant("MNT_ALTA") . "][UsuariosDB]";
+						$this->msg_Error[]	= $sTypeError;
+						error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+						header('Location: ' . constant("HTTP_SERVER") . 'index.php');
+						exit;
+					}
 					//Miramos si la empresa es de uso público
 					if ($cEntidad->getPublico() != ""){
 					}else{
@@ -714,15 +867,15 @@ class EmpresasDB
 			$sql = "UPDATE empresas SET ";
 			$sql .= "nombre=" . $aux->qstr($cEntidad->getNombre(), false) . ", ";
 			$sql .= "cif=" . $aux->qstr($cEntidad->getCif(), false) . ", ";
-	  		$sql .= (trim($cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
-//	  		$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+	  		$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
+//	  		$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 			$sql .= "mail=" . $aux->qstr($cEntidad->getMail(), false) . ", ";
 			$sql .= "mail2=" . $aux->qstr($cEntidad->getMail2(), false) . ", ";
 			$sql .= "mail3=" . $aux->qstr($cEntidad->getMail3(), false) . ", ";
 			$sql .= "distribuidor=" . $aux->qstr($cEntidad->getDistribuidor(), false) . ", ";
 			$sql .= "prepago=" . $aux->qstr($cEntidad->getPrepago(), false) . ", ";
 			$sql .= "ncandidatos=" . $aux->qstr($cEntidad->getNcandidatos(), false) . ", ";
-			$sql .= "dongles=" . $aux->qstr($cEntidad->getDongles(), false) . ", ";
+//			$sql .= "dongles=" . $aux->qstr($cEntidad->getDongles(), false) . ", ";
 			$sql .= "entidad=" . $aux->qstr($cEntidad->getEntidad(), false) . ", ";
 			$sql .= "oficina=" . $aux->qstr($cEntidad->getOficina(), false) . ", ";
 			$sql .= "dc=" . $aux->qstr($cEntidad->getDc(), false) . ", ";
@@ -731,8 +884,8 @@ class EmpresasDB
 			$sql .= "Timezone=" . $aux->qstr($cEntidad->getTimezone(), false) . ", ";
 			$sql .= "direccion=" . $aux->qstr($cEntidad->getDireccion(), false) . ", ";
 
-			$sql .= (trim($cEntidad->getTlfContacto()) != "") ? "tlfContacto=" . $aux->qstr($cEntidad->getTlfContacto(), false) . "," : "";
-			$sql .= (trim($cEntidad->getPersonaContacto()) != "") ? "personaContacto=" . $aux->qstr($cEntidad->getPersonaContacto(), false) . "," : "";
+			$sql .= (trim(is_null($cEntidad->getTlfContacto()) ? "" : $cEntidad->getTlfContacto()) != "") ? "tlfContacto=" . $aux->qstr($cEntidad->getTlfContacto(), false) . "," : "";
+			$sql .= (trim(is_null($cEntidad->getPersonaContacto()) ? "" : $cEntidad->getPersonaContacto()) != "") ? "personaContacto=" . $aux->qstr($cEntidad->getPersonaContacto(), false) . "," : "";
 
 			$sql .= "umbral_aviso=" . $aux->qstr($cEntidad->getUmbral_aviso(), false) . ", ";
 			$sql .= "idsPruebas=" . $aux->qstr($cEntidad->getIdsPruebas(), false) . ", ";
@@ -764,6 +917,38 @@ class EmpresasDB
 				$this->msg_Error[]	= $sTypeError;
 				error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
 			}else{
+				require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambiosDB.php");
+				require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambios.php");
+				$cEntidadHistorico_cambiosDB	= new Historico_cambiosDB($aux);  // Entidad DB Historico_cambios
+				$cEntidadHistorico_cambios		= new Historico_cambios();  // Entidad Historico_cambios
+				require_once(constant("DIR_WS_COM") . "Usuarios/UsuariosDB.php");
+				require_once(constant("DIR_WS_COM") . "Usuarios/Usuarios.php");
+				$_cEntidadUsuariosDB	= new UsuariosDB($aux);
+				$_cEntidadUsuarios		= new Usuarios();
+				$_cEntidadUsuarios->setIdUsuario($cEntidad->getUsuAlta());
+				$_cEntidadUsuariosDB->readEntidad($_cEntidadUsuarios);
+				$cEntidadHistorico_cambios->setFuncionalidad(basename($_SERVER['PHP_SELF']));
+				$cEntidadHistorico_cambios->setModo(constant("MNT_MODIFICAR"));
+				$cEntidadHistorico_cambios->setQuery($sql);
+				$cEntidadHistorico_cambios->setIp($_SERVER['REMOTE_ADDR']);
+				$cEntidadHistorico_cambios->setIdUsuario($_cEntidadUsuarios->getIdUsuario());
+				$cEntidadHistorico_cambios->setIdUsuarioTipo($_cEntidadUsuarios->getIdUsuarioTipo());
+				$cEntidadHistorico_cambios->setLogin($_cEntidadUsuarios->getLogin());
+				$cEntidadHistorico_cambios->setNombre($_cEntidadUsuarios->getNombre());
+				$cEntidadHistorico_cambios->setApellido1($_cEntidadUsuarios->getApellido1());
+				$cEntidadHistorico_cambios->setApellido2($_cEntidadUsuarios->getApellido2());
+				$cEntidadHistorico_cambios->setEmail($_cEntidadUsuarios->getEmail());
+				$cEntidadHistorico_cambios->setUsuAlta($cEntidad->getUsuAlta());
+				$cEntidadHistorico_cambios->setUsuMod($cEntidad->getUsuMod());
+				$HistId	= $cEntidadHistorico_cambiosDB->insertar($cEntidadHistorico_cambios);
+				if (empty($HistId)){
+					$this->msg_Error	= array();
+					$sTypeError	=	date('d/m/Y H:i:s') . " Error [GUARDANDO HISTORICO][" . constant("MNT_ALTA") . "][UsuariosDB]";
+					$this->msg_Error[]	= $sTypeError;
+					error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+					header('Location: ' . constant("HTTP_SERVER") . 'index.php');
+					exit;
+				}
 				//Miramos si la empresa es de uso público
 				if ($cEntidad->getPublico() != ""){
 				}else{
@@ -861,15 +1046,15 @@ class EmpresasDB
 							$sql .= "pathLogo=" . $aux->qstr($cEntidad->getPathLogo(), false) . ", ";
 						$sql .= "nombre=" . $aux->qstr($cEntidad->getNombre(), false) . ", ";
 						$sql .= "cif=" . $aux->qstr($cEntidad->getCif(), false) . ", ";
-				  		$sql .= (trim($cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
-				  		$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+				  		$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
+				  		$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 						$sql .= "mail=" . $aux->qstr($cEntidad->getMail(), false) . ", ";
 						$sql .= "mail2=" . $aux->qstr($cEntidad->getMail2(), false) . ", ";
 						$sql .= "mail3=" . $aux->qstr($cEntidad->getMail3(), false) . ", ";
 						$sql .= "distribuidor=" . $aux->qstr($cEntidad->getDistribuidor(), false) . ", ";
 						$sql .= "prepago=" . $aux->qstr($cEntidad->getPrepago(), false) . ", ";
 						$sql .= "ncandidatos=" . $aux->qstr($cEntidad->getNcandidatos(), false) . ", ";
-						$sql .= "dongles=" . $aux->qstr($cEntidad->getDongles(), false) . ", ";
+//						$sql .= "dongles=" . $aux->qstr($cEntidad->getDongles(), false) . ", ";
 						$sql .= "entidad=" . $aux->qstr($cEntidad->getEntidad(), false) . ", ";
 						$sql .= "oficina=" . $aux->qstr($cEntidad->getOficina(), false) . ", ";
 						$sql .= "dc=" . $aux->qstr($cEntidad->getDc(), false) . ", ";
@@ -878,8 +1063,8 @@ class EmpresasDB
 						$sql .= "Timezone=" . $aux->qstr($cEntidad->getTimezone(), false) . ", ";
 						$sql .= "direccion=" . $aux->qstr($cEntidad->getDireccion(), false) . ", ";
 
-						$sql .= (trim($cEntidad->getTlfContacto()) != "") ? "tlfContacto=" . $aux->qstr($cEntidad->getTlfContacto(), false) . "," : "";
-						$sql .= (trim($cEntidad->getPersonaContacto()) != "") ? "personaContacto=" . $aux->qstr($cEntidad->getPersonaContacto(), false) . "," : "";
+						$sql .= (trim(is_null($cEntidad->getTlfContacto()) ? "" : $cEntidad->getTlfContacto()) != "") ? "tlfContacto=" . $aux->qstr($cEntidad->getTlfContacto(), false) . "," : "";
+						$sql .= (trim(is_null($cEntidad->getPersonaContacto()) ? "" : $cEntidad->getPersonaContacto()) != "") ? "personaContacto=" . $aux->qstr($cEntidad->getPersonaContacto(), false) . "," : "";
 
 						$sql .= "umbral_aviso=" . $aux->qstr($cEntidad->getUmbral_aviso(), false) . ", ";
 						$sql .= "idsPruebas=" . $aux->qstr($cEntidad->getIdsPruebas(), false) . ", ";
@@ -926,6 +1111,40 @@ class EmpresasDB
 						$this->msg_Error[]	= $sTypeError;
 						error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
 					}
+					else{
+						require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambiosDB.php");
+						require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambios.php");
+						$cEntidadHistorico_cambiosDB	= new Historico_cambiosDB($aux);  // Entidad DB Historico_cambios
+						$cEntidadHistorico_cambios		= new Historico_cambios();  // Entidad Historico_cambios
+						require_once(constant("DIR_WS_COM") . "Usuarios/UsuariosDB.php");
+						require_once(constant("DIR_WS_COM") . "Usuarios/Usuarios.php");
+						$_cEntidadUsuariosDB	= new UsuariosDB($aux);
+						$_cEntidadUsuarios		= new Usuarios();
+						$_cEntidadUsuarios->setIdUsuario($cEntidad->getUsuAlta());
+						$_cEntidadUsuariosDB->readEntidad($_cEntidadUsuarios);
+						$cEntidadHistorico_cambios->setFuncionalidad(basename($_SERVER['PHP_SELF']));
+						$cEntidadHistorico_cambios->setModo(constant("MNT_MODIFICAR"));
+						$cEntidadHistorico_cambios->setQuery($sql);
+						$cEntidadHistorico_cambios->setIp($_SERVER['REMOTE_ADDR']);
+						$cEntidadHistorico_cambios->setIdUsuario($_cEntidadUsuarios->getIdUsuario());
+						$cEntidadHistorico_cambios->setIdUsuarioTipo($_cEntidadUsuarios->getIdUsuarioTipo());
+						$cEntidadHistorico_cambios->setLogin($_cEntidadUsuarios->getLogin());
+						$cEntidadHistorico_cambios->setNombre($_cEntidadUsuarios->getNombre());
+						$cEntidadHistorico_cambios->setApellido1($_cEntidadUsuarios->getApellido1());
+						$cEntidadHistorico_cambios->setApellido2($_cEntidadUsuarios->getApellido2());
+						$cEntidadHistorico_cambios->setEmail($_cEntidadUsuarios->getEmail());
+						$cEntidadHistorico_cambios->setUsuAlta($cEntidad->getUsuAlta());
+						$cEntidadHistorico_cambios->setUsuMod($cEntidad->getUsuMod());
+						$HistId	= $cEntidadHistorico_cambiosDB->insertar($cEntidadHistorico_cambios);
+						if (empty($HistId)){
+							$this->msg_Error	= array();
+							$sTypeError	=	date('d/m/Y H:i:s') . " Error [GUARDANDO HISTORICO][" . constant("MNT_ALTA") . "][UsuariosDB]";
+							$this->msg_Error[]	= $sTypeError;
+							error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+							header('Location: ' . constant("HTTP_SERVER") . 'index.php');
+							exit;
+						}
+					}
 //****************************
 					if ($i == 0){
 						//Miramos si la empresa es de uso público
@@ -968,15 +1187,15 @@ class EmpresasDB
 					$sql .= "pathLogo=" . $aux->qstr($cEntidad->getPathLogo(), false) . ", ";
 				$sql .= "nombre=" . $aux->qstr($cEntidad->getNombre(), false) . ", ";
 				$sql .= "cif=" . $aux->qstr($cEntidad->getCif(), false) . ", ";
-	  			$sql .= (trim($cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
-	  			$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+	  			$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
+	  			$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 				$sql .= "mail=" . $aux->qstr($cEntidad->getMail(), false) . ", ";
 				$sql .= "mail2=" . $aux->qstr($cEntidad->getMail2(), false) . ", ";
 				$sql .= "mail3=" . $aux->qstr($cEntidad->getMail3(), false) . ", ";
 				$sql .= "distribuidor=" . $aux->qstr($cEntidad->getDistribuidor(), false) . ", ";
 				$sql .= "prepago=" . $aux->qstr($cEntidad->getPrepago(), false) . ", ";
 				$sql .= "ncandidatos=" . $aux->qstr($cEntidad->getNcandidatos(), false) . ", ";
-				$sql .= "dongles=" . $aux->qstr($cEntidad->getDongles(), false) . ", ";
+//				$sql .= "dongles=" . $aux->qstr($cEntidad->getDongles(), false) . ", ";
 				$sql .= "entidad=" . $aux->qstr($cEntidad->getEntidad(), false) . ", ";
 				$sql .= "oficina=" . $aux->qstr($cEntidad->getOficina(), false) . ", ";
 				$sql .= "dc=" . $aux->qstr($cEntidad->getDc(), false) . ", ";
@@ -985,8 +1204,8 @@ class EmpresasDB
 				$sql .= "Timezone=" . $aux->qstr($cEntidad->getTimezone(), false) . ", ";
 				$sql .= "direccion=" . $aux->qstr($cEntidad->getDireccion(), false) . ", ";
 
-				$sql .= (trim($cEntidad->getTlfContacto()) != "") ? "tlfContacto=" . $aux->qstr($cEntidad->getTlfContacto(), false) . "," : "";
-				$sql .= (trim($cEntidad->getPersonaContacto()) != "") ? "personaContacto=" . $aux->qstr($cEntidad->getPersonaContacto(), false) . "," : "";
+				$sql .= (trim(is_null($cEntidad->getTlfContacto()) ? "" : $cEntidad->getTlfContacto()) != "") ? "tlfContacto=" . $aux->qstr($cEntidad->getTlfContacto(), false) . "," : "";
+				$sql .= (trim(is_null($cEntidad->getPersonaContacto()) ? "" : $cEntidad->getPersonaContacto()) != "") ? "personaContacto=" . $aux->qstr($cEntidad->getPersonaContacto(), false) . "," : "";
 
 				$sql .= "umbral_aviso=" . $aux->qstr($cEntidad->getUmbral_aviso(), false) . ", ";
 				$sql .= "idsPruebas=" . $aux->qstr($cEntidad->getIdsPruebas(), false) . ", ";
@@ -1016,6 +1235,38 @@ class EmpresasDB
 					$this->msg_Error[]	= $sTypeError;
 					error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
 				}else{
+					require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambiosDB.php");
+					require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambios.php");
+					$cEntidadHistorico_cambiosDB	= new Historico_cambiosDB($aux);  // Entidad DB Historico_cambios
+					$cEntidadHistorico_cambios		= new Historico_cambios();  // Entidad Historico_cambios
+					require_once(constant("DIR_WS_COM") . "Usuarios/UsuariosDB.php");
+					require_once(constant("DIR_WS_COM") . "Usuarios/Usuarios.php");
+					$_cEntidadUsuariosDB	= new UsuariosDB($aux);
+					$_cEntidadUsuarios		= new Usuarios();
+					$_cEntidadUsuarios->setIdUsuario($cEntidad->getUsuAlta());
+					$_cEntidadUsuariosDB->readEntidad($_cEntidadUsuarios);
+					$cEntidadHistorico_cambios->setFuncionalidad(basename($_SERVER['PHP_SELF']));
+					$cEntidadHistorico_cambios->setModo(constant("MNT_MODIFICAR"));
+					$cEntidadHistorico_cambios->setQuery($sql);
+					$cEntidadHistorico_cambios->setIp($_SERVER['REMOTE_ADDR']);
+					$cEntidadHistorico_cambios->setIdUsuario($_cEntidadUsuarios->getIdUsuario());
+					$cEntidadHistorico_cambios->setIdUsuarioTipo($_cEntidadUsuarios->getIdUsuarioTipo());
+					$cEntidadHistorico_cambios->setLogin($_cEntidadUsuarios->getLogin());
+					$cEntidadHistorico_cambios->setNombre($_cEntidadUsuarios->getNombre());
+					$cEntidadHistorico_cambios->setApellido1($_cEntidadUsuarios->getApellido1());
+					$cEntidadHistorico_cambios->setApellido2($_cEntidadUsuarios->getApellido2());
+					$cEntidadHistorico_cambios->setEmail($_cEntidadUsuarios->getEmail());
+					$cEntidadHistorico_cambios->setUsuAlta($cEntidad->getUsuAlta());
+					$cEntidadHistorico_cambios->setUsuMod($cEntidad->getUsuMod());
+					$HistId	= $cEntidadHistorico_cambiosDB->insertar($cEntidadHistorico_cambios);
+					if (empty($HistId)){
+						$this->msg_Error	= array();
+						$sTypeError	=	date('d/m/Y H:i:s') . " Error [GUARDANDO HISTORICO][" . constant("MNT_ALTA") . "][UsuariosDB]";
+						$this->msg_Error[]	= $sTypeError;
+						error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+						header('Location: ' . constant("HTTP_SERVER") . 'index.php');
+						exit;
+					}
 					//Miramos si la empresa es de uso público
 					if ($cEntidad->getPublico() != ""){
 					}else{
@@ -1089,6 +1340,39 @@ class EmpresasDB
 				$sTypeError	=	date('d/m/Y H:i:s') . " Error SQL [" . constant("MNT_BORRAR") . "][EmpresasDB]";
 				$this->msg_Error[]	= $sTypeError;
 				error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+			}else{
+				require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambiosDB.php");
+				require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambios.php");
+				$cEntidadHistorico_cambiosDB	= new Historico_cambiosDB($aux);  // Entidad DB Historico_cambios
+				$cEntidadHistorico_cambios		= new Historico_cambios();  // Entidad Historico_cambios
+				require_once(constant("DIR_WS_COM") . "Usuarios/UsuariosDB.php");
+				require_once(constant("DIR_WS_COM") . "Usuarios/Usuarios.php");
+				$_cEntidadUsuariosDB	= new UsuariosDB($aux);
+				$_cEntidadUsuarios		= new Usuarios();
+				$_cEntidadUsuarios->setIdUsuario($cEntidad->getUsuAlta());
+				$_cEntidadUsuariosDB->readEntidad($_cEntidadUsuarios);
+				$cEntidadHistorico_cambios->setFuncionalidad(basename($_SERVER['PHP_SELF']));
+				$cEntidadHistorico_cambios->setModo(constant("MNT_MODIFICAR"));
+				$cEntidadHistorico_cambios->setQuery($sql);
+				$cEntidadHistorico_cambios->setIp($_SERVER['REMOTE_ADDR']);
+				$cEntidadHistorico_cambios->setIdUsuario($_cEntidadUsuarios->getIdUsuario());
+				$cEntidadHistorico_cambios->setIdUsuarioTipo($_cEntidadUsuarios->getIdUsuarioTipo());
+				$cEntidadHistorico_cambios->setLogin($_cEntidadUsuarios->getLogin());
+				$cEntidadHistorico_cambios->setNombre($_cEntidadUsuarios->getNombre());
+				$cEntidadHistorico_cambios->setApellido1($_cEntidadUsuarios->getApellido1());
+				$cEntidadHistorico_cambios->setApellido2($_cEntidadUsuarios->getApellido2());
+				$cEntidadHistorico_cambios->setEmail($_cEntidadUsuarios->getEmail());
+				$cEntidadHistorico_cambios->setUsuAlta($cEntidad->getUsuAlta());
+				$cEntidadHistorico_cambios->setUsuMod($cEntidad->getUsuMod());
+				$HistId	= $cEntidadHistorico_cambiosDB->insertar($cEntidadHistorico_cambios);
+				if (empty($HistId)){
+					$this->msg_Error	= array();
+					$sTypeError	=	date('d/m/Y H:i:s') . " Error [GUARDANDO HISTORICO][" . constant("MNT_ALTA") . "][UsuariosDB]";
+					$this->msg_Error[]	= $sTypeError;
+					error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+					header('Location: ' . constant("HTTP_SERVER") . 'index.php');
+					exit;
+				}
 			}
 			//Borramos el registro de la Entidad (borrado Físico).
 			$sql  ="DELETE FROM empresas ";
@@ -1106,6 +1390,38 @@ class EmpresasDB
 				$this->msg_Error[]	= $sTypeError;
 				error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
 			}else{
+				require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambiosDB.php");
+				require_once(constant("DIR_WS_COM") . "Historico_cambios/Historico_cambios.php");
+				$cEntidadHistorico_cambiosDB	= new Historico_cambiosDB($aux);  // Entidad DB Historico_cambios
+				$cEntidadHistorico_cambios		= new Historico_cambios();  // Entidad Historico_cambios
+				require_once(constant("DIR_WS_COM") . "Usuarios/UsuariosDB.php");
+				require_once(constant("DIR_WS_COM") . "Usuarios/Usuarios.php");
+				$_cEntidadUsuariosDB	= new UsuariosDB($aux);
+				$_cEntidadUsuarios		= new Usuarios();
+				$_cEntidadUsuarios->setIdUsuario($cEntidad->getUsuAlta());
+				$_cEntidadUsuariosDB->readEntidad($_cEntidadUsuarios);
+				$cEntidadHistorico_cambios->setFuncionalidad(basename($_SERVER['PHP_SELF']));
+				$cEntidadHistorico_cambios->setModo(constant("MNT_BORRAR"));
+				$cEntidadHistorico_cambios->setQuery($sql);
+				$cEntidadHistorico_cambios->setIp($_SERVER['REMOTE_ADDR']);
+				$cEntidadHistorico_cambios->setIdUsuario($_cEntidadUsuarios->getIdUsuario());
+				$cEntidadHistorico_cambios->setIdUsuarioTipo($_cEntidadUsuarios->getIdUsuarioTipo());
+				$cEntidadHistorico_cambios->setLogin($_cEntidadUsuarios->getLogin());
+				$cEntidadHistorico_cambios->setNombre($_cEntidadUsuarios->getNombre());
+				$cEntidadHistorico_cambios->setApellido1($_cEntidadUsuarios->getApellido1());
+				$cEntidadHistorico_cambios->setApellido2($_cEntidadUsuarios->getApellido2());
+				$cEntidadHistorico_cambios->setEmail($_cEntidadUsuarios->getEmail());
+				$cEntidadHistorico_cambios->setUsuAlta($cEntidad->getUsuAlta());
+				$cEntidadHistorico_cambios->setUsuMod($cEntidad->getUsuMod());
+				$HistId	= $cEntidadHistorico_cambiosDB->insertar($cEntidadHistorico_cambios);
+				if (empty($HistId)){
+					$this->msg_Error	= array();
+					$sTypeError	=	date('d/m/Y H:i:s') . " Error [GUARDANDO HISTORICO][" . constant("MNT_ALTA") . "][UsuariosDB]";
+					$this->msg_Error[]	= $sTypeError;
+					error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+					header('Location: ' . constant("HTTP_SERVER") . 'index.php');
+					exit;
+				}
 				$this->getListaOrdenDel($cEntidad);
 			}
 		}else $retorno=false;
@@ -1157,6 +1473,10 @@ class EmpresasDB
 					$cEntidad->setPersonaContacto($arr['personaContacto']);
 
 					$cEntidad->setUmbral_aviso($arr['umbral_aviso']);
+					$cEntidad->setpower_bi_token($arr['power_bi_token']);
+					$cEntidad->setpower_bi_active($arr['power_bi_active']);
+					$cEntidad->setpower_bi_token_fit($arr['power_bi_token_fit']);
+					$cEntidad->setpower_bi_active_fit($arr['power_bi_active_fit']);
 					$cEntidad->setIdsPruebas($arr['idsPruebas']);
 					$cEntidad->setIdsPruebasAleatorias($arr['idsPruebasAleatorias']);
 
@@ -1263,6 +1583,10 @@ function readEntidadSinPass($cEntidad)
 					$cEntidad->setPersonaContacto($arr['personaContacto']);
 
 					$cEntidad->setUmbral_aviso($arr['umbral_aviso']);
+					$cEntidad->setpower_bi_token($arr['power_bi_token']);
+					$cEntidad->setpower_bi_active($arr['power_bi_active']);
+					$cEntidad->setpower_bi_token_fit($arr['power_bi_token_fit']);
+					$cEntidad->setpower_bi_active_fit($arr['power_bi_active_fit']);
 					$cEntidad->setIdsPruebas($arr['idsPruebas']);
 					$cEntidad->setIdsPruebasAleatorias($arr['idsPruebasAleatorias']);
 
@@ -1379,6 +1703,10 @@ function readEntidadSinPass($cEntidad)
 					$cEntidad->setPersonaContacto($arr['personaContacto']);
 
 					$cEntidad->setUmbral_aviso($arr['umbral_aviso']);
+					$cEntidad->setpower_bi_token($arr['power_bi_token']);
+					$cEntidad->setpower_bi_active($arr['power_bi_active']);
+					$cEntidad->setpower_bi_token_fit($arr['power_bi_token_fit']);
+					$cEntidad->setpower_bi_active_fit($arr['power_bi_active_fit']);
 					$cEntidad->setIdsPruebas($arr['idsPruebas']);
 					$cEntidad->setIdsPruebasAleatorias($arr['idsPruebasAleatorias']);
 
@@ -2703,6 +3031,10 @@ function readEntidadSinPass($cEntidad)
 					$cEntidad->setPersonaContacto($arr['personaContacto']);
 
 					$cEntidad->setUmbral_aviso($arr['umbral_aviso']);
+					$cEntidad->setpower_bi_token($arr['power_bi_token']);
+					$cEntidad->setpower_bi_active($arr['power_bi_active']);
+					$cEntidad->setpower_bi_token_fit($arr['power_bi_token_fit']);
+					$cEntidad->setpower_bi_active_fit($arr['power_bi_active_fit']);
 					$cEntidad->setIdsPruebas($arr['idsPruebas']);
 					$cEntidad->setIdsPruebasAleatorias($arr['idsPruebasAleatorias']);
 
@@ -3205,6 +3537,10 @@ function readEntidadSinPass($cEntidad)
 					$cEntidad->setPersonaContacto($arr['personaContacto']);
 
 					$cEntidad->setUmbral_aviso($arr['umbral_aviso']);
+					$cEntidad->setpower_bi_token($arr['power_bi_token']);
+					$cEntidad->setpower_bi_active($arr['power_bi_active']);
+					$cEntidad->setpower_bi_token_fit($arr['power_bi_token_fit']);
+					$cEntidad->setpower_bi_active_fit($arr['power_bi_active_fit']);
 					$cEntidad->setIdsPruebas($arr['idsPruebas']);
 					$cEntidad->setIdsPruebasAleatorias($arr['idsPruebasAleatorias']);
 

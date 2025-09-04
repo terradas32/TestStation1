@@ -780,14 +780,20 @@ include_once ('include/conexion.php');
 			//Indicamos cual es nuestra dirección de correo y el nombre que
 			//queremos que vea el usuario que lee nuestro correo
 			//$mail->From = $cEmpresa->getMail();
+
+			// Update 2025-08-04 [Nair E. Marinćak]: Todo lo que sale del buzón de TS si le dan responder tiene que volver al buzón de TS únicamente
+			// Update 2025-08-04 [Nair E. Marinćak]: Todo sale desde ese correo
 			$mail->From = constant("MAILUSERNAME");
 			if ($cProcesos->getProcesoConfidencial() == "1"){
-				$mail->AddReplyTo(constant("MAILUSERNAME"), constant("NOMBRE_EMPRESA"));
+				//$mail->AddReplyTo(constant("MAILUSERNAME"), constant("NOMBRE_EMPRESA"));
 				$mail->FromName = constant("NOMBRE_EMPRESA");
 			}else{
-				$mail->AddReplyTo($cEmpresa->getMail(), $cEmpresa->getNombre());
+				//$mail->AddReplyTo($cEmpresa->getMail(), $cEmpresa->getNombre());
 				$mail->FromName = $cEmpresa->getNombre();
 			}
+			//$mail->AddReplyTo();
+			//$mail->addReplyTo(constant("MAILUSERNAME"));
+
 			//Asignamos asunto y cuerpo del mensaje
 			//El cuerpo del mensaje lo ponemos en formato html, haciendo
 			//que se vea en negrita

@@ -781,7 +781,7 @@ include_once ('include/conexion.php');
 									include('Template/Informes_candidato/generaPrueba' . $cPruebas->getIdPrueba() . '.php');
 
 									//Para las de Personalidad
-//									echo "<br />" . $sLlamada;
+									//echo "<br />" . $sLlamada;
 									if ($sLlamada != "Candidato" )
  									{
 										if (isset($aSQLPuntuacionesPPL) || isset($aSQLPuntuacionesC))
@@ -1639,7 +1639,7 @@ include_once ('include/conexion.php');
 				}
 				//Miramos si ya esiste el pdf, si existe el pdf es que ya fueron descontadas las unidades y no ha pasado un año
 				//Con lo que no habria que descontar nada aunque no tenga unidades
-				$sNombre = $cUtilidades->SEOTitulo($cPruebas->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $_POST['fIdEmpresa'] . "_" . $_POST['fIdProceso'] . "_" . $_POST['fIdTipoInforme'] . "_" . $_POST['fCodIdiomaIso2'] . "_" . $_POST['fIdBaremo']);
+				$sNombre = $cUtilidades->SEOTitulo($cPruebas->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $_POST['fIdEmpresa'] . "_" . $_POST['fIdProceso'] . "_" . $_POST['fIdTipoInforme'] . "_" . $_POST['fCodIdiomaIso2'] . "_" . $_POST['fIdBaremo']);				
 				$sDirImg="imgInformes/";
 				$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT_ADMIN"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . '/' : constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
 				$_ficheroPDF = $spath . $sDirImg . $sNombre . ".rtf";
@@ -2001,6 +2001,8 @@ include_once ('include/conexion.php');
 					}else{
 						$bPDFGenerado = false;
 					}
+				//echo $_POST['fIdEmpresa'] . "_" . $_POST['fIdProceso'] . "_" . $_POST['fIdTipoInforme'] . "_" . $_POST['fCodIdiomaIso2'] . "_" . $_POST['fIdBaremo'];
+
 //					echo "<br />Generado::" . $bPDFGenerado;
 					if (!$bPDFGenerado)
 					{

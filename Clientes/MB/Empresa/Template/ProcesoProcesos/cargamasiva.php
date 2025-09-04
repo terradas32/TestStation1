@@ -19,7 +19,7 @@
 		<td colspan="3" style="height:10px;" >&nbsp;</td>
 	</tr>
 	<tr>
-		<td colspan="3" style="height:10px;" ><?php echo constant("MSG_IMPORTAR_CANDIDATOS");?> <a href="<?php echo constant("HTTP_SERVER") . "ejemplo.csv";?>" class="naranja">ejemplo.csv</a></td>
+		<td colspan="3" style="height:10px;" ><?php echo constant("MSG_IMPORTAR_CANDIDATOS");?> <a href="<?php echo (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? constant("HTTPS_SERVER") : constant("HTTP_SERVER")) . "ejemplo.csv";?>" class="naranja">ejemplo.csv</a></td>
 	</tr>
 	<tr>
 		<td colspan="3" style="height:10px;" ></td>

@@ -298,8 +298,8 @@ include_once ('include/conexionECases.php');
 			$cRespuestasPruebas = $cRespuestasPruebasDB->readEntidad($cRespuestasPruebas);
 
 			$cRespuestasPruebas->setFinalizado("1");
-			$cRespuestasPruebas->setMinutos_test($sMinutos);
-			$cRespuestasPruebas->setSegundos_test($sSegundos);
+			//$cRespuestasPruebas->setMinutos_test($sMinutos);
+			//$cRespuestasPruebas->setSegundos_test($sSegundos);
 			$cRespuestasPruebasDB->modificar($cRespuestasPruebas);
 			$bSinFinalizar=false;
     	}else{
@@ -353,8 +353,8 @@ include_once ('include/conexionECases.php');
 					$cRespuestasPruebas = $cRespuestasPruebasDB->readEntidad($cRespuestasPruebas);
 
 					$cRespuestasPruebas->setFinalizado("1");
-					$cRespuestasPruebas->setMinutos_test($sMinutos);
-					$cRespuestasPruebas->setSegundos_test($sSegundos);
+					//$cRespuestasPruebas->setMinutos_test($sMinutos);
+					//$cRespuestasPruebas->setSegundos_test($sSegundos);
 					$cRespuestasPruebasDB->modificar($cRespuestasPruebas);
 					$bSinFinalizar=false;
 				}else {
@@ -434,6 +434,8 @@ include_once ('include/conexionECases.php');
 	    	$cBaremosDB = new BaremosDB($conn);
 
 	    	$dTotalCoste=0;
+			$iProcesos_informes = 0;
+			$NOGenerarFICHERO_INFORME = "0";
 	    	while(!$rsProceso_baremos->EOF)
 	    	{
 		    	//4º Miramos que dongles hay que facturar para la prueba finalizada,
@@ -461,9 +463,11 @@ include_once ('include/conexionECases.php');
     			$cBaremos = $cBaremosDB->readEntidad($cBaremos);
     			$_sBaremo = $cBaremos->getNombre();
 
-
 	   			while(!$rsProceso_informes->EOF)
 	    		{
+					if($iProcesos_informes > 0){
+						$NOGenerarFICHERO_INFORME=1;
+					}
 	    			//Cambiar Dongels por Cliente/Prueba/Informe
 	    			//Miramos si tiene definido dongles por empresa
 	    			//5º Miramos el coste
@@ -491,7 +495,7 @@ include_once ('include/conexionECases.php');
 						$cTipos_informes->setIdTipoInforme($cInformes_pruebas->getIdTipoInforme());
 						$cTipos_informes = $cTipos_informesDB->readEntidad($cTipos_informes);
 
-						//$dTotalCoste += $cInformes_pruebas->getTarifa();
+						//$dTotalCoste += (int)$cInformes_pruebas->getTarifa();
 
 						//6º Insertamos por cada informe una línea en Consumo
 						$cConsumos = new Consumos();
@@ -534,7 +538,7 @@ include_once ('include/conexionECases.php');
 						$cConsumos->setConcepto(constant("STR_PRUEBA_FINALIZADA"));
 						$cConsRead->setConcepto(constant("STR_PRUEBA_FINALIZADA"));
 
-						$cConsumos->setUnidades($cInformes_pruebas->getTarifa());
+						$cConsumos->setUnidades((int)$cInformes_pruebas->getTarifa());
 						$cConsumos->setUsuAlta($cCandidato->getIdCandidato());
 						$cConsumos->setUsuMod($cCandidato->getIdCandidato());
 						//Revisamos si ya se le ha cobrado, si el Candidato actualiza la página, no hay que cobrar dos veces
@@ -544,7 +548,7 @@ include_once ('include/conexionECases.php');
 						$iConsRead = $rsConsRead->NumRows();
 						if ($iConsRead <= 0)
 						{
-							$dTotalCoste += $cInformes_pruebas->getTarifa();
+							$dTotalCoste += (int)$cInformes_pruebas->getTarifa();
 							$idConsumo = $cConsumosDB->insertar($cConsumos);
 							$sDescuentaMatriz = $cEmpresaConsumo->getDescuentaMatriz();
 							if (!empty($sDescuentaMatriz)){
@@ -594,17 +598,18 @@ include_once ('include/conexionECases.php');
 							// fIdCandidato Id Candidato 1
 							// fCodIdiomaIso2Prueba Idioma prueba es
 							// fIdBaremo Id Baremo, prisma no tiene , le pasamos 1
-							$cmd = constant("DIR_FS_PATH_PHP") . ' ' . str_replace("Candidato", "Admin", constant("DIR_FS_DOCUMENT_ROOT")) . '/Informes_candidato.php 1 627 ' . $cInformes_pruebas->getIdTipoInforme() . ' ' . $cInformes_pruebas->getCodIdiomaIso2() . ' ' . $_POST['fIdPrueba'] . ' ' . $_POST['fIdEmpresa'] . ' ' . $_POST['fIdProceso'] . ' ' . $_POST['fIdCandidato'] . ' ' . $_POST['fCodIdiomaIso2'] . ' 1';
+							$cmd = constant("DIR_FS_PATH_PHP") . ' ' . str_replace("Candidato", "Admin", constant("DIR_FS_DOCUMENT_ROOT")) . '/Informes_candidato.php 1 627 ' . $cInformes_pruebas->getIdTipoInforme() . ' ' . $cInformes_pruebas->getCodIdiomaIso2() . ' ' . $_POST['fIdPrueba'] . ' ' . $_POST['fIdEmpresa'] . ' ' . $_POST['fIdProceso'] . ' ' . $_POST['fIdCandidato'] . ' ' . $_POST['fCodIdiomaIso2'] . ' 1 ' . $NOGenerarFICHERO_INFORME;
 							//$cUtilidades->execInBackground($cmd);
 							$_idBaremo = $cProceso_informes->getIdBaremo();
 							$_idBaremo = (empty($_idBaremo)) ? "1" : $_idBaremo;
-							$cmdPost = constant("DIR_WS_GESTOR") . 'Informes_candidato.php?MODO=627&fIdTipoInforme=' . $cInformes_pruebas->getIdTipoInforme() . '&fCodIdiomaIso2=' . $cInformes_pruebas->getCodIdiomaIso2() . '&fIdPrueba=' . $_POST['fIdPrueba'] . '&fIdEmpresa=' . $_POST['fIdEmpresa'] . '&fIdProceso=' . $_POST['fIdProceso'] . '&fIdCandidato=' . $_POST['fIdCandidato'] . '&fCodIdiomaIso2Prueba=' . $_POST['fCodIdiomaIso2'] . '&fIdBaremo=' . $_idBaremo;
+							$cmdPost = constant("DIR_WS_GESTOR") . 'Informes_candidato.php?MODO=627&fIdTipoInforme=' . $cInformes_pruebas->getIdTipoInforme() . '&fCodIdiomaIso2=' . $cInformes_pruebas->getCodIdiomaIso2() . '&fIdPrueba=' . $_POST['fIdPrueba'] . '&fIdEmpresa=' . $_POST['fIdEmpresa'] . '&fIdProceso=' . $_POST['fIdProceso'] . '&fIdCandidato=' . $_POST['fIdCandidato'] . '&fCodIdiomaIso2Prueba=' . $_POST['fCodIdiomaIso2'] . '&fIdBaremo=' . $_idBaremo . '&NOGenerarFICHERO_INFORME=' . $NOGenerarFICHERO_INFORME;
 							$cUtilidades->backgroundPost($cmdPost);
 						}else{
 							$sTypeError=date('d/m/Y H:i:s') . " Las unidades ya fueron descontadas el día : ";
 							$sTypeError.= $rsConsRead->fields['fecAlta'] . " [Emp:" . $cConsRead->getIdEmpresa() . " - Pro:" . $cConsRead->getIdProceso() . " - Can:" . $cConsRead->getIdCandidato() . " - Pru. iso2:" . $cConsRead->getCodIdiomaIso2() . " - Pru:" . $cConsRead->getIdPrueba() . " - inf. iso2:" . $cConsRead->getCodIdiomaInforme() . " - bar:" . $cConsRead->getIdBaremo() . " - concepto:" . $cConsRead->getConcepto() . "]";
 							error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
 						}
+					$iProcesos_informes++;
 	    			$rsProceso_informes->MoveNext();
 	    		}
 		    	$rsProceso_baremos->MoveNext();
@@ -996,7 +1001,7 @@ include_once ('include/conexionECases.php');
 				    	$cProceso_baremosDB->insertar($cProceso_baremos);
 					}else{
 						//Si no está en array de aleatorias, es una prueba normal que hay que dar de alta
-						$sPruebaAleatoria = $aAleatorias[array_rand($aAleatorias)];
+						// $sPruebaAleatoria = $aAleatorias[array_rand($aAleatorias)];
 						$cProceso_pruebas_candidato->setIdEmpresa($listaProcesosPruebas->fields['idEmpresa']);
 						$cProceso_pruebas_candidato->setIdProceso($listaProcesosPruebas->fields['idProceso']);
 						$cProceso_pruebas_candidato->setCodIdiomaIso2($listaProcesosPruebas->fields['codIdiomaIso2']);
@@ -1037,7 +1042,7 @@ include_once ('include/conexionECases.php');
     //Se envia correo de Notificación
 	function enviaEmail($cEmpresaTO, $cEmpresaFROM, $cNotificaciones, $sSubject=null, $sBody=null){
 		global $conn;
-		if ($sSubject == null){
+		/*if ($sSubject == null){
 			$sSubject=$cNotificaciones->getAsunto();
 		}
 		if ($sBody == null){
@@ -1048,7 +1053,11 @@ include_once ('include/conexionECases.php');
 			$sAltBody=strip_tags($cNotificaciones->getCuerpo());
 		}else{
 			$sAltBody=strip_tags($sBody);
-		}
+		}*/
+
+		$sSubject=$cNotificaciones->getAsunto();
+		$sBody=$cNotificaciones->getCuerpo();
+		$sAltBody=strip_tags($cNotificaciones->getCuerpo());
 
 		require_once constant("DIR_WS_COM") . 'PHPMailer/Exception.php';
 		require_once constant("DIR_WS_COM") . 'PHPMailer/PHPMailer.php';
@@ -1072,7 +1081,7 @@ include_once ('include/conexionECases.php');
 			$mail->SMTPAuth   = true;                               //Enable SMTP authentication
 			$mail->Username = constant("MAILUSERNAME");             //SMTP username
 			$mail->Password = constant("MAILPASSWORD");             //SMTP password
-			$mail->SMTPSecure = 'tls';							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+			$mail->SMTPSecure = constant("MAIL_ENCRYPTION");							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
 			$mail->Port      = constant("PORTMAIL");                                //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
 
@@ -1084,7 +1093,7 @@ include_once ('include/conexionECases.php');
 
 			//Con la propiedad Mailer le indicamos que vamos a usar un
 			//servidor smtp
-			$mail->Mailer = $mail->Mailer = constant("MAILER");;
+			$mail->Mailer = constant("MAILER");
 
 			//Asignamos a Host el nombre de nuestro servidor smtp
 			$mail->Host = constant("HOSTMAIL");
@@ -1099,14 +1108,15 @@ include_once ('include/conexionECases.php');
 			//Indicamos cual es nuestra dirección de correo y el nombre que
 			//queremos que vea el usuario que lee nuestro correo
 			//$mail->From = $cEmpresaFROM->getMail();
-			$mail->From = constant("MAILUSERNAME");
+			$mail->From = constant("EMAIL_CONTACTO");
 			$mail->AddReplyTo($cEmpresaFROM->getMail(), $cEmpresaFROM->getNombre());
 			$mail->FromName = $cEmpresaFROM->getNombre();
+				$nomEmpresa = $cEmpresaFROM->getNombre();
 
 			//Asignamos asunto y cuerpo del mensaje
 			//El cuerpo del mensaje lo ponemos en formato html, haciendo
 			//que se vea en negrita
-			$mail->Subject = $sSubject;
+			$mail->Subject = $nomEmpresa . " - " . $sSubject;
 			$mail->Body = $sBody;
 
 			//Definimos AltBody por si el destinatario del correo no admite
@@ -1146,7 +1156,7 @@ include_once ('include/conexionECases.php');
 			$intentos=1;
 			while((!$exito)&&($intentos<2)&&($mail->ErrorInfo!="SMTP Error: Data not accepted"))
 			{
-			//sleep(rand(0, 2));
+			sleep(rand(0, 2));
 				//echo $mail->ErrorInfo;
 				$exito = $mail->Send();
 				$intentos=$intentos+1;
@@ -1394,7 +1404,17 @@ $iPruebasFinalizadas=0;
 																}
 																break;
 															default:
-																echo $listaItems->recordCount();
+
+																switch ($cPruebas->getIdTipoPrueba())
+																{
+																	case "20":	//TRI
+																		echo "<i>y</i>";
+																		break;
+																	default:
+																		echo $listaItems->recordCount();
+																		break;
+																}
+																
 																break;
 														}
 
@@ -1585,6 +1605,9 @@ $iPruebasFinalizadas=0;
 						if (!empty($sLang) && $sLang == 'es' ){
 							$sMSG_GRACIAS_PRUEBAS_REALIZADAS = "Muchas gracias por haber realizado todas las pruebas.";
 							$sMSG_DPTO_ADMISIONES_CONTACTO = "Por favor, cierre y salga de esta página de examen online.";
+						}elseif(!empty($sLang) && $sLang == 'pt' ) {
+							$sMSG_GRACIAS_PRUEBAS_REALIZADAS = "Muito obrigado por ter realizado todos os testes.";
+							$sMSG_DPTO_ADMISIONES_CONTACTO = "Por favor, feche e saia desta página de exame online.";
 						}else {
 							$sMSG_GRACIAS_PRUEBAS_REALIZADAS = "Thank you very much for completing all test.";
 							$sMSG_DPTO_ADMISIONES_CONTACTO = "Please, close and exit from this online exam website.";

@@ -126,7 +126,7 @@ function validaForm()
 	if ($bSeas){
 		if ($cEmpresas->getNivelConocimientoMB() == 'on'){echo "\n" . 'msg +=vNumber("' . constant("STR_NIVEL_CONOCIMIENTO_TECNICO") . ':",f.fNivelConocimientoMB.value,2,true);';}
 	}
-	if ($cEmpresas->getPuestoEvaluar() == 'on'){echo "\n" . 'msg +=vString("' . "Puesto a evaluar" . ':",f.fPuestoEvaluar.value,255,true);';}
+	if ($cEmpresas->getPuestoEvaluar() == 'on'){echo "\n" . 'msg +=vString("' . "Ref. del puesto" . ':",f.fPuestoEvaluar.value,255,true);';}
 	if ($cEmpresas->getCategoriaForjanor() == 'on'){echo "\n" . 'msg +=vString("' . "Categoría profesional" . ':",f.fCategoriaForjanor.value,255,true);';}
 	if ($cEmpresas->getResponsableDirecto() == 'on'){echo "\n" . 'msg +=vString("' . "Responsable directo" . ':",f.fResponsableDirecto.value,255,true);';}
 
@@ -414,7 +414,7 @@ $HELP="xx";
 								}
 								if ($cEmpresas->getPuestoEvaluar() == 'on'){ ?>
 					        	<tr>
-					        		<td class="negrob"><?php if ($cEmpresas->getPuestoEvaluar() == 'on'){echo "Puesto a evaluar"?>:<br /><br /><input autocomplete="off" class="obliga" maxlength="255" size="9" name="fPuestoEvaluar" value="<?php echo $cCandidato->getPuestoEvaluar();?>" onchange="javascript:trim(this);" type="text"><?php }?></td>
+					        		<td class="negrob"><?php if ($cEmpresas->getPuestoEvaluar() == 'on'){echo "Ref. del puesto <font style='font-size:9px;'>(Indicar sólo uno)</font>"?>:<br /><br /><input autocomplete="off" class="obliga" maxlength="255" size="9" name="fPuestoEvaluar" value="<?php echo $cCandidato->getPuestoEvaluar();?>" onchange="javascript:trim(this);" type="text"><?php }?></td>
 					        	</tr>
 								<?php
 								}

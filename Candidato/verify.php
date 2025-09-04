@@ -70,7 +70,7 @@ if (!empty($_GET['h'])){
 		$cEmpresas = $cEmpresasDB->readEntidad($cEmpresas);
 
 		if ($cEmpresas->getPathLogo() != ""){
-			$size = @getimagesize(constant("DIR_WS_GESTOR") . $cEmpresas->getPathLogo());
+			$size = list($anchura, $altura) = @getimagesize(constant("DIR_WS_GESTOR") . $cEmpresas->getPathLogo());
 			$anchura=$size[0];
 			$altura=$size[1];
 			if ($altura > 85){
@@ -92,22 +92,28 @@ if (!empty($_GET['h'])){
 	 	$fecFin = $cProcesos->getFechaFin();
 	 	if (!empty($fecInicio) && !empty($fecFin))
 	 	{
-	 		//Miramos si quedan candidatos temporales
+			//Miramos si puede iniciar las pruebas del proceso
+			if ($cUtilidades->isCurrent2Dates($fecInicio, $fecFin, $cEmpresas->getTimezone()))
+			{
+				//Miramos si quedan candidatos temporales
 
-	 		$cEntidad->setIdEmpresa($aH[0]);
-	 		$cEntidad->setIdProceso($aH[1]);
-	 		$sSQL = "SELECT * FROM candidatos WHERE idEmpresa=" . $cEntidad->getIdEmpresa();
-	 		$sSQL .= " AND idProceso=" . $cEntidad->getIdProceso();
-	 		// $sSQL .= " AND mail=''";
-	 		// $sSQL .= " AND nombre=''";
-	 		//echo "<br>" . $sSQL;
-	 		$rsC = $conn->Execute($sSQL);
+				$cEntidad->setIdEmpresa($aH[0]);
+				$cEntidad->setIdProceso($aH[1]);
+				$sSQL = "SELECT * FROM candidatos WHERE idEmpresa=" . $cEntidad->getIdEmpresa();
+				$sSQL .= " AND idProceso=" . $cEntidad->getIdProceso();
+				// $sSQL .= " AND mail=''";
+				// $sSQL .= " AND nombre=''";
+				//echo "<br>" . $sSQL;
+				$rsC = $conn->Execute($sSQL);
 
-	 		if($rsC->recordCount() > 0){
-	 			include('Template/datosverify.php');
-	 		}else{
-	 			$strMensaje = "985:: " . constant("ERR_PROCESO_DESHABILITADO_ALTAS_CIEGAS");
-	 		}
+				if($rsC->recordCount() > 0){
+					include('Template/datosverify.php');
+				}else{
+					$strMensaje = "985:: " . constant("ERR_PROCESO_DESHABILITADO_ALTAS_CIEGAS");
+				}
+			}else{
+				$strMensaje = constant("STR_PROCESO_FUERA_DE_FECHAS");
+			}
 
 	 	}else {
 	 		$strMensaje = "910:: " . constant("ERR_NO_AUTORIZADO");
@@ -120,12 +126,11 @@ if (!empty($_GET['h'])){
 }else {
 	if (isset($_POST['fGo'])){
 
-		if ( 	(!empty($_POST['fNombre'])) &&
-					(!empty($_POST['fApellido1'])) &&
-					(!empty($_POST['fMailCan'])) &&
-					//(!empty($_POST['fNifCan']))	&&
-					(!empty($_POST['fPasswordCan']))
-				)
+		if ((!empty($_POST['fNombre'])) &&
+			(!empty($_POST['fApellido1'])) &&
+			(!empty($_POST['fMailCan'])) &&
+			//(!empty($_POST['fNifCan']))	&&
+			(!empty($_POST['fPasswordCan'])))
 		{
 			$bEncontradoNombre = $cUtilidades->chkChar($_POST['fNombre']);
 			$bEncontradoApellido1 = $cUtilidades->chkChar($_POST['fApellido1']);
@@ -142,7 +147,7 @@ if (!empty($_GET['h'])){
 							$cEmpresas = $cEmpresasDB->readEntidad($cEmpresas);
 
 							if ($cEmpresas->getPathLogo() != ""){
-								$size = @getimagesize(constant("DIR_WS_GESTOR") . $cEmpresas->getPathLogo());
+								$size = list($anchura, $altura) = @getimagesize(constant("DIR_WS_GESTOR") . $cEmpresas->getPathLogo());
 								$anchura=$size[0];
 								$altura=$size[1];
 								if ($altura > 85){
@@ -182,7 +187,7 @@ if (!empty($_GET['h'])){
 									}
 									$rsCuantos->MoveNext();
 								}
-			// echo "<br>" . $iCuantos;exit;
+								// echo "<br>" . $iCuantos;exit;
 
 								// echo "<br>->" . $sQL;
 								// echo "<br>->" . $rsCuantos->fields['cuantos'];
@@ -194,90 +199,103 @@ if (!empty($_GET['h'])){
 					 				$fecFin = $cProcesos->getFechaFin();
 					 				if (!empty($fecInicio) && !empty($fecFin))
 					 				{
-					 					//Actualizamos los datos y la contraseña y marcamos como informado
-										$cEntidad->setIdEmpresa($_POST['fIdEmpresa']);
-										$cEntidad->setIdProceso($_POST['fIdProceso']);
-										$cEntidad->setNombre($_POST['fNombre']);
-										$cEntidad->setApellido1($_POST['fApellido1']);
-										$cEntidad->setMail($_POST['fMailCan']);
-										//$cEntidad->setDni($_POST['fNifCan']);
-										$cEntidad->setInformado(1);
-										$cEntidad->setPassword($_POST['fPasswordCan']);
-										$cEntidadDB->modificar($cEntidad);
-										$cEntidadDB->modificarPass($cEntidad);
+										//Miramos si puede iniciar las pruebas del proceso
+										if ($cUtilidades->isCurrent2Dates($fecInicio, $fecFin, $cEmpresas->getTimezone()))
+										{
+											//Miramos si aun estándo dentro de fechas, ya ha finalizado
+											//Todas las pruebas del proceso
+											if ($cEntidad->getFinalizado() < 1 )
+											{
+												//Actualizamos los datos y la contraseña y marcamos como informado
+												$cEntidad->setIdEmpresa($_POST['fIdEmpresa']);
+												$cEntidad->setIdProceso($_POST['fIdProceso']);
+												$cEntidad->setNombre($_POST['fNombre']);
+												$cEntidad->setApellido1($_POST['fApellido1']);
+												$cEntidad->setMail($_POST['fMailCan']);
+												//$cEntidad->setDni($_POST['fNifCan']);
+												$cEntidad->setInformado(1);
+												$cEntidad->setPassword($_POST['fPasswordCan']);
+												$cEntidadDB->modificar($cEntidad);
+												$cEntidadDB->modificarPass($cEntidad);
 
-					 						if ($cEntidad->getIdProceso() != "")
-					 						{
-					 							//Sacamos la información del proceso
-					 							$cProcesosDB	= new ProcesosDB($conn);
-					 							$cProcesos	= new Procesos();
-					 							$cProcesos->setIdEmpresa($cEntidad->getIdEmpresa());
-					 							$cProcesos->setIdProceso($cEntidad->getIdProceso());
-					 							$cProcesos = $cProcesosDB->readEntidad($cProcesos);
+												if ($cEntidad->getIdProceso() != "")
+												{
+													//Sacamos la información del proceso
+													$cProcesosDB	= new ProcesosDB($conn);
+													$cProcesos	= new Procesos();
+													$cProcesos->setIdEmpresa($cEntidad->getIdEmpresa());
+													$cProcesos->setIdProceso($cEntidad->getIdProceso());
+													$cProcesos = $cProcesosDB->readEntidad($cProcesos);
 
-					 							$fecInicio = $cProcesos->getFechaInicio();
-					 							$fecFin = $cProcesos->getFechaFin();
+													$fecInicio = $cProcesos->getFechaInicio();
+													$fecFin = $cProcesos->getFechaFin();
 
-					 							$cEmpresas = new Empresas();
-					 							$cEmpresasDB = new EmpresasDB($conn);
-					 							$cEmpresas->setIdEmpresa($cEntidad->getIdEmpresa());
-					 							$cEmpresas = $cEmpresasDB->readEntidad($cEmpresas);
+													$cEmpresas = new Empresas();
+													$cEmpresasDB = new EmpresasDB($conn);
+													$cEmpresas->setIdEmpresa($cEntidad->getIdEmpresa());
+													$cEmpresas = $cEmpresasDB->readEntidad($cEmpresas);
 
-					 							//Miramos si puede iniciar las pruebas del proceso
-					 							if ($cUtilidades->isCurrent2Dates($fecInicio, $fecFin, $cEmpresas->getTimezone()))
-					 							{
-					 								//Miramos si aun estándo dentro de fechas, ya ha finalizado
-					 								//Todas las pruebas del proceso
-					 								//				if (empty($rowUser['finalizado']))
-					 								//				{
-					 								//NO actualizamos el TK para la UNAV
-					 								//$token =md5(uniqid('', true));
-					 								//$cEntidad->setToken($token);
+													//Miramos si puede iniciar las pruebas del proceso
+													if ($cUtilidades->isCurrent2Dates($fecInicio, $fecFin, $cEmpresas->getTimezone()))
+													{
+														//Miramos si aun estándo dentro de fechas, ya ha finalizado
+														//Todas las pruebas del proceso
+														//				if (empty($rowUser['finalizado']))
+														//				{
+														//NO actualizamos el TK para la UNAV
+														//$token =md5(uniqid('', true));
+														//$cEntidad->setToken($token);
 
-					 								//Le dejamos con el mismo Token, pero actualizamos acción
-					 								//para que no de sesion caducada
-					 								$cEntidadDB->ActualizaToken($cEntidad);
+														//Le dejamos con el mismo Token, pero actualizamos acción
+														//para que no de sesion caducada
+														$cEntidadDB->ActualizaToken($cEntidad);
 
 
-					 								//Actualizamos el último login
-				// 	 								if ($cEntidadDB->ultimoLogin($cEntidad) == false)
-				// 	 								{
-				// 	 									echo constant("ERR");
-				// 	 									exit;
-				// 	 								}
-					 								//Seteamos el token y las variables necesarias
-					 								$_POST['sTKCandidatos'] = $cEntidad->getToken();
-					 								$_SESSION["sTKCandidatos" . constant("NOMBRE_SESSION")] = $cEntidad->getToken();
-													$sUrlAccess= constant("HTTP_SERVER") . 'indextk.php?sTK='.$cEntidad->getToken();
-													if(!empty($sLang)){
-														$sUrlAccess.="&fLang=" . $sLang;
+														//Actualizamos el último login
+														// 	 								if ($cEntidadDB->ultimoLogin($cEntidad) == false)
+														// 	 								{
+														// 	 									echo constant("ERR");
+														// 	 									exit;
+														// 	 								}
+														//Seteamos el token y las variables necesarias
+														$_POST['sTKCandidatos'] = $cEntidad->getToken();
+														$_SESSION["sTKCandidatos" . constant("NOMBRE_SESSION")] = $cEntidad->getToken();
+														$sUrlAccess= constant("HTTP_SERVER") . 'indextk.php?sTK='.$cEntidad->getToken();
+														if(!empty($sLang)){
+															$sUrlAccess.="&fLang=" . $sLang;
+														}
+														header('Location: ' . $sUrlAccess);
+
+														//******************************
+
+
+													}else{
+														$strMensaje = constant("STR_PROCESO_FUERA_DE_FECHAS");
 													}
-													header('Location: ' . $sUrlAccess);
-
-					 								//******************************
-
-
-					 							}else{
-					 								$strMensaje = constant("STR_PROCESO_FUERA_DE_FECHAS");
-					 							}
-					 						}else{
-					 							$strMensaje = "905-1:: " . constant("ERR_NO_AUTORIZADO");
-					 						}
+												}else{
+													$strMensaje = "905-1:: " . constant("ERR_NO_AUTORIZADO");
+												}
+											}else{
+												$strMensaje = constant("STR_USTED_HA_FINALIZADO_TODAS_LAS_PRUEBAS_DE_ESTE_PROCESO");
+											}
+										}else{
+											$strMensaje = constant("STR_PROCESO_FUERA_DE_FECHAS");
+										}
 
 
 
 					 				}else {
 					 					$strMensaje = "910-1:: " . constant("ERR_NO_AUTORIZADO");
 					 				}
-							}else{
-								if ($sLang="es"){
-									$strMensaje = "405:: Introduzca una contraseña no utilizada con anterioridad.";
 								}else{
-									$strMensaje = "405:: You can not use this password. Please, set a new one.";
+									if ($sLang="es"){
+										$strMensaje = "405:: Introduzca una contraseña no utilizada con anterioridad.";
+									}else{
+										$strMensaje = "405:: You can not use this password. Please, set a new one.";
+									}
+
+
 								}
-
-
-							}
 			 				}else {
 								if ($sLang="es"){
 			 						$strMensaje = "404:: Los datos proporcionados no se encuentran entre los participantes admitidos.";
@@ -341,7 +359,7 @@ function enviaEmail($cEmpresa, $cCandidato, $cCorreos_proceso, $IdModoRealizacio
 		$mail->SMTPAuth   = true;                               //Enable SMTP authentication
 		$mail->Username = constant("MAILUSERNAME");             //SMTP username
 		$mail->Password = constant("MAILPASSWORD");             //SMTP password
-		$mail->SMTPSecure = 'tls';							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+		$mail->SMTPSecure = constant("MAIL_ENCRYPTION");							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
 		$mail->Port      = constant("PORTMAIL");                                //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
 
@@ -368,19 +386,21 @@ function enviaEmail($cEmpresa, $cCandidato, $cCorreos_proceso, $IdModoRealizacio
 		//Indicamos cual es nuestra dirección de correo y el nombre que
 		//queremos que vea el usuario que lee nuestro correo
 		//$mail->From = $cEmpresa->getMail();
-		$mail->From = constant("MAILUSERNAME");
+		$mail->From = constant("EMAIL_CONTACTO");
 		if ($cProcesos->getProcesoConfidencial() == "1"){
-			$mail->AddReplyTo(constant("MAILUSERNAME"), constant("NOMBRE_EMPRESA"));
+			$mail->AddReplyTo(constant("EMAIL_CONTACTO"), constant("NOMBRE_EMPRESA"));
 			$mail->FromName = constant("NOMBRE_EMPRESA");
+				$nomEmpresa = constant("NOMBRE_EMPRESA");
 		}else{
 			$mail->AddReplyTo($cEmpresa->getMail(), $cEmpresa->getNombre());
 			$mail->FromName = $cEmpresa->getNombre();
+				$nomEmpresa = $cEmpresa->getNombre();
 		}
 
 		//Asignamos asunto y cuerpo del mensaje
 		//El cuerpo del mensaje lo ponemos en formato html, haciendo
 		//que se vea en negrita
-		$mail->Subject = $sSubject;
+		$mail->Subject = $nomEmpresa . " - " . $sSubject;
 		$mail->Body = $sBody;
 
 		//Definimos AltBody por si el destinatario del correo no admite

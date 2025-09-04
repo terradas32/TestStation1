@@ -365,5 +365,4 @@ include_once ('include/conexion.php');
 	*/
 	function setBorradoRegistro(){
 	}
-
 ?>

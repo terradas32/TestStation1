@@ -97,9 +97,9 @@ include_once ('include/conexion.php');
 					include('Template/Correos/mntcorreosa.php');
 				}
 			}else{
-				?><script language="javascript" type="text/javascript">alert("<?php echo constant("ERR_FORM_ERROR");?>\n<?php echo $cEntidadDB->ver_errores();?>");</script><?php 
 				$_POST['MODO']=constant("MNT_ALTA");
 				include('Template/Correos/mntcorreosa.php');
+				muestraAlertSinErrorTinymce(constant("ERR_FORM_ERROR"), $cEntidadDB->ver_errores());
 			}
 			break;
 		case constant("MNT_MODIFICAR"):
@@ -129,9 +129,9 @@ include_once ('include/conexion.php');
 				$lista=$pager->getRS();
 				include('Template/Correos/mntcorreosl.php');
 			}else{
-				?><script language="javascript" type="text/javascript">alert("<?php echo constant("ERR_FORM_ERROR");?>\n<?php echo $cEntidadDB->ver_errores();?>");</script><?php 
 				$_POST['MODO']=constant("MNT_MODIFICAR");
 				include('Template/Correos/mntcorreosa.php');
+				muestraAlertSinErrorTinymce(constant("ERR_FORM_ERROR"), $cEntidadDB->ver_errores());
 			}
 			break;
 		case constant("MNT_BORRAR"):
@@ -290,5 +290,15 @@ include_once ('include/conexion.php');
 	*/
 	function setBorradoRegistro(){
 	}
+
+	/*
+	* Crea alert javascript tras recarga de página
+	* para evitar conflicto con libreria tinymce
+	*/
+	function muestraAlertSinErrorTinymce(string $mensaje, string $detalles) : void
+	{
+		echo '<script>alert("' . $mensaje . " " . $detalles . '");</script>';
+	}
+
 
 ?>

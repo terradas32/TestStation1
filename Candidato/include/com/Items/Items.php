@@ -42,6 +42,9 @@ class Items
 		var $usuAltaHast;
 		var $usuMod;
 		var $usuModHast;
+		var $idTipoRazonamiento;
+		var $id;
+		var $index_tri;
 	/**
 	* Constructor q inicializa los datos de la clase.
 	* @param $conn			Conexión
@@ -75,8 +78,13 @@ class Items
 		$this->usuAltaHast			= "";
 		$this->usuMod			= "";
 		$this->usuModHast			= "";
+		$this->idTipoRazonamiento			= "";
+		$this->index_tri			= "";
+		$this->id			= "";
+		
 		$this->PKListaExcel		=	"idItem,idPrueba,codIdiomaIso2,enunciado,pathEnunciado,descripcion,pathDescripcion,correcto,bajaLog,fecAlta,fecMod,usuAlta,usuMod";
 		$this->DESCListaExcel	=	"Id  Item,Id  Prueba,Idioma,Enunciado,Path Enunciado,Descripción,PathDescripción,Correcto,Baja Log,Fecha de Alta,Fecha de Modificación,Usuario de Alta,Usuario de Modificación";
+
 	}
 
 
@@ -457,6 +465,56 @@ class Items
 	function setUsuModHast($sCadena){
 		$this->usuModHast = $sCadena;
 	}
+
+	/**
+	* Devuelve el contenido de la propiedad IdTipoRazonamiento
+	* @return int(11)
+	*/
+	function getIdTipoRazonamiento(){
+		return $this->idTipoRazonamiento;
+	}
+	/**
+	* Fija el contenido de la propiedad IdTipoRazonamiento
+	* @param usuMod
+	* @return void
+	*/
+	function setIdTipoRazonamiento($sCadena){
+		$this->idTipoRazonamiento = $sCadena;
+	}
+
+		/**
+	* Devuelve el contenido de la propiedad index_tri
+	* @return int(11)
+	*/
+	function getIndex_tri(){
+		return $this->index_tri;
+	}
+	/**
+	* Fija el contenido de la propiedad index_tri
+	* @param index_tri
+	* @return void
+	*/
+	function setIndex_tri($sCadena){
+		$this->index_tri = $sCadena;
+	}
+
+	
+	/**
+	* Devuelve el contenido de la propiedad id
+	* @return int(11)
+	*/
+	function getId(){
+		return $this->id;
+	}
+	/**
+	* Fija el contenido de la propiedad id
+	* @param id
+	* @return void
+	*/
+	function setId($sCadena){
+		$this->id = $sCadena;
+	}
+
 	/**
 	* Devuelve el contenido de los parámetros de Búsqueda.
 	* @return Array aBusqueda.

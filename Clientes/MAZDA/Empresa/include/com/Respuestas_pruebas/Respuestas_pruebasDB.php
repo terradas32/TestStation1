@@ -91,10 +91,10 @@ class Respuestas_pruebasDB
 		$sql .= $aux->qstr($cEntidad->getDescIdiomaIso2(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getIdPrueba(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getDescPrueba(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getFinalizado(), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getFinalizado()), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getLeidoInstrucciones(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getLeidoEjemplos(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getMinutos_test(), false) . ",";
+		//$sql .= $aux->qstr($cEntidad->getMinutos_test(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getSegundos_test(), false) . ",";
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->sysTimeStamp . ",";
@@ -197,10 +197,10 @@ class Respuestas_pruebasDB
 		$sql .= "descIdiomaIso2=" . $aux->qstr($cEntidad->getDescIdiomaIso2(), false) . ", ";
 		$sql .= "idPrueba=" . $aux->qstr($cEntidad->getIdPrueba(), false) . ", ";
 		$sql .= "descPrueba=" . $aux->qstr($cEntidad->getDescPrueba(), false) . ", ";
-		$sql .= "finalizado=" . $aux->qstr($cEntidad->getFinalizado(), false) . ", ";
+		$sql .= "finalizado=" . $aux->qstr(intval($cEntidad->getFinalizado()), false) . ", ";
 		$sql .= "leidoInstrucciones=" . $aux->qstr($cEntidad->getLeidoInstrucciones(), false) . ", ";
 		$sql .= "leidoEjemplos=" . $aux->qstr($cEntidad->getLeidoEjemplos(), false) . ", ";
-		$sql .= "minutos_test=" . $aux->qstr($cEntidad->getMinutos_test(), false) . ", ";
+		//$sql .= "minutos_test=" . $aux->qstr($cEntidad->getMinutos_test(), false) . ", ";
 		$sql .= "segundos_test=" . $aux->qstr($cEntidad->getSegundos_test(), false) . ", ";
 		$sql .= "fecMod=" . $aux->sysTimeStamp . ",";
 		$sql .= "usuMod=" . $aux->qstr($cEntidad->getUsuMod(), false) ;
@@ -461,7 +461,7 @@ class Respuestas_pruebasDB
 		if ($cEntidad->getFinalizado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="finalizado>=" . $aux->qstr($cEntidad->getFinalizado(), false);
+			$sql .="finalizado>=" . $aux->qstr(intval($cEntidad->getFinalizado()), false);
 		}
 		if ($cEntidad->getFinalizadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -488,11 +488,11 @@ class Respuestas_pruebasDB
 			$and = true;
 			$sql .="leidoEjemplos<=" . $aux->qstr($cEntidad->getLeidoEjemplosHast(), false);
 		}
-		if ($cEntidad->getMinutos_test() != ""){
+		/* if ($cEntidad->getMinutos_test() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
 			$sql .="UPPER(minutos_test) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getMinutos_test() . "%") . ")";
-		}
+		} */
 		if ($cEntidad->getSegundos_test() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
@@ -605,7 +605,7 @@ class Respuestas_pruebasDB
 		if ($cEntidad->getFinalizado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="finalizado>=" . $aux->qstr($cEntidad->getFinalizado(), false);
+			$sql .="finalizado>=" . $aux->qstr(intval($cEntidad->getFinalizado()), false);
 		}
 		if ($cEntidad->getFinalizadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -632,11 +632,11 @@ class Respuestas_pruebasDB
 			$and = true;
 			$sql .="leidoEjemplos<=" . $aux->qstr($cEntidad->getLeidoEjemplosHast(), false);
 		}
-		if ($cEntidad->getMinutos_test() != ""){
+		/* if ($cEntidad->getMinutos_test() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
 			$sql .="UPPER(minutos_test) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getMinutos_test() . "%") . ")";
-		}
+		} */
 		if ($cEntidad->getSegundos_test() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
@@ -752,7 +752,7 @@ class Respuestas_pruebasDB
 		if ($cEntidad->getFinalizado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="rp.finalizado>=" . $aux->qstr($cEntidad->getFinalizado(), false);
+			$sql .="rp.finalizado>=" . $aux->qstr(intval($cEntidad->getFinalizado()), false);
 		}
 		if ($cEntidad->getFinalizadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -779,11 +779,11 @@ class Respuestas_pruebasDB
 			$and = true;
 			$sql .="rp.leidoEjemplos<=" . $aux->qstr($cEntidad->getLeidoEjemplosHast(), false);
 		}
-		if ($cEntidad->getMinutos_test() != ""){
+		/* if ($cEntidad->getMinutos_test() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
 			$sql .="UPPER(minutos_test) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getMinutos_test() . "%") . ")";
-		}
+		} */
 		if ($cEntidad->getSegundos_test() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;

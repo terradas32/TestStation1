@@ -9,7 +9,6 @@ header('Expires: Tue, 03 Jul 2001 06:00:00 GMT');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 header('Cache-Control: post-check=0, pre-check=0', false);
 header('Pragma: no-cache');
-
 $_bIsProceso = false;
 $_sPATH_CONFIG="";
 $_proceso=(isset($argv[1])) ? $argv[1] : "";
@@ -37,7 +36,15 @@ if ($_proceso == ""){
 	$_POST['fIdCandidato'] = $argv[8];
 	$_POST['fCodIdiomaIso2Prueba'] = $argv[9];
 	$_POST['fIdBaremo'] = $argv[10];
+	$_GeneraPDF=(isset($argv[11])) ? $argv[11] : "";
+	if (!empty($_GeneraPDF)){
+		$NOGenerarFICHERO_INFORME=true;
+	}
+
 	$_sPATH_CONFIG = 'C:\Datos\xampp\htdocs/TestStation/Admin/';
+}
+if (!empty($_POST['NOGenerarFICHERO_INFORME'])){
+	$NOGenerarFICHERO_INFORME=true;
 }
 
 ob_start();
@@ -157,7 +164,7 @@ include_once ('include/conexion.php');
 	$comboDESC_PRUEBAS	= new Combo($conn,"_fDescPrueba","idPrueba","nombre","Descripcion","pruebas","","","","","fecMod");
 	$comboWI_USUARIOS	= new Combo($conn,"fUsuAlta","idUsuario","nombre","Descripcion","wi_usuarios","",constant("SLC_OPCION"),"","","fecMod");
 	$comboTIPOS_INFORMES	= new Combo($conn,"fIdTipoInforme","idTipoInforme","nombre","Descripcion","tipos_informes","",constant("SLC_OPCION"),"codIdiomaIso2=" . $conn->qstr(constant("LENGUAJEDEFECTO"), false),"","fecMod");
-	//echo('modo:' . $_POST['MODO']);
+//	echo('modo:' . $_POST['MODO']);
 
 	if (!isset($_POST["MODO"])){
 		session_start();
@@ -429,20 +436,26 @@ include_once ('include/conexion.php');
 				$sqlEscalas_items= $cEscalas_itemsDB->readLista($cEscalas_items);
 				$rsEscalas_items = $conn->Execute($sqlEscalas_items);
 				//////////////////////
-				if($rsEscalas_items->recordCount() > 0){
-					$bPintaBaremo=false;
-				}
+				//if($rsEscalas_items->recordCount() > 0){
+				//	$bPintaBaremo=false;
+				//}
 				$cBaremos	= new Baremos();
 				$cBaremos->setIdPrueba($_POST['fIdPrueba']);
 				$cBaremos->setIdPruebaHast($_POST['fIdPrueba']);
-
-				$sqlBaremos= $cBaremosDB->readLista($cBaremos);
+				if($rsEscalas_items->recordCount() > 0){
+					$sqlBaremos= $cBaremosDB->readListaPersonalidad($cBaremos);
+				}else{
+					$sqlBaremos= $cBaremosDB->readLista($cBaremos);
+				}
+				//$sqlBaremos= $cBaremosDB->readLista($cBaremos);
 				$listaBaremos = $conn->Execute($sqlBaremos);
 			}
 			include('Template/Informes_candidato/listabaremos.php');
 			break;
 		case constant("MNT_EXPORTA"):
-
+				
+				//echo "<script>console.log('Debug Objects:');</script>";
+			
 				require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Items/ItemsDB.php");
 				require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Items/Items.php");
 				require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Opciones/OpcionesDB.php");
@@ -491,6 +504,19 @@ include_once ('include/conexion.php');
 					$cInformesPruebasTrf->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
 					$cInformesPruebasTrf= $cInformes_pruebasDB->readEntidad($cInformesPruebasTrf);
 	   			}
+				if ($_POST['fIdTipoInforme'] == "71") {	//FIT competencial
+					$cProceso_informes_fit =  new Proceso_informes();
+					$cProceso_informes_fitDB = new Proceso_informesDB($conn);	// Entidad DB
+
+					$cProceso_informes_fit->setIdEmpresa($_POST['fIdEmpresa']);
+					$cProceso_informes_fit->setIdProceso($_POST['fIdProceso']);
+					$cProceso_informes_fit->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
+					$cProceso_informes_fit->setIdPrueba($_POST['fIdPrueba']);
+					$cProceso_informes_fit->setCodIdiomaInforme ('es');
+					$cProceso_informes_fit->setIdTipoInforme($_POST['fIdTipoInforme']);
+					$cProceso_informes_fit->setIdBaremo($_POST['fIdBaremo']);
+					$cProceso_informes_fitDB->insertar($cProceso_informes_fit);
+				}
 				//--
 				$cEmpresaDng = new Empresas();
 				$cEmpresaDng->setIdEmpresa($_POST['fIdEmpresa']);
@@ -517,7 +543,7 @@ include_once ('include/conexion.php');
 //				echo "<br />Tarifa::" . $cInformesPruebasTrf->getTarifa();
 //				echo "<br />_EmpresaLogada::" . $_EmpresaLogada;
 //				echo "<br />EMPRESA_PE::" . constant("EMPRESA_PE");
-				echo "<br />HTTP_REFERER::" . $_SERVER["HTTP_REFERER"];
+//				echo "<br />HTTP_REFERER::" . $_SERVER["HTTP_REFERER"];
 				$cCandidato = new Candidatos();
 				$cCandidato->setIdEmpresa($_POST['fIdEmpresa']);
 				$cCandidato->setIdProceso($_POST['fIdProceso']);
@@ -566,14 +592,13 @@ include_once ('include/conexion.php');
 				$bPDFGenerado = false;	//Indica si el fichero fue generado previamente
 				if($bDescargar)
 				{
-
 					//Miramos si ya esiste el pdf en caso que no esista lo generamos
 //					$sNombre = $cUtilidades->SEOTitulo($cPruebas->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $_POST['fIdEmpresa']. "_" .$_POST['fIdProceso'] . "_" . $_POST['fIdTipoInforme'] . "_" . $_POST['fCodIdiomaIso2']);
 					$sNombre = $cUtilidades->SEOTitulo($cPruebas->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $_POST['fIdEmpresa']. "_" .$_POST['fIdProceso'] . "_" . $_POST['fIdTipoInforme'] . "_" . $_POST['fCodIdiomaIso2'] . "_" . $_POST['fIdBaremo']);
 					$sDirImg="imgInformes/";
 					$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
 					$_ficheroPDF = $spath . $sDirImg . $sNombre . ".pdf";
-					echo "<br>" . $_ficheroPDF;
+					//echo "<br>" . $_ficheroPDF;
 					if(is_file($_ficheroPDF)){
 						//De momento que siempre lo genere, si se quiere cambiar habría
 						//que incluir el idioma en el nombre del fichero
@@ -584,7 +609,6 @@ include_once ('include/conexion.php');
 					}
 					if (!$bPDFGenerado)
 					{
-						echo "<br>IF**" . $bPDFGenerado;
 						$cRespuestasPruebasItemsDB = new Respuestas_pruebas_itemsDB($conn);
 						$cItemsDB = new ItemsDB($conn);
 						$cNivelesjerarquicosDB = new NivelesjerarquicosDB($conn);
@@ -610,10 +634,11 @@ include_once ('include/conexion.php');
 						$cIt->setIdPrueba($_POST['fIdPrueba']);
 						$cIt->setIdPruebaHast($_POST['fIdPrueba']);
 						$cIt->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+
 						$sqlItemsPrueba= $cItemsDB->readLista($cIt);
 						$listaItemsPrueba = $conn->Execute($sqlItemsPrueba);
-						// Montamos la lista de respuestas para los parámetros enviados.
 
+						// Montamos la lista de respuestas para los parámetros enviados.
 						$sqlRespItems = $cRespuestasPruebasItemsDB->readLista($cRespuestasPruebasItems);
 						$listaRespItems = $conn->Execute($sqlRespItems);
 
@@ -622,46 +647,58 @@ include_once ('include/conexion.php');
 						$iPercentil = 0;
 						if($listaRespItems->recordCount()>0)
 						{
-							while(!$listaRespItems->EOF){
+							if ($idTipoPrueba != "20" && $idTipoPrueba != "6" && $idTipoPrueba != "7" )
+							{
+								while(!$listaRespItems->EOF){
 
-								//Leemos el item para saber cual es la opción correcta
-								$cItem = new Items();
-								$cItem->setIdItem($listaRespItems->fields['idItem']);
-								$cItem->setIdPrueba($listaRespItems->fields['idPrueba']);
-								$cItem->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-								$cItem = $cItemsDB->readEntidad($cItem);
+									//Leemos el item para saber cual es la opción correcta
+									$cItem = new Items();
+									$cItem->setIdItem($listaRespItems->fields['idItem']);
+									$cItem->setIdPrueba($listaRespItems->fields['idPrueba']);
+									$cItem->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+									$cItem = $cItemsDB->readEntidad($cItem);
 
-								//Leemos la opción para saber en código de la misma
-								$cOpcion = new Opciones();
-								$cOpcion->setIdItem($listaRespItems->fields['idItem']);
-								$cOpcion->setIdPrueba($listaRespItems->fields['idPrueba']);
-								$cOpcion->setIdOpcion($listaRespItems->fields['idOpcion']);
-								$cOpcion->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-								$cOpcion = $cOpcionesDB->readEntidad($cOpcion);
+									//Leemos la opción para saber en código de la misma
+									$cOpcion = new Opciones();
+									$cOpcion->setIdItem($listaRespItems->fields['idItem']);
+									$cOpcion->setIdPrueba($listaRespItems->fields['idPrueba']);
+									$cOpcion->setIdOpcion($listaRespItems->fields['idOpcion']);
+									$cOpcion->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+									$cOpcion = $cOpcionesDB->readEntidad($cOpcion);
 
-								$_sValor =  $cUtilidades->getValorCalculadoPRUEBAS($listaRespItems, $cOpcion, $conn);
+									$_sValor =  $cUtilidades->getValorCalculadoPRUEBAS($listaRespItems, $cOpcion, $conn);
 
-								//Comparamos el código de la opción elegida con la opción correcta reflejada en el item
-								if(strtoupper($cItem->getCorrecto()) == strtoupper($cOpcion->getCodigo())){
-									//echo $listaRespItems->fields['idItem'] . " - bien <br />";
-									//Si es correcta, para este tipo de pruebas
-									//Seteo a 1 el campo valor
-									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=" . $conn->qstr($_sValor, false);
-									$sSQLValor .= " WHERE";
-									$sSQLValor .= " idEmpresa='" . $_POST['fIdEmpresa'] . "'";
-									$sSQLValor .= " AND idProceso='" . $_POST['fIdProceso'] . "'";
-									$sSQLValor .= " AND idCandidato='" . $_POST['fIdCandidato'] . "'";
-									$sSQLValor .= " AND codIdiomaIso2='" . $_POST['fCodIdiomaIso2Prueba'] . "'";
-									$sSQLValor .= " AND idPrueba='" . $listaRespItems->fields['idPrueba'] . "'";
-									$sSQLValor .= " AND idItem='" . $listaRespItems->fields['idItem'] . "'";
-//									echo "<br />//A*****--->correcta:: " . $sSQLValor;
-									$conn->Execute($sSQLValor);
+									//Comparamos el código de la opción elegida con la opción correcta reflejada en el item
+									if(!empty(trim($cItem->getCorrecto())) && (strtoupper($cItem->getCorrecto()) == strtoupper($cOpcion->getCodigo())) ){
+										//echo $listaRespItems->fields['idItem'] . " - bien <br />";
+										//Si es correcta, para este tipo de pruebas
+										//Seteo a 1 el campo valor
+										$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=" . $conn->qstr($_sValor, false);
+										$sSQLValor .= " WHERE";
+										$sSQLValor .= " idEmpresa='" . $_POST['fIdEmpresa'] . "'";
+										$sSQLValor .= " AND idProceso='" . $_POST['fIdProceso'] . "'";
+										$sSQLValor .= " AND idCandidato='" . $_POST['fIdCandidato'] . "'";
+										$sSQLValor .= " AND codIdiomaIso2='" . $_POST['fCodIdiomaIso2Prueba'] . "'";
+										$sSQLValor .= " AND idPrueba='" . $listaRespItems->fields['idPrueba'] . "'";
+										$sSQLValor .= " AND idItem='" . $listaRespItems->fields['idItem'] . "'";
+										//echo "<br />//A*****--->correcta:: " . $sSQLValor;
+										$conn->Execute($sSQLValor);
 
-									//Si coincide se le suma uno a la PDirecta.
-									$iPDirecta++;
+										//Si coincide se le suma uno a la PDirecta.
+										$iPDirecta++;
+									}
+
+									$listaRespItems->MoveNext();
 								}
-
-								$listaRespItems->MoveNext();
+							}else{
+								$sqlPDirecta = "SELECT * FROM respuestas_pruebas_items ";
+								$sqlPDirecta .= "WHERE idEmpresa= " . $_POST['fIdEmpresa'] . " ";
+								$sqlPDirecta .= "AND idProceso= " . $_POST['fIdProceso'] . " ";
+								$sqlPDirecta .= "AND idCandidato= " . $_POST['fIdCandidato'] . " ";
+								$sqlPDirecta .= "AND idPrueba= " . $_POST['fIdPrueba'] . " ";
+								$sqlPDirecta .= "AND valor= 1 ";
+								$rsPDirecta = $conn->Execute($sqlPDirecta);
+								$iPDirecta = $rsPDirecta->recordCount();
 							}
 
 							$cBaremos_resultados = new Baremos_resultados();
@@ -708,7 +745,7 @@ include_once ('include/conexion.php');
 							$cProceso->setIdProceso($cCandidato->getIdProceso());
 							$cProceso = $cProcesoDB->readEntidad($cProceso);
 
-							echo "<br />TIPO::" . $cPruebas->getIdTipoPrueba();
+							//echo "<br />TIPO::" . $cPruebas->getIdTipoPrueba();
 							switch ($cPruebas->getIdTipoPrueba())
 							{
 								case 6:	//Motivaviones
@@ -734,11 +771,9 @@ include_once ('include/conexion.php');
 									$cBloquesDB = new BloquesDB($conn);
 									$cEscalasDB = new EscalasDB($conn);
 									$cEscalas_itemsDB = new Escalas_itemsDB($conn);
-									echo "<br />Inicio Generación:: " . date('d/m/Y H:i:s');
 									
 									include('Template/Informes_candidato/generaPrueba' . $cPruebas->getIdPrueba() . '.php');
-									echo "<br />He generado el informe en HTML y PDF:: " . date('d/m/Y H:i:s');
-									echo "<br />Inicio Generación Puntuaciones:: " . date('d/m/Y H:i:s');
+									
 									//Para las de Personalidad
 									if (isset($aSQLPuntuacionesPPL) || isset($aSQLPuntuacionesC))
 									{
@@ -762,7 +797,7 @@ include_once ('include/conexion.php');
 										//$_sBaremo=$cBaremos->getNombre();
 
 										//Miramos primero si ya está guardado
-										$sSQL = "DELETE FROM export_personalidad ";
+										$sSQL = "SELECT * FROM export_personalidad ";
 										$sSQL .= " WHERE ";
 										$sSQL .= " idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false);
 										$sSQL .= " AND idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false);
@@ -807,7 +842,7 @@ include_once ('include/conexion.php');
 											//echo "<br />" . print_r($aSQLPuntuacionesPPL);
 											if (isset($aSQLPuntuacionesPPL) && count($aSQLPuntuacionesPPL) > 0)
 											{
-												$sValidar = "DELETE FROM export_personalidad_laboral ";
+												$sValidar = "SELECT * FROM export_personalidad_laboral ";
 												$sValidar .= " WHERE ";
 												$sValidar .= " idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false);
 												$sValidar .= " AND idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false);
@@ -829,7 +864,7 @@ include_once ('include/conexion.php');
 											//echo "<br />" . print_r($aSQLPuntuacionesC);
 											if (isset($aSQLPuntuacionesC) && count($aSQLPuntuacionesC) > 0)
 											{
-												$sValidar = "DELETE FROM export_personalidad_competencias ";
+												$sValidar = "SELECT * FROM export_personalidad_competencias ";
 												$sValidar .= " WHERE ";
 												$sValidar .= " idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false);
 												$sValidar .= " AND idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false);
@@ -851,7 +886,6 @@ include_once ('include/conexion.php');
 												}
 											}
 										}
-										echo "<br />He generado las puntuaciones, previamente las he borrado para esta prueba:: " . date('d/m/Y H:i:s:v');
 									}else{
 										$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] Sin calculos en informe: idEmpresa: " . $_POST['fIdEmpresa'] . " idProceso: " . $_POST['fIdProceso'] . " idCandidato: " . $_POST['fIdCandidato'] . " idPrueba: " . $_POST['fIdPrueba'];
 										error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
@@ -910,7 +944,8 @@ include_once ('include/conexion.php');
 												$sSQL .= " AND idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false);
 												$sSQL .= " AND idBaremo=" . $conn->qstr($_POST["fIdBaremo"], false);
 												$sSQL .= " AND idTipoInforme=" . $conn->qstr($_POST['fIdTipoInforme'], false);
-
+												//var_dump($sSQL);
+												//die;
 												$rsCuantos = $conn->Execute($sSQL);
 												if ($rsCuantos->NumRows() <= 0)
 												{
@@ -1205,6 +1240,8 @@ include_once ('include/conexion.php');
 								</script>
 							<?php
 							echo "<br /><br />" . $sMsgDescuento . "<br />";
+							// JOSH
+							//echo "<br /><br />" . $iTotalItemsPruebas . " / " . $puntuacion . " / " . $respuestasBlancas . "<br />";
 							echo "<a href=\"#_\" title=\"Descargar\" onclick=\"javascript:abrirVentana('0','". base64_encode(constant('HTTP_SERVER'). $sDirImg . $sNombre)."');\">" . constant("STR_DESCARGAR") . "</a>";
 		//					header ( "Expires: 0");
 		//					header ( "Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT" );
@@ -1294,7 +1331,7 @@ include_once ('include/conexion.php');
 						//$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Generado desde [" . $_SERVER['REMOTE_ADDR'] . "] [" . $sNombre . "][" . constant("MNT_EXPORTA") . "][" . $sLlamada . "]";
 						//error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
 					}else{
-						echo "<br>ELSE**" . $bPDFGenerado;
+						
 						//Si ya está generado sacamos el enlace
 						//Miramos si hay que descontar y cuanto para informar al usuario.
 						$dTotalCoste = getDescuentoDongles($cCandidato->getIdEmpresa(), $cCandidato->getIdProceso(), $cCandidato->getIdCandidato(), $cPruebas->getCodIdiomaIso2(), $cPruebas->getIdPrueba(), $cInformesPruebasTrf->getCodIdiomaIso2(), $cInformesPruebasTrf->getIdTipoInforme(), $_POST['fIdBaremo'], $dTotalCoste, false);
@@ -1316,6 +1353,7 @@ include_once ('include/conexion.php');
 					<?php
 					echo "<br />" . constant("MSG_SIN_DONGLES_PARA_VER_INFORME");
 				}
+			
 			break;
 		case constant("MNT_EXPORTA_HTML"):
 
@@ -1480,49 +1518,60 @@ include_once ('include/conexion.php');
 						$iPercentil = 0;
 						if($listaRespItems->recordCount()>0)
 						{
-							while(!$listaRespItems->EOF){
+							if ($idTipoPrueba != "20" && $idTipoPrueba != "6" && $idTipoPrueba != "7" )
+							{
+								while(!$listaRespItems->EOF){
 
-								//Leemos el item para saber cual es la opción correcta
-								$cItem = new Items();
-								$cItem->setIdItem($listaRespItems->fields['idItem']);
-								$cItem->setIdPrueba($listaRespItems->fields['idPrueba']);
-								$cItem->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-								$cItem = $cItemsDB->readEntidad($cItem);
+									//Leemos el item para saber cual es la opción correcta
+									$cItem = new Items();
+									$cItem->setIdItem($listaRespItems->fields['idItem']);
+									$cItem->setIdPrueba($listaRespItems->fields['idPrueba']);
+									$cItem->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+									$cItem = $cItemsDB->readEntidad($cItem);
 
-								//Leemos la opción para saber en código de la misma
-								$cOpcion = new Opciones();
-								$cOpcion->setIdItem($listaRespItems->fields['idItem']);
-								$cOpcion->setIdPrueba($listaRespItems->fields['idPrueba']);
-								$cOpcion->setIdOpcion($listaRespItems->fields['idOpcion']);
-								$cOpcion->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-								$cOpcion = $cOpcionesDB->readEntidad($cOpcion);
+									//Leemos la opción para saber en código de la misma
+									$cOpcion = new Opciones();
+									$cOpcion->setIdItem($listaRespItems->fields['idItem']);
+									$cOpcion->setIdPrueba($listaRespItems->fields['idPrueba']);
+									$cOpcion->setIdOpcion($listaRespItems->fields['idOpcion']);
+									$cOpcion->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+									$cOpcion = $cOpcionesDB->readEntidad($cOpcion);
 
-								$_sValor =  $cUtilidades->getValorCalculadoPRUEBAS($listaRespItems, $cOpcion, $conn);
+									$_sValor =  $cUtilidades->getValorCalculadoPRUEBAS($listaRespItems, $cOpcion, $conn);
 
-								//Comparamos el código de la opción elegida con la opción correcta reflejada en el item
-								if(strtoupper($cItem->getCorrecto()) == strtoupper($cOpcion->getCodigo())){
-									//echo $listaRespItems->fields['idItem'] . " - bien <br />";
-									//Si es correcta, para este tipo de pruebas
-									//Seteo a 1 el campo valor
-//									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=1 ";
-									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=" . $conn->qstr($_sValor, false);
-									$sSQLValor .= " WHERE";
-									$sSQLValor .= " idEmpresa='" . $_POST['fIdEmpresa'] . "'";
-									$sSQLValor .= " AND idProceso='" . $_POST['fIdProceso'] . "'";
-									$sSQLValor .= " AND idCandidato='" . $_POST['fIdCandidato'] . "'";
-									$sSQLValor .= " AND codIdiomaIso2='" . $_POST['fCodIdiomaIso2Prueba'] . "'";
-									$sSQLValor .= " AND idPrueba='" . $listaRespItems->fields['idPrueba'] . "'";
-									$sSQLValor .= " AND idItem='" . $listaRespItems->fields['idItem'] . "'";
-//									echo "<br />//B*****--->correcta:: " . $sSQLValor;
-									$conn->Execute($sSQLValor);
+									//Comparamos el código de la opción elegida con la opción correcta reflejada en el item
+									if(strtoupper($cItem->getCorrecto()) == strtoupper($cOpcion->getCodigo())){
+										//echo $listaRespItems->fields['idItem'] . " - bien <br />";
+										//Si es correcta, para este tipo de pruebas
+										//Seteo a 1 el campo valor
+	//									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=1 ";
+										$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=" . $conn->qstr($_sValor, false);
+										$sSQLValor .= " WHERE";
+										$sSQLValor .= " idEmpresa='" . $_POST['fIdEmpresa'] . "'";
+										$sSQLValor .= " AND idProceso='" . $_POST['fIdProceso'] . "'";
+										$sSQLValor .= " AND idCandidato='" . $_POST['fIdCandidato'] . "'";
+										$sSQLValor .= " AND codIdiomaIso2='" . $_POST['fCodIdiomaIso2Prueba'] . "'";
+										$sSQLValor .= " AND idPrueba='" . $listaRespItems->fields['idPrueba'] . "'";
+										$sSQLValor .= " AND idItem='" . $listaRespItems->fields['idItem'] . "'";
+	//									echo "<br />//B*****--->correcta:: " . $sSQLValor;
+										$conn->Execute($sSQLValor);
 
-									//Si coincide se le suma uno a la PDirecta.
-									$iPDirecta++;
+										//Si coincide se le suma uno a la PDirecta.
+										$iPDirecta++;
+									}
+
+									$listaRespItems->MoveNext();
 								}
-
-								$listaRespItems->MoveNext();
+							}else{
+								$sqlPDirecta = "SELECT * FROM respuestas_pruebas_items ";
+								$sqlPDirecta .= "WHERE idEmpresa= " . $_POST['fIdEmpresa'] . " ";
+								$sqlPDirecta .= "AND idProceso= " . $_POST['fIdProceso'] . " ";
+								$sqlPDirecta .= "AND idCandidato= " . $_POST['fIdCandidato'] . " ";
+								$sqlPDirecta .= "AND idPrueba= " . $_POST['fIdPrueba'] . " ";
+								$sqlPDirecta .= "AND valor= 1 ";
+								$rsPDirecta = $conn->Execute($sqlPDirecta);
+								$iPDirecta = $rsPDirecta->recordCount();
 							}
-
 							$cBaremos_resultados = new Baremos_resultados();
 							$cBaremos_resultados->setIdBaremo($_POST['fIdBaremo']);
 							$cBaremos_resultados->setIdPrueba($_POST['fIdPrueba']);
@@ -1830,49 +1879,60 @@ include_once ('include/conexion.php');
 						$iPercentil = 0;
 						if($listaRespItems->recordCount()>0)
 						{
-							while(!$listaRespItems->EOF){
+							if ($idTipoPrueba != "20" && $idTipoPrueba != "6" && $idTipoPrueba != "7" )
+							{
+								while(!$listaRespItems->EOF){
 
-								//Leemos el item para saber cual es la opción correcta
-								$cItem = new Items();
-								$cItem->setIdItem($listaRespItems->fields['idItem']);
-								$cItem->setIdPrueba($listaRespItems->fields['idPrueba']);
-								$cItem->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-								$cItem = $cItemsDB->readEntidad($cItem);
+									//Leemos el item para saber cual es la opción correcta
+									$cItem = new Items();
+									$cItem->setIdItem($listaRespItems->fields['idItem']);
+									$cItem->setIdPrueba($listaRespItems->fields['idPrueba']);
+									$cItem->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+									$cItem = $cItemsDB->readEntidad($cItem);
 
-								//Leemos la opción para saber en código de la misma
-								$cOpcion = new Opciones();
-								$cOpcion->setIdItem($listaRespItems->fields['idItem']);
-								$cOpcion->setIdPrueba($listaRespItems->fields['idPrueba']);
-								$cOpcion->setIdOpcion($listaRespItems->fields['idOpcion']);
-								$cOpcion->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-								$cOpcion = $cOpcionesDB->readEntidad($cOpcion);
+									//Leemos la opción para saber en código de la misma
+									$cOpcion = new Opciones();
+									$cOpcion->setIdItem($listaRespItems->fields['idItem']);
+									$cOpcion->setIdPrueba($listaRespItems->fields['idPrueba']);
+									$cOpcion->setIdOpcion($listaRespItems->fields['idOpcion']);
+									$cOpcion->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+									$cOpcion = $cOpcionesDB->readEntidad($cOpcion);
 
-								$_sValor =  $cUtilidades->getValorCalculadoPRUEBAS($listaRespItems, $cOpcion, $conn);
+									$_sValor =  $cUtilidades->getValorCalculadoPRUEBAS($listaRespItems, $cOpcion, $conn);
 
-								//Comparamos el código de la opción elegida con la opción correcta reflejada en el item
-								if(strtoupper($cItem->getCorrecto()) == strtoupper($cOpcion->getCodigo())){
-									//echo $listaRespItems->fields['idItem'] . " - bien <br />";
-									//Si es correcta, para este tipo de pruebas
-									//Seteo a 1 el campo valor
-//									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=1 ";
-									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=" . $conn->qstr($_sValor, false);
-									$sSQLValor .= " WHERE";
-									$sSQLValor .= " idEmpresa='" . $_POST['fIdEmpresa'] . "'";
-									$sSQLValor .= " AND idProceso='" . $_POST['fIdProceso'] . "'";
-									$sSQLValor .= " AND idCandidato='" . $_POST['fIdCandidato'] . "'";
-									$sSQLValor .= " AND codIdiomaIso2='" . $_POST['fCodIdiomaIso2Prueba'] . "'";
-									$sSQLValor .= " AND idPrueba='" . $listaRespItems->fields['idPrueba'] . "'";
-									$sSQLValor .= " AND idItem='" . $listaRespItems->fields['idItem'] . "'";
-//									echo "<br />//C*****--->correcta:: " . $sSQLValor;
-									$conn->Execute($sSQLValor);
+									//Comparamos el código de la opción elegida con la opción correcta reflejada en el item
+									if(strtoupper($cItem->getCorrecto()) == strtoupper($cOpcion->getCodigo())){
+										//echo $listaRespItems->fields['idItem'] . " - bien <br />";
+										//Si es correcta, para este tipo de pruebas
+										//Seteo a 1 el campo valor
+	//									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=1 ";
+										$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=" . $conn->qstr($_sValor, false);
+										$sSQLValor .= " WHERE";
+										$sSQLValor .= " idEmpresa='" . $_POST['fIdEmpresa'] . "'";
+										$sSQLValor .= " AND idProceso='" . $_POST['fIdProceso'] . "'";
+										$sSQLValor .= " AND idCandidato='" . $_POST['fIdCandidato'] . "'";
+										$sSQLValor .= " AND codIdiomaIso2='" . $_POST['fCodIdiomaIso2Prueba'] . "'";
+										$sSQLValor .= " AND idPrueba='" . $listaRespItems->fields['idPrueba'] . "'";
+										$sSQLValor .= " AND idItem='" . $listaRespItems->fields['idItem'] . "'";
+	//									echo "<br />//C*****--->correcta:: " . $sSQLValor;
+										$conn->Execute($sSQLValor);
 
-									//Si coincide se le suma uno a la PDirecta.
-									$iPDirecta++;
+										//Si coincide se le suma uno a la PDirecta.
+										$iPDirecta++;
+									}
+
+									$listaRespItems->MoveNext();
 								}
-
-								$listaRespItems->MoveNext();
+							}else{
+								$sqlPDirecta = "SELECT * FROM respuestas_pruebas_items ";
+								$sqlPDirecta .= "WHERE idEmpresa= " . $_POST['fIdEmpresa'] . " ";
+								$sqlPDirecta .= "AND idProceso= " . $_POST['fIdProceso'] . " ";
+								$sqlPDirecta .= "AND idCandidato= " . $_POST['fIdCandidato'] . " ";
+								$sqlPDirecta .= "AND idPrueba= " . $_POST['fIdPrueba'] . " ";
+								$sqlPDirecta .= "AND valor= 1 ";
+								$rsPDirecta = $conn->Execute($sqlPDirecta);
+								$iPDirecta = $rsPDirecta->recordCount();
 							}
-
 							$cBaremos_resultados = new Baremos_resultados();
 							$cBaremos_resultados->setIdBaremo($_POST['fIdBaremo']);
 							$cBaremos_resultados->setIdPrueba($_POST['fIdPrueba']);
@@ -2174,49 +2234,60 @@ include_once ('include/conexion.php');
 						$iPercentil = 0;
 						if($listaRespItems->recordCount()>0)
 						{
-							while(!$listaRespItems->EOF){
+							if ($idTipoPrueba != "20" && $idTipoPrueba != "6" && $idTipoPrueba != "7" )
+							{
+								while(!$listaRespItems->EOF){
 
-								//Leemos el item para saber cual es la opción correcta
-								$cItem = new Items();
-								$cItem->setIdItem($listaRespItems->fields['idItem']);
-								$cItem->setIdPrueba($listaRespItems->fields['idPrueba']);
-								$cItem->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-								$cItem = $cItemsDB->readEntidad($cItem);
+									//Leemos el item para saber cual es la opción correcta
+									$cItem = new Items();
+									$cItem->setIdItem($listaRespItems->fields['idItem']);
+									$cItem->setIdPrueba($listaRespItems->fields['idPrueba']);
+									$cItem->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+									$cItem = $cItemsDB->readEntidad($cItem);
 
-								//Leemos la opción para saber en código de la misma
-								$cOpcion = new Opciones();
-								$cOpcion->setIdItem($listaRespItems->fields['idItem']);
-								$cOpcion->setIdPrueba($listaRespItems->fields['idPrueba']);
-								$cOpcion->setIdOpcion($listaRespItems->fields['idOpcion']);
-								$cOpcion->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-								$cOpcion = $cOpcionesDB->readEntidad($cOpcion);
+									//Leemos la opción para saber en código de la misma
+									$cOpcion = new Opciones();
+									$cOpcion->setIdItem($listaRespItems->fields['idItem']);
+									$cOpcion->setIdPrueba($listaRespItems->fields['idPrueba']);
+									$cOpcion->setIdOpcion($listaRespItems->fields['idOpcion']);
+									$cOpcion->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+									$cOpcion = $cOpcionesDB->readEntidad($cOpcion);
 
-								$_sValor =  $cUtilidades->getValorCalculadoPRUEBAS($listaRespItems, $cOpcion, $conn);
+									$_sValor =  $cUtilidades->getValorCalculadoPRUEBAS($listaRespItems, $cOpcion, $conn);
 
-								//Comparamos el código de la opción elegida con la opción correcta reflejada en el item
-								if(strtoupper($cItem->getCorrecto()) == strtoupper($cOpcion->getCodigo())){
-									//echo $listaRespItems->fields['idItem'] . " - bien <br />";
-									//Si es correcta, para este tipo de pruebas
-									//Seteo a 1 el campo valor
-//									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=1 ";
-									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=" . $conn->qstr($_sValor, false);
-									$sSQLValor .= " WHERE";
-									$sSQLValor .= " idEmpresa='" . $_POST['fIdEmpresa'] . "'";
-									$sSQLValor .= " AND idProceso='" . $_POST['fIdProceso'] . "'";
-									$sSQLValor .= " AND idCandidato='" . $_POST['fIdCandidato'] . "'";
-									$sSQLValor .= " AND codIdiomaIso2='" . $_POST['fCodIdiomaIso2Prueba'] . "'";
-									$sSQLValor .= " AND idPrueba='" . $listaRespItems->fields['idPrueba'] . "'";
-									$sSQLValor .= " AND idItem='" . $listaRespItems->fields['idItem'] . "'";
-//									echo "<br />//D*****--->correcta:: " . $sSQLValor;
-									$conn->Execute($sSQLValor);
+									//Comparamos el código de la opción elegida con la opción correcta reflejada en el item
+									if(strtoupper($cItem->getCorrecto()) == strtoupper($cOpcion->getCodigo())){
+										//echo $listaRespItems->fields['idItem'] . " - bien <br />";
+										//Si es correcta, para este tipo de pruebas
+										//Seteo a 1 el campo valor
+	//									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=1 ";
+										$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=" . $conn->qstr($_sValor, false);
+										$sSQLValor .= " WHERE";
+										$sSQLValor .= " idEmpresa='" . $_POST['fIdEmpresa'] . "'";
+										$sSQLValor .= " AND idProceso='" . $_POST['fIdProceso'] . "'";
+										$sSQLValor .= " AND idCandidato='" . $_POST['fIdCandidato'] . "'";
+										$sSQLValor .= " AND codIdiomaIso2='" . $_POST['fCodIdiomaIso2Prueba'] . "'";
+										$sSQLValor .= " AND idPrueba='" . $listaRespItems->fields['idPrueba'] . "'";
+										$sSQLValor .= " AND idItem='" . $listaRespItems->fields['idItem'] . "'";
+	//									echo "<br />//D*****--->correcta:: " . $sSQLValor;
+										$conn->Execute($sSQLValor);
 
-									//Si coincide se le suma uno a la PDirecta.
-									$iPDirecta++;
+										//Si coincide se le suma uno a la PDirecta.
+										$iPDirecta++;
+									}
+
+									$listaRespItems->MoveNext();
 								}
-
-								$listaRespItems->MoveNext();
+							}else{
+								$sqlPDirecta = "SELECT * FROM respuestas_pruebas_items ";
+								$sqlPDirecta .= "WHERE idEmpresa= " . $_POST['fIdEmpresa'] . " ";
+								$sqlPDirecta .= "AND idProceso= " . $_POST['fIdProceso'] . " ";
+								$sqlPDirecta .= "AND idCandidato= " . $_POST['fIdCandidato'] . " ";
+								$sqlPDirecta .= "AND idPrueba= " . $_POST['fIdPrueba'] . " ";
+								$sqlPDirecta .= "AND valor= 1 ";
+								$rsPDirecta = $conn->Execute($sqlPDirecta);
+								$iPDirecta = $rsPDirecta->recordCount();
 							}
-
 							$cBaremos_resultados = new Baremos_resultados();
 							$cBaremos_resultados->setIdBaremo($_POST['fIdBaremo']);
 							$cBaremos_resultados->setIdPrueba($_POST['fIdPrueba']);
@@ -2467,49 +2538,60 @@ include_once ('include/conexion.php');
 						$iPercentil = 0;
 						if($listaRespItems->recordCount()>0)
 						{
-							while(!$listaRespItems->EOF){
+							if ($idTipoPrueba != "20" && $idTipoPrueba != "6" && $idTipoPrueba != "7" )
+							{
+								while(!$listaRespItems->EOF){
 
-								//Leemos el item para saber cual es la opción correcta
-								$cItem = new Items();
-								$cItem->setIdItem($listaRespItems->fields['idItem']);
-								$cItem->setIdPrueba($listaRespItems->fields['idPrueba']);
-								$cItem->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-								$cItem = $cItemsDB->readEntidad($cItem);
+									//Leemos el item para saber cual es la opción correcta
+									$cItem = new Items();
+									$cItem->setIdItem($listaRespItems->fields['idItem']);
+									$cItem->setIdPrueba($listaRespItems->fields['idPrueba']);
+									$cItem->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+									$cItem = $cItemsDB->readEntidad($cItem);
 
-								//Leemos la opción para saber en código de la misma
-								$cOpcion = new Opciones();
-								$cOpcion->setIdItem($listaRespItems->fields['idItem']);
-								$cOpcion->setIdPrueba($listaRespItems->fields['idPrueba']);
-								$cOpcion->setIdOpcion($listaRespItems->fields['idOpcion']);
-								$cOpcion->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-								$cOpcion = $cOpcionesDB->readEntidad($cOpcion);
+									//Leemos la opción para saber en código de la misma
+									$cOpcion = new Opciones();
+									$cOpcion->setIdItem($listaRespItems->fields['idItem']);
+									$cOpcion->setIdPrueba($listaRespItems->fields['idPrueba']);
+									$cOpcion->setIdOpcion($listaRespItems->fields['idOpcion']);
+									$cOpcion->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+									$cOpcion = $cOpcionesDB->readEntidad($cOpcion);
 
-								$_sValor =  $cUtilidades->getValorCalculadoPRUEBAS($listaRespItems, $cOpcion, $conn);
+									$_sValor =  $cUtilidades->getValorCalculadoPRUEBAS($listaRespItems, $cOpcion, $conn);
 
-								//Comparamos el código de la opción elegida con la opción correcta reflejada en el item
-								if(strtoupper($cItem->getCorrecto()) == strtoupper($cOpcion->getCodigo())){
-									//echo $listaRespItems->fields['idItem'] . " - bien <br />";
-									//Si es correcta, para este tipo de pruebas
-									//Seteo a 1 el campo valor
-//									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=1 ";
-									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=" . $conn->qstr($_sValor, false);
-									$sSQLValor .= " WHERE";
-									$sSQLValor .= " idEmpresa='" . $_POST['fIdEmpresa'] . "'";
-									$sSQLValor .= " AND idProceso='" . $_POST['fIdProceso'] . "'";
-									$sSQLValor .= " AND idCandidato='" . $_POST['fIdCandidato'] . "'";
-									$sSQLValor .= " AND codIdiomaIso2='" . $_POST['fCodIdiomaIso2Prueba'] . "'";
-									$sSQLValor .= " AND idPrueba='" . $listaRespItems->fields['idPrueba'] . "'";
-									$sSQLValor .= " AND idItem='" . $listaRespItems->fields['idItem'] . "'";
-//									echo "<br />//E*****--->correcta:: " . $sSQLValor;
-									$conn->Execute($sSQLValor);
+									//Comparamos el código de la opción elegida con la opción correcta reflejada en el item
+									if(strtoupper($cItem->getCorrecto()) == strtoupper($cOpcion->getCodigo())){
+										//echo $listaRespItems->fields['idItem'] . " - bien <br />";
+										//Si es correcta, para este tipo de pruebas
+										//Seteo a 1 el campo valor
+	//									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=1 ";
+										$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=" . $conn->qstr($_sValor, false);
+										$sSQLValor .= " WHERE";
+										$sSQLValor .= " idEmpresa='" . $_POST['fIdEmpresa'] . "'";
+										$sSQLValor .= " AND idProceso='" . $_POST['fIdProceso'] . "'";
+										$sSQLValor .= " AND idCandidato='" . $_POST['fIdCandidato'] . "'";
+										$sSQLValor .= " AND codIdiomaIso2='" . $_POST['fCodIdiomaIso2Prueba'] . "'";
+										$sSQLValor .= " AND idPrueba='" . $listaRespItems->fields['idPrueba'] . "'";
+										$sSQLValor .= " AND idItem='" . $listaRespItems->fields['idItem'] . "'";
+	//									echo "<br />//E*****--->correcta:: " . $sSQLValor;
+										$conn->Execute($sSQLValor);
 
-									//Si coincide se le suma uno a la PDirecta.
-									$iPDirecta++;
+										//Si coincide se le suma uno a la PDirecta.
+										$iPDirecta++;
+									}
+
+									$listaRespItems->MoveNext();
 								}
-
-								$listaRespItems->MoveNext();
+							}else{
+								$sqlPDirecta = "SELECT * FROM respuestas_pruebas_items ";
+								$sqlPDirecta .= "WHERE idEmpresa= " . $_POST['fIdEmpresa'] . " ";
+								$sqlPDirecta .= "AND idProceso= " . $_POST['fIdProceso'] . " ";
+								$sqlPDirecta .= "AND idCandidato= " . $_POST['fIdCandidato'] . " ";
+								$sqlPDirecta .= "AND idPrueba= " . $_POST['fIdPrueba'] . " ";
+								$sqlPDirecta .= "AND valor= 1 ";
+								$rsPDirecta = $conn->Execute($sqlPDirecta);
+								$iPDirecta = $rsPDirecta->recordCount();
 							}
-
 							$cBaremos_resultados = new Baremos_resultados();
 							$cBaremos_resultados->setIdBaremo($_POST['fIdBaremo']);
 							$cBaremos_resultados->setIdPrueba($_POST['fIdPrueba']);
@@ -2740,49 +2822,60 @@ include_once ('include/conexion.php');
 						$iPercentil = 0;
 						if($listaRespItems->recordCount()>0)
 						{
-							while(!$listaRespItems->EOF){
+							if ($idTipoPrueba != "20" && $idTipoPrueba != "6" && $idTipoPrueba != "7" )
+							{
+								while(!$listaRespItems->EOF){
 
-								//Leemos el item para saber cual es la opción correcta
-								$cItem = new Items();
-								$cItem->setIdItem($listaRespItems->fields['idItem']);
-								$cItem->setIdPrueba($listaRespItems->fields['idPrueba']);
-								$cItem->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-								$cItem = $cItemsDB->readEntidad($cItem);
+									//Leemos el item para saber cual es la opción correcta
+									$cItem = new Items();
+									$cItem->setIdItem($listaRespItems->fields['idItem']);
+									$cItem->setIdPrueba($listaRespItems->fields['idPrueba']);
+									$cItem->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+									$cItem = $cItemsDB->readEntidad($cItem);
 
-								//Leemos la opción para saber en código de la misma
-								$cOpcion = new Opciones();
-								$cOpcion->setIdItem($listaRespItems->fields['idItem']);
-								$cOpcion->setIdPrueba($listaRespItems->fields['idPrueba']);
-								$cOpcion->setIdOpcion($listaRespItems->fields['idOpcion']);
-								$cOpcion->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
-								$cOpcion = $cOpcionesDB->readEntidad($cOpcion);
+									//Leemos la opción para saber en código de la misma
+									$cOpcion = new Opciones();
+									$cOpcion->setIdItem($listaRespItems->fields['idItem']);
+									$cOpcion->setIdPrueba($listaRespItems->fields['idPrueba']);
+									$cOpcion->setIdOpcion($listaRespItems->fields['idOpcion']);
+									$cOpcion->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+									$cOpcion = $cOpcionesDB->readEntidad($cOpcion);
 
-								$_sValor =  $cUtilidades->getValorCalculadoPRUEBAS($listaRespItems, $cOpcion, $conn);
+									$_sValor =  $cUtilidades->getValorCalculadoPRUEBAS($listaRespItems, $cOpcion, $conn);
 
-								//Comparamos el código de la opción elegida con la opción correcta reflejada en el item
-								if(strtoupper($cItem->getCorrecto()) == strtoupper($cOpcion->getCodigo())){
-									//echo $listaRespItems->fields['idItem'] . " - bien <br />";
-									//Si es correcta, para este tipo de pruebas
-									//Seteo a 1 el campo valor
-//									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=1 ";
-									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=" . $conn->qstr($_sValor, false);
-									$sSQLValor .= " WHERE";
-									$sSQLValor .= " idEmpresa='" . $_POST['fIdEmpresa'] . "'";
-									$sSQLValor .= " AND idProceso='" . $_POST['fIdProceso'] . "'";
-									$sSQLValor .= " AND idCandidato='" . $_POST['fIdCandidato'] . "'";
-									$sSQLValor .= " AND codIdiomaIso2='" . $_POST['fCodIdiomaIso2Prueba'] . "'";
-									$sSQLValor .= " AND idPrueba='" . $listaRespItems->fields['idPrueba'] . "'";
-									$sSQLValor .= " AND idItem='" . $listaRespItems->fields['idItem'] . "'";
-//									echo "<br />//F*****--->correcta:: " . $sSQLValor;
-									$conn->Execute($sSQLValor);
+									//Comparamos el código de la opción elegida con la opción correcta reflejada en el item
+									if(strtoupper($cItem->getCorrecto()) == strtoupper($cOpcion->getCodigo())){
+										//echo $listaRespItems->fields['idItem'] . " - bien <br />";
+										//Si es correcta, para este tipo de pruebas
+										//Seteo a 1 el campo valor
+	//									$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=1 ";
+										$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=" . $conn->qstr($_sValor, false);
+										$sSQLValor .= " WHERE";
+										$sSQLValor .= " idEmpresa='" . $_POST['fIdEmpresa'] . "'";
+										$sSQLValor .= " AND idProceso='" . $_POST['fIdProceso'] . "'";
+										$sSQLValor .= " AND idCandidato='" . $_POST['fIdCandidato'] . "'";
+										$sSQLValor .= " AND codIdiomaIso2='" . $_POST['fCodIdiomaIso2Prueba'] . "'";
+										$sSQLValor .= " AND idPrueba='" . $listaRespItems->fields['idPrueba'] . "'";
+										$sSQLValor .= " AND idItem='" . $listaRespItems->fields['idItem'] . "'";
+	//									echo "<br />//F*****--->correcta:: " . $sSQLValor;
+										$conn->Execute($sSQLValor);
 
-									//Si coincide se le suma uno a la PDirecta.
-									$iPDirecta++;
+										//Si coincide se le suma uno a la PDirecta.
+										$iPDirecta++;
+									}
+
+									$listaRespItems->MoveNext();
 								}
-
-								$listaRespItems->MoveNext();
+							}else{
+								$sqlPDirecta = "SELECT * FROM respuestas_pruebas_items ";
+								$sqlPDirecta .= "WHERE idEmpresa= " . $_POST['fIdEmpresa'] . " ";
+								$sqlPDirecta .= "AND idProceso= " . $_POST['fIdProceso'] . " ";
+								$sqlPDirecta .= "AND idCandidato= " . $_POST['fIdCandidato'] . " ";
+								$sqlPDirecta .= "AND idPrueba= " . $_POST['fIdPrueba'] . " ";
+								$sqlPDirecta .= "AND valor= 1 ";
+								$rsPDirecta = $conn->Execute($sqlPDirecta);
+								$iPDirecta = $rsPDirecta->recordCount();
 							}
-
 							$cBaremos_resultados = new Baremos_resultados();
 							$cBaremos_resultados->setIdBaremo($_POST['fIdBaremo']);
 							$cBaremos_resultados->setIdPrueba($_POST['fIdPrueba']);

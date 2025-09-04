@@ -414,7 +414,7 @@ function enviaEmail($FROM, $FROMNombre, $Asunto, $Cuerpo){
 		$mail->SMTPAuth   = true;                               //Enable SMTP authentication
 		$mail->Username = constant("MAILUSERNAME");             //SMTP username
 		$mail->Password = constant("MAILPASSWORD");             //SMTP password
-		$mail->SMTPSecure = 'tls';							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+		$mail->SMTPSecure = constant("MAIL_ENCRYPTION");							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
 		$mail->Port      = constant("PORTMAIL");                                //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
 		$mail->CharSet = 'utf-8';
@@ -423,29 +423,30 @@ function enviaEmail($FROM, $FROMNombre, $Asunto, $Cuerpo){
 
 		//Con la propiedad Mailer le indicamos que vamos a usar un
 		//servidor smtp
-		$mail->Mailer = $mail->Mailer = constant("MAILER");;
+		$mail->Mailer = constant("MAILER");
 
 		//Asignamos a Host el nombre de nuestro servidor smtp
-		$mail->Host = "mail.test-station.biz";
+		$mail->Host = "mail.test-station.com";
 
 		//Le indicamos que el servidor smtp requiere autenticaciÃ³n
 		$mail->SMTPAuth = true;
 
 		//Le decimos cual es nuestro nombre de usuario y password
-		$mail->Username = "helpdesk@test-station.biz";
+		$mail->Username = "helpdesk@test-station.com";
 		$mail->Password = constant("MAILPASSWORD");
 
 		//Indicamos cual es nuestra dirección de correo y el nombre que
 		//queremos que vea el usuario que lee nuestro correo
 		//$mail->From = $cEmpresaFROM->getMail();
-		$mail->From = "helpdesk@test-station.biz";
+		$mail->From = "helpdesk@test-station.com";
 		$mail->AddReplyTo($FROM, $FROMNombre);
 		$mail->FromName = $FROMNombre;
+				$nomEmpresa = $FROMNombre;
 
 		//Asignamos asunto y cuerpo del mensaje
 		//El cuerpo del mensaje lo ponemos en formato html, haciendo
 		//que se vea en negrita
-		$mail->Subject = $sSubject;
+		$mail->Subject = $nomEmpresa . " - " . $sSubject;
 		$mail->Body = $sBody;
 
 		//Definimos AltBody por si el destinatario del correo no admite
@@ -463,7 +464,7 @@ function enviaEmail($FROM, $FROMNombre, $Asunto, $Cuerpo){
 		}
 
 		//Indicamos cuales son las direcciones de destino del correo
-		$mail->AddAddress("helpdesk@test-station.biz", "Soporte al Usuario");
+		$mail->AddAddress("helpdesk@test-station.com", "Soporte al Usuario");
 
 		//se envia el mensaje, si no ha habido problemas la variable $success
 		//tendra el valor true

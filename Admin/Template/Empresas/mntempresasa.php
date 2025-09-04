@@ -120,7 +120,7 @@ function validaForm()
 	msg +=vString("Persona Contacto:",f.fPersonaContacto.value,255,false);
 	msg +=vString("Tlf. Contacto:",f.fTlfContacto.value,255,false);
 	msg +=vString("<?php echo constant("STR_PRUEBAS");?>:",f.fIdsPruebas.value,5000,true);
-
+	
 if (msg != "") {
 	alert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.");
 	return false;
@@ -312,12 +312,29 @@ $HELP="xx";
 						$sDisabled = "disabled=\"disabled\"";
 					}
 					?>
+          			<tr>
+						<td width="5"><img src="<?php echo constant("DIR_WS_GRAF");?>sp.gif" width="5" height="20" border="0" alt="" /></td>
+						<td nowrap="nowrap" width="140" class="negrob" valign="top"><label for="fDescuentaMatriz" title="<?php echo "Cliente";?>"><?php echo "Cliente";?></label>&nbsp;</td>
+						<td>
+							<?php 
+							$sDisabled=" ";
+							$sStyle=" style=\"width:75% !important;\" ";
+							if ($cEntidad->getIdCliente() == ""){
+								$bCliente=false;
+								$cEntidad->setIdCliente(constant("EMPRESA_PE"));
+							}
+              				$comboCLIENTES->setNombre("fIdCliente");?><?php echo $comboCLIENTES->getHTMLCombo("1","cajatexto",$cEntidad->getIdCliente(), $sDisabled . $sStyle . " ","");
+							?>
+							<input type="checkbox" name="fEsCliente" /><?php echo "Es Cliente";?>
+						</td>
+					</tr>
+					<tr><td colspan="3"><img src="<?php echo constant("DIR_WS_GRAF");?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
 					<tr>
 						<td width="5"><img src="<?php echo constant("DIR_WS_GRAF");?>sp.gif" width="5" height="20" border="0" alt="" /></td>
 						<td nowrap="nowrap" width="140" class="negrob" valign="top"><label for="fDescuentaMatriz" title="<?php echo constant("STR_DESCONTAR_UNIDADES_DE_LA_MATRIZ");?>"><?php echo constant("STR_DESCONTAR_UNIDADES_DE_LA_MATRIZ");?></label>&nbsp;</td>
 						<td><?php $comboDESCUENTAMATRIZ->setNombre("fDescuentaMatriz");?><?php echo $comboDESCUENTAMATRIZ->getHTMLComboMenu("1","cajatexto",$cEntidad->getDescuentaMatriz(), $sDisabled . " ","");?></td>
 					</tr>
-          <tr>
+          			<tr>
 						<td width="5"><img src="<?php echo constant("DIR_WS_GRAF");?>sp.gif" width="5" height="20" border="0" alt="" /></td>
 						<td nowrap="nowrap" width="140" class="negrob" valign="top"><label for="fDescuentaMatriz" title="<?php echo constant("STR_SOLICITAR_UNIDADES_A");?>"><?php echo constant("STR_SOLICITAR_UNIDADES_A");?></label>&nbsp;</td>
 						<td><?php $sDisabled="";
@@ -472,7 +489,6 @@ $HELP="xx";
 					</tr>
 					<tr>
 						<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
-<<<<<<< HEAD
 						<td nowrap="nowrap" width="140" class="negrob" valign="top">Token PowerBI&nbsp;</td>
 						<td><input type="text" name="fpower_bi_token" value="<?php echo $cEntidad->getpower_bi_token();?>" class="cajatexto"  onchange="javascript:trim(this);" /></td>
 					</tr>
@@ -483,7 +499,6 @@ $HELP="xx";
 							<input type="radio" name="fpower_bi_active" id="fpower_bi_active1" value="1" <?php echo ($cEntidad->getpower_bi_active() != "" && strtoupper($cEntidad->getpower_bi_active()) == "1") ? "checked=\"checked\"" : "";?> />&nbsp;<label for="fpower_bi_active1">Sí</label>&nbsp;<input onclick="chkTpv();" type="radio" name="fpower_bi_active" id="fpower_bi_active0" value="0"  <?php echo ($cEntidad->getpower_bi_active() != "" && strtoupper($cEntidad->getpower_bi_active()) == "0") ? "checked=\"checked\"" : "";?> />&nbsp;<label for="fpower_bi_active0">No</label>
 						</td>
 					</tr>
-
 					<tr>
 						<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
 						<td nowrap="nowrap" width="140" class="negrob" valign="top">Token PowerBI FIT&nbsp;</td>
@@ -497,32 +512,23 @@ $HELP="xx";
 						</td>
 					</tr>
 					<!-- Texto personalizado para cada empresa como descripción del FIT competencial -->
-					<tr>
+					<!-- <tr>
 						<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
 						<td nowrap="nowrap" width="140" class="negrob" valign="top">Descripción FIT competencial&nbsp;</td>
 						<td>
-							<!-- JOSH -->
 							<?php
-								if($cEntidad->gettexto_fit_comp() != '' ){
+								/* if($cEntidad->gettexto_fit_comp() != '' ){
 									$textoFitComp = $cEntidad->gettexto_fit_comp();
 								}else{
-									$textoFitComp = "Este Perfil describe cómo se ha definido la persona que ha respondido al cuestionario Prism@ con respecto a los
-									comportamientos del Cuestionario Prisma asociados a la definición de las Competencias de Arcor.
-									Los resultados obtenidos en el perfil son una puntuación global, y por tanto deben ser considerados como un indicador
-									orientativo de los aspectos más destacados y de las áreas de desarrollo, en base a las respuestas que se han dado en el
-									cuestionario. Las puntuaciones van desde el 1 al 10.
-									El cuestionario Prisma obliga a la persona que lo responde a elegir entre 3 frases que reflejan conductas o situaciones
-									laborales, la que mejor y peor le describe.";
-								}
+									$textoFitComp = "Esto es el texto predefinido";
+								} */
 							?>
 							<textarea rows="5" type="text" maxlength="1000" id="texto_fit_comp" name="texto_fit_comp" class="cajatexto"  onchange="javascript:trim(this);"><?php echo $textoFitComp; ?></textarea>
 							<div id="contador">0/1000</div>
 						</td>
-					</tr>
+					</tr> -->
 					<tr>
 						<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
-=======
->>>>>>> ef67b2adad35376e7004f53c2ad7cef5f1096846
 						<td nowrap="nowrap" width="140" class="negrob" valign="top">Activar servicio TPV&nbsp;</td>
 						<td>
 							<input onclick="chkTpv();" type="radio" name="fSrvTPV" id="fSrvTPV1" value="1" <?php echo ($cEntidad->getSrvTPV() != "" && strtoupper($cEntidad->getSrvTPV()) == "1") ? "checked=\"checked\"" : "";?> />&nbsp;<label for="fSrvTPV1">Sí</label>&nbsp;<input onclick="chkTpv();" type="radio" name="fSrvTPV" id="fSrvTPV0" value="0"  <?php echo ($cEntidad->getSrvTPV() != "" && strtoupper($cEntidad->getSrvTPV()) == "0") ? "checked=\"checked\"" : "";?> />&nbsp;<label for="fSrvTPV0">No</label>
@@ -632,25 +638,30 @@ $HELP="xx";
 						$cEscalasItems->setIdPruebaHast($rsPRUEBASGROUP->fields[$sAsIdPRUEBASGROUP]);
 						$sqlEscalas = $cEscalasItemsDB->readLista($cEscalasItems);
 						$listaEscalas = $conn->Execute($sqlEscalas);
-//						echo $sqlEscalas . "<br />";
-						if($listaEscalas->recordCount() > 0){
-							$_idBloque="-1";	$_idEscala="-1";
-// 							$cEscalasItems->setOrderBy("idBloque");
-// 							$cEscalasItems->setOrder("ASC");
-// 							$sql = $cEscalasItemsDB->readListaGroupBloque($cEscalasItems);
-// 							echo $sql . "<br />";
-// 							$lista = $conn->Execute($sql);
-						}else{
-							$_idBloque="0";	$_idEscala="0";
-						}
+						//echo $sqlEscalas . "<br />";
+						//if($listaEscalas->recordCount() > 0){
+						//	$_idBloque="-1";	$_idEscala="-1";
+						// $cEscalasItems->setOrderBy("idBloque");
+						// $cEscalasItems->setOrder("ASC");
+						// $sql = $cEscalasItemsDB->readListaGroupBloque($cEscalasItems);
+						// echo $sql . "<br />";
+						// $lista = $conn->Execute($sql);
+						//}else{
+						//	$_idBloque="0";	$_idEscala="0";
+						//}
 						$cBaremos = new Baremos();
 						$cBaremos->setIdPrueba($rsPRUEBASGROUP->fields[$sAsIdPRUEBASGROUP]);
-						$cBaremos->setIdEscala($_idEscala);
-						$cBaremos->setIdEscalaHast($_idEscala);
-						$cBaremos->setIdBloque($_idBloque);
-						$cBaremos->setIdBloqueHast($_idBloque);
-						$sqlBaremos= $cBaremosDB->readLista($cBaremos);
-//						echo $sqlBaremos . "<br />";
+						//$cBaremos->setIdEscala($_idEscala);
+						//$cBaremos->setIdEscalaHast($_idEscala);
+						//$cBaremos->setIdBloque($_idBloque);
+						//$cBaremos->setIdBloqueHast($_idBloque);
+						//$sqlBaremos= $cBaremosDB->readLista($cBaremos);
+						if($listaEscalas->recordCount() > 0){
+							$sqlBaremos= $cBaremosDB->readListaPersonalidad($cBaremos);
+						}else{
+							$sqlBaremos= $cBaremosDB->readLista($cBaremos);
+						}
+						//echo $sqlBaremos . "<br />";
 						$listaBaremos = $conn->Execute($sqlBaremos);
 						$k=0;
 						while(!$listaBaremos->EOF){
@@ -757,7 +768,7 @@ $HELP="xx";
 						<td>
 							<table border =1>
 								<tr>
-									<td style="padding-right:20px"><input <?php echo ($cEntidad->getPuestoEvaluar() != "" && strtoupper($cEntidad->getPuestoEvaluar()) == "ON") ? "checked=\"checked\"" : "";?> id="fPuestoEvaluar" name="fPuestoEvaluar" type="checkbox"><label for="fPuestoEvaluar" title="<?php echo "Puesto a evaluar";?>"><?php echo "Puesto a evaluar";?></label></td>
+									<td style="padding-right:20px"><input <?php echo ($cEntidad->getPuestoEvaluar() != "" && strtoupper($cEntidad->getPuestoEvaluar()) == "ON") ? "checked=\"checked\"" : "";?> id="fPuestoEvaluar" name="fPuestoEvaluar" type="checkbox"><label for="fPuestoEvaluar" title="<?php echo "Ref. del puesto (Indicar sólo uno)";?>"><?php echo "Ref. del puesto";?> <font style="font-size:8px;">(Indicar sólo uno)</font></label></td>
 									<td style="padding-right:20px"><input <?php echo ($cEntidad->getCategoriaForjanor() != "" && strtoupper($cEntidad->getCategoriaForjanor()) == "ON") ? "checked=\"checked\"" : "";?> id="fCategoriaForjanor" name="fCategoriaForjanor" type="checkbox"><label for="fCategoriaForjanor" title="<?php echo "Categoria Forjanor";?>">Categoría profesional del puesto a evaluar</label></td>
 									<td style="padding-right:20px"><input <?php echo ($cEntidad->getResponsableDirecto() != "" && strtoupper($cEntidad->getResponsableDirecto()) == "ON") ? "checked=\"checked\"" : "";?> id="fResponsableDirecto" name="fResponsableDirecto" type="checkbox"><label for="fResponsableDirecto" title="<?php echo "Responsable Directo";?>">Responsable directo</label></td>
 								</tr>
@@ -894,22 +905,16 @@ $HELP="xx";
 	<input type="hidden" name="empresas_next_page" value="<?php echo (isset($_POST['empresas_next_page'])) ? $cUtilidades->validaXSS($_POST['empresas_next_page']) : "1";?>" />
 
 	<script language="javascript" type="text/javascript">
-		//<![CDATA[
+		
 		function cambiadentrode(){
 			var f= document.forms[0];
 			$("#combodespuesde").show().load("jQuery.php",{sPG:"combodespuesdeEmpresas",bBus:"0",multiple:"0",nLineas:"1",bObliga:"0",fDentroDe:f.fDentroDe.value,vSelected:"<?php echo $cEntidad->getDespuesDe();?>",sTK:"<?php echo $_cEntidadUsuarioTK->getToken();?>"}).fadeIn("slow");
 		}
-		//]]>
-	</script>
-	<script language="javascript" type="text/javascript">
-		//<![CDATA[
-		function cambiadespuesde(){
-		}
-		//]]>
+		
 		// Funcion para contar los caracteres del textarea texto_fit_comp
-		const mensaje = document.getElementById('texto_fit_comp');
-		const contador = document.getElementById('contador');
-		document.addEventListener("DOMContentLoaded", (e) => {
+		//const mensaje = document.getElementById('texto_fit_comp');
+		//const contador = document.getElementById('contador');
+		/* document.addEventListener("DOMContentLoaded", (e) => {
 			const longitudMax = mensaje.getAttribute('maxlength');
 			const longitudAct = mensaje.value.length;
 			contador.innerHTML = `${longitudAct}/${longitudMax}`;
@@ -919,7 +924,13 @@ $HELP="xx";
 			const longitudMax = target.getAttribute('maxlength');
 			const longitudAct = target.value.length;
 			contador.innerHTML = `${longitudAct}/${longitudMax}`;
-		});
+		}); */
+	</script>
+	<script language="javascript" type="text/javascript">
+		//<![CDATA[
+		function cambiadespuesde(){
+		}
+		//]]>
 	</script>
 </div>
 

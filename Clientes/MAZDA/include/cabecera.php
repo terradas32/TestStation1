@@ -63,7 +63,8 @@ $listaIdiomas = $conn->Execute($sqlIdiomas);
 		</div>
 		<div id="cabecera-izquierda">
 			<div id="cabecera-logo">
-				<img height="70" width="208px" alt="<?php echo constant("NOMBRE_EMPRESA");?>" src="<?php echo constant("DIR_WS_GRAF");?>logo.png" border="0" />
+				<!-- <img height="70" width="208px" alt="<?php echo constant("NOMBRE_EMPRESA");?>" src="<?php echo constant("DIR_WS_GRAF");?>logo.png" border="0" /> -->
+				<img height="70" alt="People Experts" src="https://test-station.com/Admin/graf/logo.jpg" border="0" />
 			</div>
 		</div>
 		<div id="cabecera-derecha">

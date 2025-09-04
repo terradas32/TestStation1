@@ -1,47 +1,48 @@
 <?php
-	include 'vendor/autoload.php';
+
+// servicio.php
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+require_once("../../Empresa/include/Configuracion.php");
+
+// Se incluye la clase a generar
+require_once('WS_Service.php');
+
+define("HTTP_SERVER_URL", constant("HTTP_SERVER_FRONT") . "SOAP/WS/servicio.php");
+$serviceNs    = 'https://ts-ssff.expertos-pe-online.com/'; 
+$serverUrl = constant("HTTP_SERVER_URL");
+
+$options = [
+    'uri' => $serverUrl,
+];
+$server = new \Laminas\Soap\Server($serviceNs, $options);
+
+if (isset($_GET['wsdl'])) {
+    $soapAutoDiscover = new \Laminas\Soap\AutoDiscover(new \Laminas\Soap\Wsdl\ComplexTypeStrategy\ArrayOfTypeSequence());
 
 
-	require_once("../../Empresa/include/Configuracion.php");
-	define("HTTP_SERVER_WSDL", constant("HTTP_SERVER_FRONT") . "SOAP/WS/servicio.php?wsdl");
-	define("HTTP_SERVER_URL", constant("HTTP_SERVER_FRONT") . "SOAP/WS/servicio.php");
+    $soapAutoDiscover->setBindingStyle(array('style' => 'document'));
+    //$soapAutoDiscover->setBindingStyle(array('style' => 'document', 'transport' => 'https://testadmisionesade.com/SOAP/WS/'));
+    //$soapAutoDiscover->setOperationBodyStyle(array('use' => 'literal'));
+    $soapAutoDiscover->setOperationBodyStyle(['use' => 'literal', 
+                                                'targetNamespace' => $serviceNs, 
+                                                'namespace' => $serviceNs],);
+    $soapAutoDiscover->setClass('WS_Service', $serviceNs);
+    $soapAutoDiscover->setUri($serverUrl);
+    //$soapAutoDiscover->setServiceName('ws_esade');
+    
+    header("Content-Type: text/xml");
+    $wsdl= $soapAutoDiscover->generate()->toXml();
+    //$wsdl= str_replace('targetNamespace="' . constant("HTTP_SERVER_FRONT"),'targetNamespace="' . $serviceNs, $wsdl);
+    $wsdl= str_replace(constant("HTTP_SERVER_FRONT"), $serviceNs, $wsdl);
+    $wsdl= str_replace('location="' . $serviceNs,'location="' . constant("HTTP_SERVER_FRONT"), $wsdl);
+    
 
-    // Se incluye la clase a generar
-    require_once('WS_Service.php');
-
-    // Si en la url está presente la entrada ?wsdl
-    if (strtolower($_SERVER['QUERY_STRING']) == "wsdl")
-    {
-        // Se incluye la clase AutoDiscover que es la encargada de generar en forma automática el WSDL
-
-        require_once('vendor/zendframework/zend-uri/src/Uri.php');
-        require_once('vendor/zendframework/zend-soap/src/AutoDiscover.php');
-        require_once('vendor/zendframework/zend-soap/src/Wsdl/ComplexTypeStrategy/ArrayOfTypeComplex.php');
-
-        $autodiscover = new Zend\Soap\AutoDiscover();
-        $autodiscover->setComplexTypeStrategy(new \Zend\Soap\Wsdl\ComplexTypeStrategy\ArrayOfTypeComplex());
-        $autodiscover->setOperationBodyStyle(
-            array('use' => 'literal',
-            'namespace' => 'http://framework.zend.com')
-        );
-
-        $autodiscover->setClass('WS_Service');
-        $autodiscover->setUri(constant("HTTP_SERVER_URL"));
-        // header("Content-type: text/xml");
-        // echo $autodiscover->toXML();
-        $autodiscover->handle();
-    }
-    // Si no
-    else
-    {
-        require_once('vendor/zendframework/zend-soap/src/Server.php');
-        $wsdl_url = sprintf('http://%s%s?wsdl', $_SERVER['HTTP_HOST'], $_SERVER['SCRIPT_NAME']);
-        $server = new \Zend\Soap\Server($wsdl_url);
-
-        // $server->setObject(new \Zend\Soap\Server\DocumentLiteralWrapper(new WS_Service()));
-        // $server->handle();
-
-		    $server->setClass('WS_Service');
-		    $server->handle();
-    }
+    echo $wsdl;
+} else {
+    $soap = new \Laminas\Soap\Server($serverUrl . '?wsdl');
+    $soap->setObject(new \Laminas\Soap\Server\DocumentLiteralWrapper(new WS_Service()));
+    $soap->handle();
+}
 ?>

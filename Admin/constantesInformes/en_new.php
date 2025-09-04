@@ -3,6 +3,8 @@
 define("STR_PIE_INFORMES" 							, "Any reproduction either partial or total of this report, by any means, will be considered an infringement of Copyright");
 define("STR_NOMBRE_APELLIDOS"						, "Given Name(s) and Family Name");
 define("STR_FECHA_INFORME"							, "Report date");
+define("STR_FECHA_INFORME_DIAN", "Finish date");
+define("STR_IDENTIFICADOR", "Número de Cédula");
 define("STR_INTRODUCCION" 							, "Introduction");
 define("STR_INTRODUCCION_CAPS" 						, "INTRODUCTION");
 define("STR_PUNTUACION_DIRECTA"						, "Direct Score");

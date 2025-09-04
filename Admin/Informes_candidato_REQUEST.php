@@ -787,18 +787,18 @@ include_once ('include/conexion.php');
 											{	for ($c=0;$c < count($aSQLPuntuacionesPPL); $c++){
 													//echo "<br />" . $aSQLPuntuacionesPPL[$c];
 													$conn->Execute($aSQLPuntuacionesPPL[$c]);
-													$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesPPL[$c];
-													error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
-													usleep(250000);	//mitad de medio segundo
+													//$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesPPL[$c];
+													//error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+													//usleep(250000);	//mitad de medio segundo
 												}
 											}
 											if (isset($aSQLPuntuacionesC) && count($aSQLPuntuacionesC) > 0)
 											{	for ($c=0;$c < count($aSQLPuntuacionesC); $c++){
 													//echo "<br />" . $aSQLPuntuacionesC[$c];
 													$conn->Execute($aSQLPuntuacionesC[$c]);
-													$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesC[$c];
-													error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
-													usleep(250000);	//mitad de medio segundo
+													//$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesC[$c];
+													//error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+													//usleep(250000);	//mitad de medio segundo
 												}
 											}
 										}else{
@@ -880,17 +880,17 @@ include_once ('include/conexion.php');
 													if (isset($aSQLPuntuacionesPPL) && count($aSQLPuntuacionesPPL) > 0)
 													{	for ($c=0;$c < count($aSQLPuntuacionesPPL); $c++){
 															$conn->Execute($aSQLPuntuacionesPPL[$c]);
-															$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesPPL[$c];
-															error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
-															usleep(250000);	//mitad de medio segundo
+															//$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesPPL[$c];
+															//error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+															//usleep(250000);	//mitad de medio segundo
 														}
 													}
 													if (isset($aSQLPuntuacionesC) && count($aSQLPuntuacionesC) > 0)
 													{	for ($c=0;$c < count($aSQLPuntuacionesC); $c++){
 															$conn->Execute($aSQLPuntuacionesC[$c]);
-															$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesC[$c];
-															error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
-															usleep(250000);	//mitad de medio segundo
+															//$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesC[$c];
+															//error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+															//usleep(250000);	//mitad de medio segundo
 														}
 													}
 												}else{
@@ -956,17 +956,17 @@ include_once ('include/conexion.php');
 													if (isset($aSQLPuntuacionesPPL) && count($aSQLPuntuacionesPPL) > 0)
 													{	for ($c=0;$c < count($aSQLPuntuacionesPPL); $c++){
 															$conn->Execute($aSQLPuntuacionesPPL[$c]);
-															$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesPPL[$c];
-															error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
-															usleep(250000);	//mitad de medio segundo
+															//$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesPPL[$c];
+															//error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+															//usleep(250000);	//mitad de medio segundo
 														}
 													}
 													if (isset($aSQLPuntuacionesC) && count($aSQLPuntuacionesC) > 0)
 													{	for ($c=0;$c < count($aSQLPuntuacionesC); $c++){
 															$conn->Execute($aSQLPuntuacionesC[$c]);
-															$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesC[$c];
-															error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
-															usleep(250000);	//mitad de medio segundo
+															//$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesC[$c];
+															//error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+															//usleep(250000);	//mitad de medio segundo
 														}
 													}
 												}else{

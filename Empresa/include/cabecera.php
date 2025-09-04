@@ -56,7 +56,7 @@ if (!function_exists('convertir_fecha')) {
 		global $_Timezone;
 		//Esta función convierte la fecha del formato DATETIME de SQL a formato DD-MM-YYYY HH:mm:ss
 		$dt=new datetime($fecha_datetime,new datetimezone($_Timezone));
-		$fecha_datetime = gmdate("Y-m-d H:i:s",(strtotime($fecha_datetime)+$dt->getOffset()));	//Fecha actual de la Zona horaria
+		$fecha_datetime = gmdate("Y-m-d H:i:s",(time()+$dt->getOffset()));	//Fecha actual de la Zona horaria
 		$fecha = explode("-",$fecha_datetime);
 		$hora = explode(":",$fecha[2]);
 		$fecha_hora = explode(" ",$hora[0]);
@@ -112,11 +112,14 @@ if (!function_exists('convertir_fecha')) {
 				</div>
 			</div>
 		</div>
+
+
+
 		<div id="cabecera-izquierda">
 			<div id="cabecera-logo">
            <h2><?php if ($_PathLogo != ""){
 						 $altura = 85;
-           		$size = @getimagesize(constant("DIR_WS_GESTOR") . $_PathLogo);
+           		$size = list($anchura, $altura) = @getimagesize(constant("DIR_WS_GESTOR") . $_PathLogo);
 							if($size){
 							$anchura=$size[0];
 							$altura=$size[1];

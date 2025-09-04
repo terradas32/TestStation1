@@ -83,7 +83,7 @@ class Prisma_papelDB
 		$sql .= $aux->qstr($cEntidad->getPrisma(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getOrden(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getCarga(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getEstado(), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getEstado()), false) . ",";
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->qstr($cEntidad->getUsuAlta(), false) . ",";
@@ -183,7 +183,7 @@ class Prisma_papelDB
 		$sql .= "prisma=" . $aux->qstr($cEntidad->getPrisma(), false) . ", ";
 		$sql .= "orden=" . $aux->qstr($cEntidad->getOrden(), false) . ", ";
 		$sql .= "carga=" . $aux->qstr($cEntidad->getCarga(), false) . ", ";
-		$sql .= "estado=" . $aux->qstr($cEntidad->getEstado(), false) . ", ";
+		$sql .= "estado=" . $aux->qstr(intval($cEntidad->getEstado()), false) . ", ";
 		$sql .= "fecMod=" . $aux->sysTimeStamp . ",";
 		$sql .= "usuMod=" . $aux->qstr($cEntidad->getUsuMod(), false) ;
 		$sql .= " WHERE ";

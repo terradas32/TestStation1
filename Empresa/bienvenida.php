@@ -114,26 +114,26 @@ $HELP="xx";
 	<?php include_once(constant("DIR_WS_INCLUDE") . 'cabecera.php');?>
 	<div id="envoltura">
 		<div id="contenido">
-			
+
 			<div style="width: 100%"> 			
-		     	 <table border="0" cellpadding="0" cellspacing="0" width="90%">
-		        	<tr>
-		        		<td width="10%" rowspan="2"><img src="graf/sp.gif" width="1" height="1" border="0" alt="" /></td>
-		        		<td ><img src="graf/sp.gif" width="1" height="45" border="0" alt="" /></td>
-		        	</tr>
-		        	<tr>
-		        		<td valign="top">
-		        			<table border="0" cellpadding="0" cellspacing="0" width="90%">
-		        				<tr>
-		        					<td align="justify" valign="top" class="negro">
-		        						<br /><br /><?php echo constant('MSG_BIENVENIDA_COMENZAR');?>
-		        					</td>
-		        				</tr>
-		        			</table>
-		        		</td>
-		        	</tr>
-		        </table>
-		    </div>
+				<table border="0" cellpadding="0" cellspacing="0" width="90%">
+					<tr>
+						<td width="10%" rowspan="2"><img src="graf/sp.gif" width="1" height="1" border="0" alt="" /></td>
+						<td ><img src="graf/sp.gif" width="1" height="45" border="0" alt="" /></td>
+					</tr>
+					<tr>
+						<td valign="top">
+							<table border="0" cellpadding="0" cellspacing="0" width="90%">
+								<tr>
+									<td align="justify" valign="top" class="negro">
+										<br /><br /><?php echo constant('MSG_BIENVENIDA_COMENZAR'); ?>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</div>
 		    
 		</div>
 	</div>

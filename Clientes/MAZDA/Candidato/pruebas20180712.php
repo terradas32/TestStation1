@@ -468,7 +468,7 @@ include_once ('include/conexionECases.php');
 						$cTipos_informes->setIdTipoInforme($cInformes_pruebas->getIdTipoInforme());
 						$cTipos_informes = $cTipos_informesDB->readEntidad($cTipos_informes);
 
-						//$dTotalCoste += $cInformes_pruebas->getTarifa();
+						//$dTotalCoste += (int)$cInformes_pruebas->getTarifa();
 
 						//6º Insertamos por cada informe una línea en Consumo
 						$cConsumos = new Consumos();
@@ -511,7 +511,7 @@ include_once ('include/conexionECases.php');
 						$cConsumos->setConcepto(constant("STR_PRUEBA_FINALIZADA"));
 						$cConsRead->setConcepto(constant("STR_PRUEBA_FINALIZADA"));
 
-						$cConsumos->setUnidades($cInformes_pruebas->getTarifa());
+						$cConsumos->setUnidades((int)$cInformes_pruebas->getTarifa());
 						$cConsumos->setUsuAlta($cCandidato->getIdCandidato());
 						$cConsumos->setUsuMod($cCandidato->getIdCandidato());
 						//Revisamos si ya se le ha cobrado, si el Candidato actualiza la página, no hay que cobrar dos veces
@@ -521,7 +521,7 @@ include_once ('include/conexionECases.php');
 						$iConsRead = $rsConsRead->NumRows();
 						if ($iConsRead <= 0)
 						{
-							$dTotalCoste += $cInformes_pruebas->getTarifa();
+							$dTotalCoste += (int)$cInformes_pruebas->getTarifa();
 							$idConsumo = $cConsumosDB->insertar($cConsumos);
 							$sDescuentaMatriz = $cEmpresaConsumo->getDescuentaMatriz();
 							if (!empty($sDescuentaMatriz)){
@@ -1183,7 +1183,7 @@ include_once ('include/conexionECases.php');
 
 					}else{
 						//Si no está en array de aleatorias, es una prueba normal que hay que dar de alta
-						$sPruebaAleatoria = $aAleatorias[array_rand($aAleatorias)];
+						// $sPruebaAleatoria = $aAleatorias[array_rand($aAleatorias)];
 						$cProceso_pruebas_candidato->setIdEmpresa($listaProcesosPruebas->fields['idEmpresa']);
 						$cProceso_pruebas_candidato->setIdProceso($listaProcesosPruebas->fields['idProceso']);
 						$cProceso_pruebas_candidato->setCodIdiomaIso2($listaProcesosPruebas->fields['codIdiomaIso2']);
@@ -1259,7 +1259,7 @@ include_once ('include/conexionECases.php');
 			$mail->SMTPAuth   = true;                               //Enable SMTP authentication
 			$mail->Username = constant("MAILUSERNAME");             //SMTP username
 			$mail->Password = constant("MAILPASSWORD");             //SMTP password
-			$mail->SMTPSecure = 'tls';							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+			$mail->SMTPSecure = constant("MAIL_ENCRYPTION");							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
 			$mail->Port      = constant("PORTMAIL");                                //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
 
@@ -1269,7 +1269,7 @@ include_once ('include/conexionECases.php');
 
 			//Con la propiedad Mailer le indicamos que vamos a usar un
 			//servidor smtp
-			$mail->Mailer = $mail->Mailer = constant("MAILER");;
+			$mail->Mailer = constant("MAILER");
 
 			//Asignamos a Host el nombre de nuestro servidor smtp
 			$mail->Host = constant("HOSTMAIL");
@@ -1284,12 +1284,13 @@ include_once ('include/conexionECases.php');
 			//Indicamos cual es nuestra dirección de correo y el nombre que
 			//queremos que vea el usuario que lee nuestro correo
 			$mail->From = $cEmpresaFROM->getMail();
-			$mail->FromName = $cEmpresaFROM->getNombre();
+			$mail->FromName = $cEmpresa->getNombre();
+				$nomEmpresa = $cEmpresa->getNombre();
 
 			//Asignamos asunto y cuerpo del mensaje
 			//El cuerpo del mensaje lo ponemos en formato html, haciendo
 			//que se vea en negrita
-			$mail->Subject = $sSubject;
+			$mail->Subject = $nomEmpresa . " - " . $sSubject;
 			$mail->Body = $sBody;
 
 			//Definimos AltBody por si el destinatario del correo no admite

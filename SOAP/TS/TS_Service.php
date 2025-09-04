@@ -6,6 +6,8 @@ include(constant("DIR_ADODB") . 'adodb.inc.php');
 require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas/EmpresasDB.php");
 require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas/Empresas.php");
 require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "/Utilidades.php");
+require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Baremos_resultados/Baremos_resultadosDB.php");
+require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Baremos_resultados/Baremos_resultados.php");
 
 include_once ('../../Empresa/include/conexion.php');
 
@@ -15,6 +17,7 @@ include_once ('../../Empresa/include/conexionECases.php');
 $cUtilidades	= new Utilidades();
 $cEmpresasDB	= new EmpresasDB($conn);  // Entidad DB
 $cEmpresas	= new Empresas();  // Entidad
+$cBaremos_resultadosDB = new Baremos_resultadosDB($conn);
 
 class TS_Service
 {
@@ -24,7 +27,7 @@ class TS_Service
     *
 	* @param string $usuario
 	* @param string $password
-	* @return string
+	* @return string $sesion
 	*/
 	public function login($usuario, $password)
 	{
@@ -53,7 +56,7 @@ class TS_Service
 	        	$sqlEmpresas_accesos = $cEmpresas_accesosDB->readLista($cEmpresas_accesos);
 	            $aEmpresas_accesos = $conn->Execute($sqlEmpresas_accesos);
 		        if ($aEmpresas_accesos->RecordCount() >= 5){
-		        	$strMensaje = constant("ERR_FORM_LOGIN");
+					$strMensaje = "Superado número de intentos de acceso fallidos.";
 		        	throw new SoapFault("MaxAccess", "Login:: " . $strMensaje);
 				}
 	        	if (empty($strMensaje))
@@ -65,7 +68,7 @@ class TS_Service
 	        		$rowUser = $cEmpresasDB->Login($cEmpresas);
 	        		if (!empty($rowUser["usuario"]) && $rowUser["usuario"] == $usuario )
 	        		{
-						//Borramos los acceso erroneos anteriorres
+						//Borramos los acceso erróneos anteriorres
 	            		$cEmpresas_accesos->setIP("");
 						$cEmpresas_accesosDB->borrarPorLogin($cEmpresas_accesos);
 						//Dejamos sólo este login
@@ -88,7 +91,8 @@ class TS_Service
 	        				$i++;
 	        			}
 
-	        			if ($i > 0){
+	        			if ($i > 0)
+						{
 	        				$sUP = substr($sUP,1);
 	        				//Miramos las funcionalidades para el / los Perfiles.
 	        				require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_perfiles_funcionalidades/Empresas_perfiles_funcionalidadesDB.php");
@@ -127,7 +131,7 @@ class TS_Service
 	        						throw new SoapFault("LastAccess", "Login:: " . constant("ERR"));
 	        					}
 	            			}else{
-	        					$strMensaje = '* ' . constant("ERR_NO_AUTORIZADO");
+								$strMensaje =  constant("ERR_NO_AUTORIZADO");
 	        					throw new SoapFault("AutAccess", "Login:: " . $strMensaje);
 	        				}
 	        			}else{
@@ -135,15 +139,15 @@ class TS_Service
 	        				throw new SoapFault("AutAccess", "Login:: " . $strMensaje);
 	        			}
 	        		}else {
-	        			$strMensaje = constant("ERR_FORM_LOGIN");
-	        			throw new SoapFault("MaxAccess", "Login:: " . $strMensaje);
+								$strMensaje = constant("ERR_NO_AUTORIZADO");
+								throw new SoapFault("AutAccess", "Login:: " . $strMensaje);
 	        		}
 	    		}
 	        }else{
-	        	throw new SoapFault("ErrCaracter", "Login:: " . "Caracteres no permitidos en el login");
+				throw new SoapFault("ErrCaracter", "Login:: " . "Caracteres no permitidos en el login.");
 	        }
 		}else{
-	  		throw new SoapFault("FaltanDatos", "Login:: " . "Faltan datos");
+	  		throw new SoapFault("FaltanDatos", "Login:: " . "Faltan datos Obligatorios.");
 	  }
 		$oggetto = new stdClass();
 		$oggetto->session = $token;
@@ -200,6 +204,7 @@ class TS_Service
 						$k++;
 						$rs->MoveNext();
 					}
+
 				}
 
 			}else{
@@ -2067,7 +2072,7 @@ $mail->Debugoutput = 'html';
 		//Indicamos cual es nuestra dirección de correo y el nombre que
 		//queremos que vea el usuario que lee nuestro correo
 		//$mail->From = $cEmpresa->getMail();
-		$mail->From = constant("MAILUSERNAME");
+		$mail->From = constant("EMAIL_CONTACTO");
 		$mail->AddReplyTo($cEmpresa->getMail(), $cEmpresa->getNombre());
 		$mail->FromName = $cEmpresa->getNombre();
 

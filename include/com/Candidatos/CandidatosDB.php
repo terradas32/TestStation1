@@ -38,6 +38,7 @@ class CandidatosDB
 	***********************************************************************/
 	function insertar($cEntidad)
 	{
+
 		$aux			= $this->conn;
 
 		$newId = $this->getSiguienteId($cEntidad);
@@ -101,8 +102,8 @@ class CandidatosDB
 		$sql .= $aux->qstr($cEntidad->getTelefono(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getEstadoCivil(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getNacionalidad(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getInformado(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getFinalizado(), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getInformado()), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getFinalizado()), false) . ",";
 		$sql .= $aux->DBDate($cEntidad->getFechaFinalizado()) . ",";
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->sysTimeStamp . ",";
@@ -220,8 +221,8 @@ class CandidatosDB
 		$sql .= "telefono=" . $aux->qstr($cEntidad->getTelefono(), false) . ", ";
 		$sql .= "estadoCivil=" . $aux->qstr($cEntidad->getEstadoCivil(), false) . ", ";
 		$sql .= "nacionalidad=" . $aux->qstr($cEntidad->getNacionalidad(), false) . ", ";
-		$sql .= "informado=" . $aux->qstr($cEntidad->getInformado(), false) . ", ";
-		$sql .= "finalizado=" . $aux->qstr($cEntidad->getFinalizado(), false) . ", ";
+		$sql .= "informado=" . $aux->qstr(intval($cEntidad->getInformado()), false) . ", ";
+		$sql .= "finalizado=" . $aux->qstr(intval($cEntidad->getFinalizado()), false) . ", ";
 		$sql .= "fechaFinalizado=" . $aux->DBDate($cEntidad->getFechaFinalizado()) . ",";
 		$sql .= "fecMod=" . $aux->sysTimeStamp . ",";
 		$sql .= "usuMod=" . $aux->qstr($cEntidad->getUsuMod(), false) ;
@@ -412,7 +413,7 @@ class CandidatosDB
 
 			echo(constant("ERR"));
 			$this->msg_Error	= array();
-			$sTypeError	=	date('d/m/Y H:i:s') . " Error SQL [readEntidad][CandidatosDB]";
+			$sTypeError	=	date('d/m/Y H:i:s') . " Error SQL [readEntidad][CandidatosDB]patarta5";
 			$this->msg_Error[]	= $sTypeError;
 			error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
 			exit;
@@ -675,7 +676,7 @@ class CandidatosDB
 		if ($cEntidad->getInformado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="informado>=" . $aux->qstr($cEntidad->getInformado(), false);
+			$sql .="informado>=" . $aux->qstr(intval($cEntidad->getInformado()), false);
 		}
 		if ($cEntidad->getInformadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -685,7 +686,7 @@ class CandidatosDB
 		if ($cEntidad->getFinalizado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="finalizado>=" . $aux->qstr($cEntidad->getFinalizado(), false);
+			$sql .="finalizado>=" . $aux->qstr(intval($cEntidad->getFinalizado()), false);
 		}
 		if ($cEntidad->getFinalizadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);

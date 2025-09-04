@@ -1,22 +1,23 @@
 <?php
-/*
-@version   v5.21.0-rc.1  2021-02-02
-@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
-@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
-  Released under both BSD license and Lesser GPL library license.
-  Whenever there is any discrepancy between the two licenses,
-  the BSD license will take precedence. See License.txt.
-  Set tabs to 4 for best viewing.
-
-  Latest version is available at https://adodb.org/
-
-  Library for basic performance monitoring and tuning.
-
-  My apologies if you see code mixed with presentation. The presentation suits
-  my needs. If you want to separate code from presentation, be my guest. Patches
-  are welcome.
-
-*/
+/**
+ * performance monitoring and tuning.
+ *
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
+ *
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ */
 
 if (!defined('ADODB_DIR')) include_once(dirname(__FILE__).'/adodb.inc.php');
 include_once(ADODB_DIR.'/tohtml.inc.php');
@@ -235,6 +236,9 @@ class adodb_perf {
 	var $helpurl = '<a href="https://adodb.org/dokuwiki/doku.php?id=v5:performance:logsql">LogSQL help</a>';
 	var $createTableSQL = false;
 	var $maxLength = 2000;
+
+	/** @var array Settings data. */
+	var $settings = [];
 
     // Sets the tablename to be used
     static function table($newtable = false)
@@ -1013,7 +1017,7 @@ Committed_AS:   348732 kB
      *      <code>ADODB_OPT_LOW</code> for CPU-less optimization
      *      Default is LOW <code>ADODB_OPT_LOW</code>
      * @author Markus Staab
-     * @return Returns <code>true</code> on success and <code>false</code> on error
+     * @return bool true on success, false on error
      */
     function OptimizeTables()
     {
@@ -1044,7 +1048,7 @@ Committed_AS:   348732 kB
      *      <code>ADODB_OPT_LOW</code> for CPU-less optimization
      *      Default is LOW <code>ADODB_OPT_LOW</code>
      * @author Markus Staab
-     * @return Returns <code>true</code> on success and <code>false</code> on error
+	 * @return bool true on success, false on error
      */
     function OptimizeTable( $table, $mode = ADODB_OPT_LOW)
     {
@@ -1058,7 +1062,7 @@ Committed_AS:   348732 kB
      * optimize each using <code>optmizeTable()</code>
      *
      * @author Markus Staab
-     * @return Returns <code>true</code> on success and <code>false</code> on error
+	 * @return bool true on success, false on error
      */
     function optimizeDatabase()
     {

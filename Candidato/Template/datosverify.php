@@ -56,7 +56,7 @@ function validaForm()
 
 	msg +=vString("<?php echo constant("STR_NOMBRE");?>:",f.fNombre.value,255,true);
 	msg +=vString("<?php echo constant("STR_APELLIDO1");?>:",f.fApellido1.value,255,true);
-	msg +=vEmail("<?php echo constant("STR_MAIL");?>:",f.fMailCan.value,255,true);
+	msg +=vString("<?php echo constant("STR_MAIL");?>:",f.fMailCan.value,255,true);
 //	msg +=vString("<?php echo constant("STR_DNI");?>:",f.fNifCan.value,255,true);
 	msg +=vString("<?php echo constant("STR_PASSWORD");?>:",f.fPasswordCan.value,255,true);
 	msg +=vString("<?php echo constant("STR_CONF_PASSWORD");?>:",f.fConfPasswordCan.value,255,true);

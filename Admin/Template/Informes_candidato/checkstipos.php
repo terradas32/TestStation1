@@ -1,5 +1,12 @@
 <?php
-    if (!defined ("DIR_FS_DOCUMENT_ROOT")){
+
+	if(isset($_POST['esZip']) && $_POST['esZip'] == true){
+		$documentRoot = "DIR_FS_DOCUMENT_ROOT_ADMIN";
+	}else{
+		$documentRoot = "DIR_FS_DOCUMENT_ROOT";
+	}
+
+    if (!defined ($documentRoot)){
         require_once("../../include/SeguridadTemplate.php");
     }else{
     	require_once("include/SeguridadTemplate.php");

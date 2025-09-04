@@ -47,12 +47,13 @@ ob_start();
 	require_once(constant("DIR_WS_COM") . "Informes_pruebas/Informes_pruebas.php");
 	require_once(constant("DIR_WS_COM") . "Escalas_items/Escalas_itemsDB.php");
 	require_once(constant("DIR_WS_COM") . "Escalas_items/Escalas_items.php");
-	require_once(constant("DIR_WS_COM") . "Empresas/EmpresasDB.php");
-	require_once(constant("DIR_WS_COM") . "Empresas/Empresas.php");
 	require_once(constant("DIR_WS_COM") . "Baremos_empresas/Baremos_empresasDB.php");
 	require_once(constant("DIR_WS_COM") . "Baremos_empresas/Baremos_empresas.php");
+	require_once(constant("DIR_WS_COM") . "Empresas/EmpresasDB.php");
+	require_once(constant("DIR_WS_COM") . "Empresas/Empresas.php");
 
-include_once ('include/conexion.php');
+
+	include_once ('include/conexion.php');
 
 	require_once(constant("DIR_WS_INCLUDE") . "SeguridadTemplate.php");
 
@@ -63,6 +64,7 @@ include_once ('include/conexion.php');
 
 	$cEmpresasDB	= new EmpresasDB($conn);  // Empresas DB
 	$cEmpresas	= new Empresas();  // Empresas
+
 	$cProcesoBaremosDB	= new Proceso_baremosDB($conn);  // Entidad DB
 	$cProcesoInformesDB	= new Proceso_InformesDB($conn);  // Entidad DB
 	$cProcesoPruebasDB	= new Proceso_pruebasDB($conn);  // Entidad DB
@@ -122,7 +124,7 @@ include_once ('include/conexion.php');
 
 	$comboEMK_CHARSETS	= new Combo($conn,"fCodificacion","codigo",$conn->Concat("codigo", "' - '", "descripcion"),"Descripcion","emk_charsets","",constant("SLC_OPCION"),"","","fecMod DESC");
 
-//echo('modo:' . $_POST['MODO']);
+	//echo('modo:' . $_POST['MODO']);
 
 	if (!isset($_POST['MODO'])){
 		session_start();
@@ -281,7 +283,7 @@ include_once ('include/conexion.php');
 					$cProcesoBaremos->setIdProceso($_POST['fIdProceso']);
 					$cProcesoBaremos->setIdEmpresa($_POST['fIdEmpresa']);
 					$cProcesoBaremos->setIdPrueba($_POST['fIdPrueba']);
-					$cProcesoBaremos->setIdBaremo((!empty($_POST['fIdBaremo'])) ? $_POST['fIdBaremo'] : "0");
+					$cProcesoBaremos->setIdBaremo((!empty($_POST['fIdBaremo'])) ? $_POST['fIdBaremo'] : "1");
 					$cProcesoBaremos->setCodIdiomaIso2($_POST['fIdioma']);
 
 					if (!$cProcesoBaremosDB->borrar($cProcesoBaremos)){
@@ -291,7 +293,7 @@ include_once ('include/conexion.php');
 						$cProcesoInformes->setIdProceso($_POST['fIdProceso']);
 						$cProcesoInformes->setIdEmpresa($_POST['fIdEmpresa']);
 						$cProcesoInformes->setIdPrueba($_POST['fIdPrueba']);
-						$cProcesoInformes->setIdBaremo((!empty($_POST['fIdBaremo'])) ? $_POST['fIdBaremo'] : "0");
+						$cProcesoInformes->setIdBaremo((!empty($_POST['fIdBaremo'])) ? $_POST['fIdBaremo'] : "1");
 						$cProcesoInformes->setCodIdiomaIso2($_POST['fIdioma']);
 
 						if (!$cProcesoInformesDB->borrar($cProcesoInformes)){
@@ -312,17 +314,17 @@ include_once ('include/conexion.php');
 				$cProcesoBaremos->setIdProceso($_POST['fIdProceso']);
 				$cProcesoBaremos->setIdEmpresa($_POST['fIdEmpresa']);
 				$cProcesoBaremos->setIdPrueba($_POST['fIdPrueba']);
-				$cProcesoBaremos->setIdBaremo((!empty($_POST['fIdBaremo'])) ? $_POST['fIdBaremo'] : "0");
+				$cProcesoBaremos->setIdBaremo((!empty($_POST['fIdBaremo'])) ? $_POST['fIdBaremo'] : "1");
 
 				$cProcesoInformes = new Proceso_informes();  // Entidad
 				$cProcesoInformes->setIdProceso($_POST['fIdProceso']);
 				$cProcesoInformes->setIdEmpresa($_POST['fIdEmpresa']);
 				$cProcesoInformes->setIdPrueba($_POST['fIdPrueba']);
-				$cProcesoInformes->setIdBaremo((!empty($_POST['fIdBaremo'])) ? $_POST['fIdBaremo'] : "0");
+				$cProcesoInformes->setIdBaremo((!empty($_POST['fIdBaremo'])) ? $_POST['fIdBaremo'] : "1");
 				$cProcesoInformes->setCodIdiomaIso2($_POST['fIdioma']);
 
 				$cProcesoInformes->setCodIdiomaInforme($_POST['fIdiomaInforme']);
-//				$cProcesoInformes->setIdTipoInforme($_POST['fIdTipoInforme']);
+				//$cProcesoInformes->setIdTipoInforme($_POST['fIdTipoInforme']);
 				$aInformes= array();
 				for ($i=0, $max = 200; $i < $max; $i++){
 					if(isset($_POST["fIdTipoInforme" . $i]) && !empty($_POST["fIdTipoInforme" . $i])){
@@ -344,15 +346,37 @@ include_once ('include/conexion.php');
 					$cProcesoBaremos->setUsuMod($_cEntidadUsuarioTK->getIdEmpresa());
 
 					$newIdPP = $cProcesoPruebasDB->insertar($cProcesoPruebas);
-					$newIdPB = $cProcesoBaremosDB->insertar($cProcesoBaremos);
+					if (!$newIdPP)
+					{
+						?><script language="javascript" type="text/javascript">alert("<?php echo constant("ERR_FORM_ERROR");?>\n<?php echo $cProcesoPruebasDB->ver_errores();?>");</script><?php
+					}else{
+						$newIdPB = $cProcesoBaremosDB->insertar($cProcesoBaremos);
 
-					$i=0;
-					$cProcesoInformes->setUsuAlta($_cEntidadUsuarioTK->getIdEmpresa());
-					$cProcesoInformes->setUsuMod($_cEntidadUsuarioTK->getIdEmpresa());
-					while($i < count($aInformes)) {
-						$cProcesoInformes->setIdTipoInforme($aInformes[$i]);
-						$newIdPI = $cProcesoInformesDB->insertar($cProcesoInformes);
-						$i++;
+						$i=0;
+						$cProcesoInformes->setUsuAlta($_cEntidadUsuarioTK->getIdEmpresa());
+						$cProcesoInformes->setUsuMod($_cEntidadUsuarioTK->getIdEmpresa());
+						while($i < count($aInformes)) {
+							$cProcesoInformes->setIdTipoInforme($aInformes[$i]);
+							$newIdPI = $cProcesoInformesDB->insertar($cProcesoInformes);
+							$i++;
+						}
+						//Miramos si ya tiene candidatos, en ese caso se aplica el descuento de Administración para todos ellos para esta prueba agregada.
+						$cPrueba	= new Pruebas();
+						$cPrueba->setIdPrueba($_POST['fIdPrueba']);
+						$cPrueba->setCodIdiomaIso2($_POST['fIdioma']);
+						$cPrueba = $cPruebasDB->readEntidad($cPrueba);
+
+						$cCandidatos	= new Candidatos();
+						$cCandidatos->setIdEmpresa($_POST['fIdEmpresa']);
+						$cCandidatos->setIdProceso($_POST['fIdProceso']);
+						//Saco la lista de candidatos para la empresa proceso
+						$sSQLCandidatos = $cCandidatosDB->readLista($cCandidatos);
+						$rsCandidatos = $conn->Execute($sSQLCandidatos);
+						while(!$rsCandidatos->EOF){
+							$cCandidatos->setIdCandidato($rsCandidatos->fields['idCandidato']);
+							$bOk = $cCandidatosDB->decuentaConsumoXAdministracion($cCandidatos);
+							$rsCandidatos->MoveNext();
+						}
 					}
 				}
 				$cProcesoPruebas	= new Proceso_pruebas();  // Entidad
@@ -573,17 +597,7 @@ include_once ('include/conexion.php');
 				$cBaremos->setIdPrueba("-5");
 			}
 			$bPintaBaremo=true;
-			//Comprobamos si es de tipo prisma (Personalidad), ya que este tipo no tiene baremo por prueba,
-			//Si no por escalas
-			$cEscalas_items=  new Escalas_items();
-			$cEscalas_itemsDB=  new Escalas_itemsDB($conn);
-			$cEscalas_items->setIdPrueba($_POST['fIdPrueba']);
-			$sqlEscalas_items= $cEscalas_itemsDB->readLista($cEscalas_items);
-			$rsEscalas_items = $conn->Execute($sqlEscalas_items);
-			//////////////////////
-			if($rsEscalas_items->recordCount() > 0){
-				$bPintaBaremo=false;
-			}
+
 			//Revisamos los baremos que tiene activos la Empresa
 			if ($bPintaBaremo)
 			{
@@ -608,7 +622,22 @@ include_once ('include/conexion.php');
 			}
 			//FIN Revisamos los baremos que tiene activos la Empresa
 
-			$sqlBaremos = $cBaremosDB->readLista($cBaremos);
+			//Comprobamos si es de tipo prisma (Personalidad), ya que este tipo no tiene baremo por prueba,
+			//Si no por escalas
+			$cEscalas_items=  new Escalas_items();
+			$cEscalas_itemsDB=  new Escalas_itemsDB($conn);
+			$cEscalas_items->setIdPrueba($_POST['fIdPrueba']);
+			$sqlEscalas_items= $cEscalas_itemsDB->readLista($cEscalas_items);
+			$rsEscalas_items = $conn->Execute($sqlEscalas_items);
+			//////////////////////
+			if($rsEscalas_items->recordCount() > 0){
+				//Es de tipo personalidad, para activar los baremos y mostrar sólo uno modificamos la consulta
+				//$bPintaBaremo=false;
+				$sqlBaremos = $cBaremosDB->readListaPersonalidad($cBaremos);
+			}else{
+				$sqlBaremos = $cBaremosDB->readLista($cBaremos);
+			}
+			
 			$listaBaremos = $conn->Execute($sqlBaremos);
 			if(isset($_POST['fIdPrueba']) && $_POST['fIdPrueba']!=""){
 				if($listaBaremos->recordCount()==0){
@@ -616,7 +645,7 @@ include_once ('include/conexion.php');
 				}
 			}
 			//Para los informes
-//			$cTipos_informesDB = new Tipos_informesDB($conn);
+			//$cTipos_informesDB = new Tipos_informesDB($conn);
 			$cInformes_pruebasDB = new Informes_pruebasDB($conn);
 			$sMensajeInforme = "";
 			$aIdiomasInformes[]="";
@@ -626,7 +655,7 @@ include_once ('include/conexion.php');
 				$cInformes_pruebas->setIdPrueba($_POST['fIdPrueba']);
 				$sqlInformes_pruebas= $cInformes_pruebasDB->readLista($cInformes_pruebas);
 				$sqlInformes_pruebas.=" GROUP BY codIdiomaIso2";
-//				echo $sqlInformes_pruebas;
+				//echo $sqlInformes_pruebas;
 				$listaInformes_pruebas = $conn->Execute($sqlInformes_pruebas);
 
 				while(!$listaInformes_pruebas->EOF){
@@ -647,7 +676,6 @@ include_once ('include/conexion.php');
 		case constant("MNT_ANIADECANDIDATOS"):
 			$bTpvActivo = false;
 			$sIdEmpresa = (!empty($_POST['fIdEmpresa'])) ? $_POST['fIdEmpresa'] : "";
-			//echo "<br />-->" . $sIdEmpresa;
 			if (!empty($sIdEmpresa)){
 				$cEmpTPV = new Empresas();
 				$cEmpTPVDB = new EmpresasDB($conn);
@@ -680,6 +708,23 @@ include_once ('include/conexion.php');
 					include('Template/ProcesoProcesos/mntcandidatosa.php');
 					break;
 				}else{
+					//Miramos que tenga definidas las pruebas a realizar
+					$cProceso_pruebas	=	new Proceso_pruebas();
+					$cProceso_pruebas->setIdEmpresa($_POST['fIdEmpresa']);
+					$cProceso_pruebas->setIdProceso($_POST['fIdProceso']);
+					$sqlProceso_pruebas = $cProcesoPruebasDB->readLista($cProceso_pruebas);
+					
+					$rsProceso_pruebas = $conn->Execute($sqlProceso_pruebas);
+					$iContPruebas = $rsProceso_pruebas->RecordCount();
+					if ($iContPruebas <= 0 ){
+						$_POST['fTipoAlta']=0;
+						?>
+						<script language="javascript" type="text/javascript">
+							document.forms[0].elements['fTipoAlta'].selectedIndex=0;
+							alert("<?php echo constant("ERR_FORM_ERROR");?>\n\nAsigne primero la/las pruebas al proceso.\n\n\tGracias.");
+						</script><?php
+						break;
+					}
 					if($sTipoAlta==1){
 						include('Template/ProcesoProcesos/cargamasiva.php');
 						break;
@@ -706,6 +751,8 @@ include_once ('include/conexion.php');
 			}
 
 		case constant("MNT_LISTACANDIDATOS"):
+			//JOSH
+			//echo "<br />-->" . $sIdEmpresa;
 
 			if(isset($_POST['fBorra']) && $_POST['fBorra']!=""){
 				if ($_POST['fIdCandidato'] == "*"){ //Borrar todos
@@ -756,7 +803,7 @@ include_once ('include/conexion.php');
 					$cCandidatos->setFinalizado("0");
 					$cCandidatos->setUsuAlta($_cEntidadUsuarioTK->getIdEmpresa());
 					$cCandidatos->setUsuMod($_cEntidadUsuarioTK->getIdEmpresa());
-
+					//ALTACANDIDATO
 					$newIdC = $cCandidatosDB->insertar($cCandidatos);
 				}
 			}
@@ -778,6 +825,7 @@ include_once ('include/conexion.php');
 					$cCandidatos->setApellido1("");
 					$cCandidatos->setApellido2("");
 					$cCandidatos->setDni("");
+					//ALTACANDIDATO
 					$newIdC = $cCandidatosDB->insertar($cCandidatos);
 				}
 			}
@@ -816,7 +864,7 @@ include_once ('include/conexion.php');
 							$cCandidatos->setFinalizado("0");
 							$cCandidatos->setUsuAlta($_cEntidadUsuarioTK->getIdEmpresa());
 							$cCandidatos->setUsuMod($_cEntidadUsuarioTK->getIdEmpresa());
-
+							//ALTACANDIDATO
 							$newIdC = $cCandidatosDB->insertar($cCandidatos);
 						}
 
@@ -902,29 +950,32 @@ include_once ('include/conexion.php');
 			$iImportados	= 0;
 			if (!empty($newId)){
 				$cEntidad = readEntidad($cEntidad);
-//				$cEntidad = $cEntidadDB->readEntidad($cEntidad);
+				//$cEntidad = $cEntidadDB->readEntidad($cEntidad);
 				$cCandidatos_backDB = new Candidatos_backDB($conn);
 				$idGrupos = "";
 
 				$aRespuesta = $cCandidatos_backDB->importarSuscriptoresCSV($_POST['fCampos'], $_POST['fFichero'], $_POST['fSrc_type'], $_POST['fSeparadorCampos'], $_POST['fCodificacion'], $_POST['fEntrecomillado'], $_POST['fCabeceras'], $idGrupos, $cEntidad);
+				$iImportados = $aRespuesta["Importados"];
 			}
-//			if (!empty($iImportados)){
-//				?><script language="javascript" type="text/javascript">alert("<?php echo sprintf(constant("CONF_ALTA_VARIOS"), $aRespuesta['Importados'], $aRespuesta['Total']);?>\n<?php echo $cEntidadDB->ver_errores();?>");</script><?php
-//
-//				$cEntidad	= new Candidatos_back();  // Entidad
-//				$cEntidad->setOrderBy("fecMod");
-//				$cEntidad->setBusqueda(constant("STR_ORDENAR_POR"), constant("STR_FEC_MOD"));
-//				$cEntidad->setOrder("DESC");
-//				$cEntidad->setBusqueda(constant("STR_ORDEN"), "DESC");
-//				$_POST["LSTOrderBy"] = "fecMod";
-//				$_POST["LSTOrder"] = "DESC";
-//				$_POST['MODO']    = constant("MNT_ALTA");
-//				include('Template/ProcesoProcesos/previsualizar.php');
-//			}else{
-//				$_POST['MODO']=constant("MNT_LISTAR");
-//				include('Template/ProcesoProcesos/previsualizar.php');
-//			}
-//			include('Template/ProcesoProcesos/definirCampos.php');
+
+			if (!empty($iImportados))
+			{
+				?> <script language="javascript" type="text/javascript">alert("<?php echo sprintf(constant("CONF_ALTA_VARIOS"), $aRespuesta['Importados'], $aRespuesta['Total']);?>\n<?php echo $cEntidadDB->ver_errores();?>");</script> <?php
+
+			// 	$cEntidad	= new Candidatos_back();  // Entidad
+			// 	$cEntidad->setOrderBy("fecMod");
+			// 	$cEntidad->setBusqueda(constant("STR_ORDENAR_POR"), constant("STR_FEC_MOD"));
+			// 	$cEntidad->setOrder("DESC");
+			// 	$cEntidad->setBusqueda(constant("STR_ORDEN"), "DESC");
+			// 	$_POST["LSTOrderBy"] = "fecMod";
+			// 	$_POST["LSTOrder"] = "DESC";
+			// 	$_POST['MODO']    = constant("MNT_ALTA");
+			// 	include('Template/ProcesoProcesos/previsualizar.php');
+			// }else{
+			// 	$_POST['MODO']=constant("MNT_LISTAR");
+			// 	include('Template/ProcesoProcesos/previsualizar.php');
+			}
+			//include('Template/ProcesoProcesos/definirCampos.php');
 			?><script language="javascript" type="text/javascript">
 				listacandidato();
 			</script><?php
@@ -1022,6 +1073,7 @@ include_once ('include/conexion.php');
 						$cCorreos->setDescripcion($_POST['fDescripcionNew']);
 						$cCorreos->setCuerpo($_POST['fCuerpoNew']);
 						$cCorreos->setNombre($_POST['fNombreNew']);
+
 						//verificamos que el contenido del correo
 						//lleva el tag de @acceso_password@
 						if ($cCorreos->getIdTipoCorreo() == 2)

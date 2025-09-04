@@ -188,6 +188,21 @@ $HELP="xx";
 					<td nowrap="nowrap" width="140" class="negrob" valign="top"><label for="LSTCabecera"><?php echo constant("STR_CABECERA");?></label>&nbsp;</td>
 					<td><input type="text" id="LSTCabecera" name="LSTCabecera" value="<?php echo $cEntidad->getCabecera();?>" class="cajatexto"  onchange="javascript:trim(this);" /></td>
 				</tr>
+								<tr>
+					<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
+					<td nowrap="nowrap" width="140" class="negrob" valign="top"><label for="LSTTarifa">Tarifa Administración</label>&nbsp;</td>
+					<td>
+						<table cellspacing="0" cellpadding="0" border="0">
+							<tr>
+								<td nowrap="nowrap" class="negrob"><?php echo constant("STR_DESDE");?>&nbsp;</td>
+								<td><input type="text" id="LSTTarifa" name="LSTTarifa" value="<?php echo $cEntidad->getTarifa();?>" class="cajatexto" style="width:75px;" onchange="javascript:trim(this);" /></td>
+								<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
+								<td nowrap="nowrap" class="negrob"><?php echo constant("STR_HASTA");?>&nbsp;</td>
+								<td><input type="text" id="LSTTarifaHast" name="LSTTarifaHast" value="<?php echo $cEntidad->getTarifaHast();?>" class="cajatexto" style="width:75px;" onchange="javascript:trim(this);" /></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
 				<tr>
 					<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
 					<td nowrap="nowrap" width="140" class="negrob" valign="top"><label for="LSTBajaLog"><?php echo constant("STR_BAJA_LOG");?></label>&nbsp;</td>

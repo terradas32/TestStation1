@@ -100,8 +100,8 @@ class CandidatosDB
 		$sql .= $aux->qstr($cEntidad->getTelefono(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getEstadoCivil(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getNacionalidad(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getInformado(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getFinalizado(), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getInformado()), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getFinalizado()), false) . ",";
 		$sql .= $aux->DBDate($cEntidad->getFechaFinalizado()) . ",";
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->sysTimeStamp . ",";
@@ -203,7 +203,7 @@ class CandidatosDB
 		$sql .= "apellido2=" . $aux->qstr($cEntidad->getApellido2(), false) . ", ";
 		$sql .= "dni=" . $aux->qstr($cEntidad->getDni(), false) . ", ";
 		$sql .= "mail=" . $aux->qstr($cEntidad->getMail(), false) . ", ";
-//		$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+//		$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 		$sql .= "idTratamiento=" . $aux->qstr($cEntidad->getIdTratamiento(), false) . ", ";
 		$sql .= "idSexo=" . $aux->qstr($cEntidad->getIdSexo(), false) . ", ";
 		$sql .= "idEdad=" . $aux->qstr($cEntidad->getIdEdad(), false) . ", ";
@@ -235,8 +235,8 @@ class CandidatosDB
 		if ($cEntidad->getNivelConocimientoMB() != ""){
 			$sql .= "nivelConocimientoMB=" . $aux->qstr($cEntidad->getNivelConocimientoMB(), false) . ", ";
 		}
-		$sql .= (trim($cEntidad->getInformado()) != "") ? "informado=" . $aux->qstr($cEntidad->getInformado(), false) . "," : "";
-		$sql .= "finalizado=" . $aux->qstr($cEntidad->getFinalizado(), false) . ", ";
+		$sql .= (trim($cEntidad->getInformado()) != "") ? "informado=" . $aux->qstr(intval($cEntidad->getInformado()), false) . "," : "";
+		$sql .= "finalizado=" . $aux->qstr(intval($cEntidad->getFinalizado()), false) . ", ";
 		$sql .= (trim($cEntidad->getFechaFinalizado()) != "") ? "fechaFinalizado=" . $aux->sysTimeStamp . "," : "";
 		$sql .= "fecMod=" . $aux->sysTimeStamp . ",";
 		$sql .= "usuMod=" . $aux->qstr($cEntidad->getUsuMod(), false) . " ";
@@ -364,7 +364,7 @@ class CandidatosDB
 		$aux			= $this->conn;
 
 		$sql = "UPDATE candidatos SET ";
-		$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "" : "";
+		$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "" : "";
 		$sql .= " WHERE ";
 		$sql .="idCandidato=" . $aux->qstr($cEntidad->getIdCandidato(), false) . " AND idEmpresa=" . $aux->qstr($cEntidad->getIdEmpresa(), false) . " AND idProceso=" . $aux->qstr($cEntidad->getIdProceso(), false) . " ";
 //		echo $sql;exit;
@@ -893,7 +893,7 @@ class CandidatosDB
 		if ($cEntidad->getInformado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="informado>=" . $aux->qstr($cEntidad->getInformado(), false);
+			$sql .="informado>=" . $aux->qstr(intval($cEntidad->getInformado()), false);
 		}
 		if ($cEntidad->getInformadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -903,7 +903,7 @@ class CandidatosDB
 		if ($cEntidad->getFinalizado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="finalizado>=" . $aux->qstr($cEntidad->getFinalizado(), false);
+			$sql .="finalizado>=" . $aux->qstr(intval($cEntidad->getFinalizado()), false);
 		}
 		if ($cEntidad->getFinalizadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);

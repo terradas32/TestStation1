@@ -56,7 +56,7 @@ include_once ('include/conexion.php');
 							<p>Fax:&nbsp;(+34) 91 559 12 30</p>
 							<p>e-Mail:&nbsp;info@people-experts.com</p>
 							<p>Inscrita en el Registro Mercantil de Madrid, tomo 10.641, libro 0, sección 8, hoja M-168579, CIF: A78301934</p>
-							<p>Nombre de dominio:&nbsp;test-station.biz</p>
+							<p>Nombre de dominio:&nbsp;test-station.com</p>
 							
 							<p></p>
 							<p><b>OBJETO</b></p>
@@ -85,7 +85,7 @@ include_once ('include/conexion.php');
 							<p><b>&nbsp;</b></p>
 							<p><b>POLÍTICA DE PRIVACIDAD</b></p>
 							<p></p>
-							<p>PSICOLOGOS EMPRESARIALES y ASOC. S.A. le informa de que los datos que usted introduzca a través de nuestra página web ubicada en www.test-station.biz serán guardados por PEOPLE EXPERTS con la más estricta confidencialidad.</p>
+							<p>PSICOLOGOS EMPRESARIALES y ASOC. S.A. le informa de que los datos que usted introduzca a través de nuestra página web ubicada en www.test-station.com serán guardados por PEOPLE EXPERTS con la más estricta confidencialidad.</p>
 							<p></p>
 							<p>A cualquier interesado que lo solicite se le facilitará su derecho a acceder a la información que sobre sus datos exista en el fichero, así como su derecho a rectificarlos, cancelarlos u oponerse a ellos, tal y como señala la Ley Orgánica 15/1999 de 13 de Diciembre de Protección de Datos de Carácter Personal.</p>
 							<p></p>

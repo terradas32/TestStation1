@@ -90,7 +90,12 @@ define("MSG_BIENVENIDA_COMENZAR", "To begin choose an option from the left menu.
 define("MSG_AVISO_LEGAL_P1"					, "In compliance with Organic Law 15/1999, of December 13rd, Protection of Personal Data, we inform you that your personal data will be incorporated into Psicólogos Empresariales, S.A. data base (addressed at Paseo Pintor Rosales, 44 1º Dcha- 28008 Madrid), in order to obtain psychological evaluation.");
 define("MSG_AVISO_LEGAL_P2"					, "To exercise your rights of access, rectification, cancellation and opposition please may address a written communication to Psicólogos Empresariales, S.A. as Security Responsible, at Paseo Pintor Rosales, 44 1 º D (28008-Madrid).");
 define("MSG_AVISO_LEGAL_P3"					, "In case that your evaluation was requested by a Psicólogos Empresariales client, as part of an assessment process in which you are voluntarily participating, we inform you that the results will be sole shared with this client as part of the evaluation or recruitment process.");
+define("MSG_ESTAS_SEGURO_DE_FINALIZAR_LA_PRUEBA"	, "¿Estás seguro de que quieres finalizar la prueba?");
 define("MSG_ESTAS_SEGURO_DE_FINALIZAR_LA_PRUEBA"	, "Are you sure you want to end the test?");
+define("MSG_ESTAS_SEGURO_DE_COMENZAR_LA_PRUEBA_AUDIO"	, "¿Estás seguro de que quieres comenzar la prueba?\\nUna vez comenzada, no podrás volver a escuchar el audio.\\n\\nSi estás seguro pulsa 'Aceptar', de lo contrario pulsa 'Cancelar'.");
+define("MSG_DATOS_DE_ACCESO_ENVIADOS_ALTAS_CIEGAS"	, "Le hemos enviado un correo con sus datos de acceso.<br/>Revise su buzón de entrada y carpeta de Spam.");
+define("MSG_YA_REGISTRADO_ALTAS_CIEGAS_CONTINUAR"	, "Ya se encuentra registrado en el sistema, si quiere continuar desde donde lo dejo, pulse sobre el siguiente <a href=\"remember.php?fLang=%s&s=%s\">enlace</a>, recibirá un mensaje en su buzón de correo con los datos de acceso.");
+
 /*********** Mensajes de Error en los campos del formulario *************/
 //Formato: ERR_FORM_XXXXX
 define("ERR"								, "General Error try again later.");
@@ -120,6 +125,8 @@ define("ERR_FORM_NO_MAYOR_QUE"				, "It can not be greater than or equal to");
 define("ERR_FORM_NO_IGUAL_FICHERO"			, "The file does not match try to modify the existing");
 define("ERR_FORM_CARACTERES_LOGIN"			, "Invalid characters entered.");
 define("ERR_FORM_DOWNLOAD_FICHERO"			, "It was impossible to download file.");
+define("ERR_FORM_TODOS_CAMPOS_REQUERIDOS"					, "Todos los Campos son requeridos.");
+define("ERR_PROCESO_DESHABILITADO_ALTAS_CIEGAS"					, "El proceso en el que intenta participar está deshabilitado por favor contacte con la persona que le facilitó el link.");
 //Literales en los campos de formulario.
 //Formato: STR_XXXXX
 define("STR_CAMPO_REQUERIDO"                    , "Required field");
@@ -526,6 +533,7 @@ define("STR_TPV_DATOS_SUBTITULO", "Completing the Questionnaires  and Psychologi
 define("STR_TPV_DATOS_TEXTO", "Before starting, the payment must be completed through the following secure on-line merchant service.<br /><br />Thank you,");
 define("STR_TPV_PAGAR", "TO PAY");
 define("STR_TPV_CUESTIONARIOS", "Questionnaire");
+define("STR_TPV_PENDIENTE", "Pendiente");
 define("STR_RESPONSABILIDADES"					, "Responsibilities");
 define("STR_SUS_RESPONSABILIDADES"					, "Your responsibilities");
 define("STR_SU_COMPROMISO"					, "YOUR COMMITMENT");
@@ -533,7 +541,23 @@ define("STR_SU_COMPROMISO_TEXTO"					, "Before you continue, you must accept a n
 define("STR_ACEPTO"					, "I agree");
 define("STR_SI_NO_ACEPTO_TEXTO"					, "If you do not agree, contact the test administrator and click Disconnect, upper right. <img src='graf/btn_salir_off.gif' border=0 />");
 define("STR_DEBE_ACEPTAR"			,"You must press 'I agree' to continue.");
+define("STR_TIEMPO_REQUERIDO", "Tiempo requerido");
+define("STR_N_DE_PREGUNTAS", "Nº de preguntas");
+define("STR_SECTOR", "Sector");
+define("STR_CONCESION", "Concesión / Talleres Autorizados");
+define("STR_FECHA_NACIMIENTO", "Fecha de Nacimiento");
+define("STR_ESPECIALIDAD", "Especialidad");
+define("STR_NIVEL_CONOCIMIENTO_TECNICO", "Autoevaluación del nivel de conocimientos técnicos en función del sector señalado");
 define("STR_TIEMPO_REQUERIDO", "Time required");
+define("STR_TEXTO_ACCESO_BLIND"						, "Para darse de alta en el proceso, rellene los siguientes campos con sus datos.");
+define("STR_NECESITA_AYUDA_SOPORTE_AL_USUARIO"						, "Necesita ayuda? Soporte al usuario");
+define("STR_AYUDA_AL_CANDIDATO"						, "Ayuda al Candidato");
+define("STR_SOPORTE_AL_USUARIO"						, "Soporte al Usuario");
+define("STR_CONTACTA_CON_NOSOTROS"						, "Contacta con nosotros");
+define("STR_EXPANDIR_TODO"						, "Expandir todo");
 define("STR_N_DE_PREGUNTAS", "Questions no.");
-
+define("STR_MENSAJE"						, "Mensaje");
+define("STR_ENVIAR"						, "Enviar");
+define("STR_LO_QUE_NECESITARA"						, "Lo que necesitará");
+define("STR_PAIS_DE_PROCEDENCIA"                         , "País de procedencia");
 ?>

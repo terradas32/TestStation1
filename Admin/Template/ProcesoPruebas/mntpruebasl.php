@@ -4,6 +4,18 @@
     }else{
     	require_once("include/SeguridadTemplate.php");
     }
+
+	$clave = obtenerClavePlantilla();
+	$payload = [
+		'sql'   => $sql,
+		'nombre'=> $clave,
+		'ts'    => time(),
+		'nonce' => bin2hex(random_bytes(8)),
+	];
+
+	$token = excel_encrypt_payload($payload, EXCEL_ENC_KEY);
+	$sig   = excel_sign($token, EXCEL_HMAC_KEY);
+	$urlExcel = 'sqlToExcel.php?fSQLtoEXCEL='.base64_encode($token).'&signature='.base64_encode($sig);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $sLang;?>" xml:lang="<?php echo $sLang;?>">
@@ -219,6 +231,20 @@ function _body_onunload(){	lon();	}
 			<?php 
 			$sPinta = "";
 			$sOrden = "ASC";
+			if ($cEntidad->getOrderBy() == "tarifa"){
+				if ($cEntidad->getOrder() == "ASC"){
+					$sOrden = "DESC";
+					$sPinta = $strOrderASC;
+				}else{
+					$sOrden = "ASC";
+					$sPinta = $strOrderDESC;
+				}
+			}
+			?>
+			<td class="tdnaranjab" align="center"><a title="<?php echo constant("STR_ORDENAR_POR");?> >>> Tarifa Administración" href="#" class="tdnaranjab" style="color:#ffffff" onclick="javascript:document.forms[0].fReordenar.value=1;document.forms[0].LSTOrderBy.value='tarifa';document.forms[0].LSTOrder.value='<?php echo $sOrden;?>';enviar('<?php echo constant("MNT_LISTAR");?>');" onmouseout="window.status='';return true" onmouseover="window.status='<?php echo constant("STR_ORDENAR_POR");?> >>> Tarifa Administración';return true">Tarifa Administración<?php echo $sPinta;?></a></td>
+			<?php 
+			$sPinta = "";
+			$sOrden = "ASC";
 			if ($cEntidad->getOrderBy() == "bajaLog"){
 				if ($cEntidad->getOrder() == "ASC"){
 					$sOrden = "DESC";
@@ -251,6 +277,7 @@ function _body_onunload(){	lon();	}
 			<td class="tddatoslista" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPrueba']);?>','<?php echo addslashes($lista->fields['codIdiomaIso2']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['logoPrueba']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['logoPrueba'], "<b><i><u><strong><br /><br />")),0,255);?></td>
 			<td class="tddatoslista" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPrueba']);?>','<?php echo addslashes($lista->fields['codIdiomaIso2']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['capturaPantalla']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['capturaPantalla'], "<b><i><u><strong><br /><br />")),0,255);?></td>
 			<td class="tddatoslista" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPrueba']);?>','<?php echo addslashes($lista->fields['codIdiomaIso2']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['cabecera']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['cabecera'], "<b><i><u><strong><br /><br />")),0,255);?></td>
+			<td class="tddatoslista" valign="top" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPrueba']);?>','<?php echo addslashes($lista->fields['codIdiomaIso2']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['tarifa']);?>"><?php echo substr(str_replace("\n","<br />",strip_tags($lista->fields['tarifa'], "<b><i><u><strong><br /><br />")),0,255);?></td>
 			<td class="tddatoslista" align="center" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPrueba']);?>','<?php echo addslashes($lista->fields['codIdiomaIso2']);?>');enviar(<?php echo constant("MNT_CONSULTAR");?>);" title="<?php echo strip_tags($lista->fields['bajaLog']);?>"><?php echo (empty($lista->fields['bajaLog'])) ? "<img src='" . constant("DIR_WS_GRAF") . "boloverde.gif' width='9' height='9' border='0' alt='" . constant("STR_ACTIVO") . "'>" : "<img src='" . constant("DIR_WS_GRAF") . "bolorojo.gif' width='9' height='9' border='0' alt='" . constant("STR_NO_ACTIVO") . "'>";?></td>
 			<td class="negro" align="center" valign="middle"><?php if($_bBorrar) {?><a href="#" onclick="javascript:setPK('<?php echo addslashes($lista->fields['idPrueba']);?>','<?php echo addslashes($lista->fields['codIdiomaIso2']);?>');confBorrar(<?php echo constant("MNT_BORRAR");?>,'<?php echo constant("DEL_GENERICO");?>');"><img src="<?php echo constant('DIR_WS_GRAF');?>menos.gif" width="9" height="9" border="0" alt="<?php echo constant("STR_BORRAR");?>" /></a><?php } ?></td>
 		</tr>
@@ -322,7 +349,8 @@ $aBuscador= $cEntidad->getBusqueda();
 	<table cellspacing="0" cellpadding="0" border="0" width="100%">
 		<tr>
 			<td width="10"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="10" height="1" border="0" alt="" /></td>
-			<td width="100%" colspan="2" class="naranjab"><?php echo sprintf(constant("STR_LISTA_DE_"),str_replace('_', ' ', constant("STR_PRUEBAS")));?><a href="sqlToExcel.php?fSQLtoEXCEL=<?php echo base64_encode($sql . constant("CHAR_SEPARA") . "Pruebas");?>"><img src="<?php echo constant('DIR_WS_GRAF');?>excel.gif" width="34" height="35" align="right" border="0" alt="<?php echo constant("STR_EXPORTAR_A_EXCEL");?>" /></a></td>
+			<td width="100%" colspan="2" class="naranjab"><?php echo sprintf(constant("STR_LISTA_DE_"),str_replace('_', ' ', constant("STR_PRUEBAS")));?>
+			<a href="<?php echo($urlExcel); ?>"><img src="<?php echo constant('DIR_WS_GRAF');?>excel.gif" width="34" height="35" align="right" border="0" alt="<?php echo constant("STR_EXPORTAR_A_EXCEL");?>" /></a></td>
 		</tr>
 		<tr>
 			<td width="10"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="10" height="1" border="0" alt="" /></td>

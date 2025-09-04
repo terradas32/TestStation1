@@ -197,7 +197,7 @@ include_once ('include/conexion.php');
 					$cInformes_pruebas = $cInformes_pruebasDB->readEntidad($cInformes_pruebas);
     			}
 
-    			$iDonglesADescontarUnitario += $cInformes_pruebas->getTarifa();
+    			$iDonglesADescontarUnitario += (int)$cInformes_pruebas->getTarifa();
 				$rsProceso_informes->MoveNext();
 			}
 			$iDonglesADescontar	=	($iDonglesADescontarUnitario * $iTotalCandidatos);
@@ -807,7 +807,7 @@ include_once ('include/conexion.php');
 			$mail->SMTPAuth   = true;                               //Enable SMTP authentication
 			$mail->Username = constant("MAILUSERNAME");             //SMTP username
 			$mail->Password = constant("MAILPASSWORD");             //SMTP password
-			$mail->SMTPSecure = 'tls';							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+			$mail->SMTPSecure = constant("MAIL_ENCRYPTION");							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
 			$mail->Port      = constant("PORTMAIL");                                //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
 
@@ -817,7 +817,7 @@ include_once ('include/conexion.php');
 
 			//Con la propiedad Mailer le indicamos que vamos a usar un
 			//servidor smtp
-			$mail->Mailer = $mail->Mailer = constant("MAILER");;
+			$mail->Mailer = constant("MAILER");
 
 			//Asignamos a Host el nombre de nuestro servidor smtp
 			$mail->Host = constant("HOSTMAIL");
@@ -832,14 +832,16 @@ include_once ('include/conexion.php');
 			//Indicamos cual es nuestra dirección de correo y el nombre que
 			//queremos que vea el usuario que lee nuestro correo
 			//$mail->From = $cEmpresa->getMail();
-			$mail->From = constant("MAILUSERNAME");
-			$mail->AddReplyTo($cEmpresa->getMail(), $cEmpresa->getNombre());
+			$mail->From = constant("EMAIL_CONTACTO");
+			//$mail->AddReplyTo($cEmpresa->getMail(), $cEmpresa->getNombre());
+			//$mail->addReplyTo();
 			$mail->FromName = $cEmpresa->getNombre();
+				$nomEmpresa = $cEmpresa->getNombre();
 
 			//Asignamos asunto y cuerpo del mensaje
 			//El cuerpo del mensaje lo ponemos en formato html, haciendo
 			//que se vea en negrita
-			$mail->Subject = $sSubject;
+			$mail->Subject = $nomEmpresa . " - " . $sSubject;
 			$mail->Body = $sBody;
 
 			//Definimos AltBody por si el destinatario del correo no admite

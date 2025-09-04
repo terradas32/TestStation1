@@ -40,6 +40,38 @@ class Proceso_pruebasDB
 	{
 		$aux			= $this->conn;
 
+		require_once(constant("DIR_WS_COM") . "Candidatos/CandidatosDB.php");
+		require_once(constant("DIR_WS_COM") . "Candidatos/Candidatos.php");
+		require_once(constant("DIR_WS_COM") . "Procesos/Procesos.php");
+		require_once(constant("DIR_WS_COM") . "Procesos/ProcesosDB.php");
+
+		$this->msg_Error = array();
+		//Comprobamos que no se han informado ya a candidatos
+
+		$cProceso = new Procesos();
+		$cProcesoDB = new ProcesosDB($aux);
+		$cCandidato = new Candidatos();
+		$cCandidatoDB = new CandidatosDB($aux);
+
+		$cCandidato->setIdEmpresa($cEntidad->getIdEmpresa());
+		$cCandidato->setIdProceso($cEntidad->getIdProceso());
+		$sqlInformados =  $cCandidatoDB->readListaInformados($cCandidato);
+
+		$listaInformados = $aux->Execute($sqlInformados);
+
+		if($listaInformados->recordCount() > 0){
+
+			$cProceso->setIdEmpresa($cEntidad->getIdEmpresa());
+			$cProceso->setIdProceso($cEntidad->getIdProceso());
+			$cProceso = $cProcesoDB->readEntidad($cProceso);
+
+			$this->msg_Error	= array();
+			$sTypeError	= "No se ha podido asignar esta prueba al proceso '" . $cProceso->getNombre() ."',\\n ya tiene candidatos informados.";
+			$this->msg_Error[]	= $sTypeError;
+			error_log($sTypeError . " ->\t\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+			return 0;
+		}
+
 		$newId = $cEntidad->getIdEmpresa();
 		$newOrden = $this->getSiguienteOrden($cEntidad);
 		$iCont = 0;

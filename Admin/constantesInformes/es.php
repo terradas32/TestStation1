@@ -4,6 +4,8 @@ define("STR_PIE_INFORMES" 												, "La reproducción total o parcial de est
 define("STR_PIE_INFORMES_PASCUAL" 										, "Psicólogos Empresariales y Asociados SA.");
 define("STR_NOMBRE_APELLIDOS"											, "Nombre y Apellidos");
 define("STR_FECHA_INFORME"												, "Fecha del Informe");
+define("STR_FECHA_INFORME_DIAN"											, "Fecha finalización");
+define("STR_IDENTIFICADOR"												, "Número de Cédula");
 define("STR_INTRODUCCION" 												, "Introducción");
 define("STR_INTRODUCCION_CAPS" 											, "INTRODUCCIÓN");
 define("STR_PUNTUACION_DIRECTA" 										, "Puntuación Directa");

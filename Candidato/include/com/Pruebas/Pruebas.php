@@ -44,6 +44,7 @@ class Pruebas
 		var $bajaLog;
 		var $bajaLogHast;
 		var $necesitara;
+		var $num_preguntas_max_tri;
 		
 		var $fecAlta;
 		var $fecAltaHast;
@@ -89,6 +90,7 @@ class Pruebas
 		$this->bajaLog			= "";
 		$this->bajaLogHast			= "";
 		$this->necesitara			= "";
+		$this->num_preguntas_max_tri	= "";
 		
 		$this->fecAlta			= "";
 		$this->fecAltaHast			= "";
@@ -307,7 +309,7 @@ class Pruebas
 	* @return varchar(255)
 	*/
 	function getDuracion(){
-		return $this->duracion;
+		return $this->duracion == "" ? 0 : $this->duracion;
 	}
 	/**
 	* Fija el contenido de la propiedad duracion
@@ -322,7 +324,7 @@ class Pruebas
 	* @return varchar(255)
 	*/
 	function getDuracion2(){
-		return $this->duracion2;
+		return $this->duracion2 == "" ? 0 : $this->duracion2;
 	}
 	/**
 	* Fija el contenido de la propiedad duracion
@@ -483,6 +485,23 @@ class Pruebas
 	function setNecesitara($sCadena){
 		$this->necesitara = $sCadena;
 	}
+	
+	/**
+	 * Devuelve el contenido de la propiedad num_preguntas_max_tri
+	 * @return int(2)
+	 */
+	function getNum_preguntas_max_tri(){
+		return $this->num_preguntas_max_tri;
+	}
+	/**
+	 * Fija el contenido de la propiedad num_preguntas_max_tri
+	 * @param bajaLog
+	 * @return void
+	 */
+	function setNum_preguntas_max_tri($sCadena){
+		$this->num_preguntas_max_tri = $sCadena;
+	}
+
 	/**
 	* Devuelve el contenido de la propiedad fecAlta
 	* @return datetime

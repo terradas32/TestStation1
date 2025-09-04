@@ -567,6 +567,101 @@ class BaremosDB
 		$this->sSQL=$sql;
 		return $sql;
 	}
+
+	/*************************************************************************
+	* Lista en la base de datos recogiendo la información
+	* recibida por la entidad, Este metodo se utiliza para búsquedas
+	* de uno o varios registros.
+	* @param entidad Entidad con la información de la Búsqueda
+	* @return Vector Lista recuperada
+	*************************************************************************/
+	function readListaPersonalidad($cEntidad)
+	{
+		$aux			= $this->conn;
+	
+		$sql="";
+		$and = true;
+		$sql.="SELECT * FROM baremos WHERE idBloque <> 0 and idEscala <> 0 ";
+		
+		if ($cEntidad->getIdBaremo() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="idBaremo=" . $aux->qstr($cEntidad->getIdBaremo(), false);
+		}
+		if ($cEntidad->getIdPrueba() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="idPrueba=" . $aux->qstr($cEntidad->getIdPrueba(), false);
+		}
+		if ($cEntidad->getIdBloque() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="idBloque=" . $aux->qstr($cEntidad->getIdBloque(), false);
+		}
+		if ($cEntidad->getIdEscala() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="idEscala=" . $aux->qstr($cEntidad->getIdEscala(), false);
+		}
+		if ($cEntidad->getNombre() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="UPPER(nombre) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getNombre() . "%") . ")";
+		}
+		if ($cEntidad->getDescripcion() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="UPPER(descripcion) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getDescripcion() . "%") . ")";
+		}
+		if ($cEntidad->getObservaciones() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="UPPER(observaciones) LIKE UPPER(" . $aux->qstr("%" . $cEntidad->getObservaciones() . "%") . ")";
+		}
+		if ($cEntidad->getFecAlta() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="fecAlta>=" . $aux->qstr($cEntidad->getFecAlta(), false);
+		}
+		if ($cEntidad->getFecAltaHast() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="fecAlta<=" . $aux->qstr($cEntidad->getFecAltaHast(), false);
+		}
+		if ($cEntidad->getFecMod() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="fecMod>=" . $aux->qstr($cEntidad->getFecMod(), false);
+		}
+		if ($cEntidad->getFecModHast() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="fecMod<=" . $aux->qstr($cEntidad->getFecModHast(), false);
+		}
+		if ($cEntidad->getUsuAlta() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="usuAlta=" . $aux->qstr($cEntidad->getUsuAlta(), false);
+		}
+		if ($cEntidad->getUsuMod() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="usuMod=" . $aux->qstr($cEntidad->getUsuMod(), false);
+		}
+		$sql .=" GROUP BY idPrueba, idBaremo ";
+
+		if ($cEntidad->getOrderBy() != ""){
+			$sql .=" ORDER BY " . $cEntidad->getOrderBy();
+			if ($cEntidad->getOrder() != ""){
+				$sql .=" " . $cEntidad->getOrder();
+			}
+		}
+
+		
+		$this->sSQL=$sql;
+		return $sql;
+	}
+
 	function getSQLWhere($bFlag)
 	{
 		if (!$bFlag)	return " WHERE ";

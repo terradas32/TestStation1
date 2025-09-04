@@ -155,12 +155,12 @@ include_once ('include/conexion.php');
 	$comboDESC_CANDIDATOS	= new Combo($conn,"_fDescCandidato","idCandidato",$conn->Concat("nombre", "' '", "apellido1", "apellido2", "' ('", "mail" , "')'"),"Descripcion","candidatos","",constant("SLC_OPCION"),"","","fecMod");
 	$comboWI_IDIOMAS	= new Combo($conn,"fCodIdiomaIso2","codIdiomaIso2","nombre","Descripcion","wi_idiomas","",constant("SLC_OPCION"),"activoFront=1","","fecMod");
 	$comboDESC_WI_IDIOMAS	= new Combo($conn,"_fDescIdiomaIso2","codIdiomaIso2","nombre","Descripcion","wi_idiomas","","","","","fecMod");
-//	$comboPRUEBAS	= new Combo($conn,"fIdPrueba","idPrueba","nombre","Descripcion","pruebas","",constant("SLC_OPCION"),"codIdiomaIso2=" . $conn->qstr(constant("LENGUAJEDEFECTO"), false),"","fecMod");
+	//	$comboPRUEBAS	= new Combo($conn,"fIdPrueba","idPrueba","nombre","Descripcion","pruebas","",constant("SLC_OPCION"),"codIdiomaIso2=" . $conn->qstr(constant("LENGUAJEDEFECTO"), false),"","fecMod");
 	$comboPRUEBAS	= new Combo($conn,"fIdPrueba","idPrueba",$conn->Concat("nombre","' - '","descripcion"),"Descripcion","pruebas","",constant("SLC_OPCION"),$sSQLPruebaIN . "AND bajaLog=0","","","idprueba");
 	$comboDESC_PRUEBAS	= new Combo($conn,"_fDescPrueba","idPrueba","nombre","Descripcion","pruebas","","","","","fecMod");
 	$comboWI_USUARIOS	= new Combo($conn,"fUsuAlta","idUsuario","nombre","Descripcion","wi_usuarios","",constant("SLC_OPCION"),"","","fecMod");
 	$comboTIPOS_INFORMES	= new Combo($conn,"fIdTipoInforme","idTipoInforme","nombre","Descripcion","tipos_informes","",constant("SLC_OPCION"),"codIdiomaIso2=" . $conn->qstr(constant("LENGUAJEDEFECTO"), false),"","fecMod");
-//	echo('modo:' . $_POST['MODO']);
+	//	echo('modo:' . $_POST['MODO']);
 
 	if (!isset($_POST["MODO"])){
 		session_start();
@@ -168,8 +168,7 @@ include_once ('include/conexion.php');
 		header("Location: " . constant("HTTP_SERVER") . "msg.php");
 		exit;
 	}
-	switch ($_POST['MODO'])
-	{
+	switch ($_POST['MODO']){
 		case constant("MNT_ALTA"):
 			$cEntidad	= readEntidad($cEntidad);
 			$newId	= $cEntidadDB->insertar($cEntidad);
@@ -340,7 +339,7 @@ include_once ('include/conexion.php');
 			$rsProceso_informes = $conn->Execute($sSQLProceso_informes);
 			$cProceso_informes->setCodIdiomaInforme($rsProceso_informes->fields['codIdiomaInforme']);
 			$cProceso_informes->setIdTipoInforme($rsProceso_informes->fields['idTipoInforme']);
-//			$cProceso_informes->setIdBaremo($rsProceso_informes->fields['idBaremo']);
+			//			$cProceso_informes->setIdBaremo($rsProceso_informes->fields['idBaremo']);
 			$cProceso_informes = $cProceso_informesDB->readEntidad($cProceso_informes);
 
 			$_POST['MODO']    = constant("MNT_MODIFICAR");
@@ -368,7 +367,7 @@ include_once ('include/conexion.php');
 					$sql = $cEntidadDB->readListaIN($cEntidad);
 				}
 			}
-//			echo "<br />" . $sql;
+			//			echo "<br />" . $sql;
 			$pager = new ADODB_Pager($conn,$sql,'respuestas_pruebas');
 			if ($bInit)	$pager->curr_page=1;
 			$pager->showPageLinks = true;
@@ -381,114 +380,1044 @@ include_once ('include/conexion.php');
 			}
 			$lista=$pager->getRS();
 
-		$valid_files = array();
-		$NO_valid_files = array();
-		$error="";
-		$zip_name="";
-		$GETzip_name="";
-		while (!$lista->EOF)
-		{
+			$valid_files = array();
+			$NO_valid_files = array();
+			$error="";
+			$zip_name="";
+			$GETzip_name="";
+			$counter = 0;
+			
+			while (!$lista->EOF){
+				$cPrueba = new Pruebas();
+				$cPrueba->setIdPrueba($lista->fields['idPrueba']);
+				$cPrueba->setCodIdiomaIso2($lista->fields['codIdiomaIso2']);
+				$cPrueba =  $cPruebasDB->readEntidad($cPrueba);
 
-			$cPrueba = new Pruebas();
-			$cPrueba->setIdPrueba($lista->fields['idPrueba']);
-			$cPrueba->setCodIdiomaIso2($lista->fields['codIdiomaIso2']);
-			$cPrueba =  $cPruebasDB->readEntidad($cPrueba);
+				$cCandidato = new Candidatos();
+				$cCandidato->setIdEmpresa($lista->fields['idEmpresa']);
+				$cCandidato->setIdProceso($lista->fields['idProceso']);
+				$cCandidato->setIdCandidato($lista->fields['idCandidato']);
+				$cCandidato = $cCandidatosDB->readEntidad($cCandidato);
 
-			$cCandidato = new Candidatos();
-			$cCandidato->setIdEmpresa($lista->fields['idEmpresa']);
-			$cCandidato->setIdProceso($lista->fields['idProceso']);
-			$cCandidato->setIdCandidato($lista->fields['idCandidato']);
-			$cCandidato = $cCandidatosDB->readEntidad($cCandidato);
+				$cProceso_informes =  new Proceso_informes();
+				$cProceso_informes->setIdEmpresa($lista->fields['idEmpresa']);
+				$cProceso_informes->setIdProceso($lista->fields['idProceso']);
+				$cProceso_informes->setIdPrueba($lista->fields['idPrueba']);
+				$cProceso_informes->setCodIdiomaIso2($lista->fields['codIdiomaIso2']);
+				$sSQLProceso_informes = $cProceso_informesDB->readLista($cProceso_informes);
+							//echo "<br />" . $sSQLProceso_informes;
+				$rsProceso_informes = $conn->Execute($sSQLProceso_informes);
+							//echo "<br />" . $rsProceso_informes->recordCount();
+				while(!$rsProceso_informes->EOF){
+		
+					$cProceso_informes->setCodIdiomaInforme($rsProceso_informes->fields['codIdiomaInforme']);
+					$cProceso_informes->setIdTipoInforme($rsProceso_informes->fields['idTipoInforme']);
+					$cProceso_informes = $cProceso_informesDB->readEntidad($cProceso_informes);
+					//			echo "<br />" . $cProceso_informes;
+					
+					//Miramos si ya esiste el pdf en caso que no esista lo generamos
+					//			$sNombre = $cUtilidades->SEOTitulo($cPrueba->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $lista->fields['idEmpresa'] . "_" . $lista->fields['idProceso'] . "_" . $rsProceso_informes->fields['idTipoInforme'] . "_" . $rsProceso_informes->fields['codIdiomaInforme']);
+					$_sIdBaremo = $rsProceso_informes->fields['idBaremo'];
+					//			echo "<br />" . $sSQLProceso_informes;
+					$_sIdBaremo = (empty($_sIdBaremo)) ? 1 : $_sIdBaremo;
+				
+					$sNombre = $cUtilidades->SEOTitulo($cPrueba->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $lista->fields['idEmpresa'] . "_" . $lista->fields['idProceso'] . "_" . $rsProceso_informes->fields['idTipoInforme'] . "_" . $rsProceso_informes->fields['codIdiomaInforme'] . "_" . $_sIdBaremo);
+					$sDirImg="imgInformes/";
+					$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT_ADMIN"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . '/' : constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
+					$_ficheroPDF = $spath . $sDirImg . $sNombre . ".pdf";
 
-			$cProceso_informes =  new Proceso_informes();
-			$cProceso_informes->setIdEmpresa($lista->fields['idEmpresa']);
-			$cProceso_informes->setIdProceso($lista->fields['idProceso']);
-			$cProceso_informes->setIdPrueba($lista->fields['idPrueba']);
-			$cProceso_informes->setCodIdiomaIso2($lista->fields['codIdiomaIso2']);
-			$sSQLProceso_informes = $cProceso_informesDB->readLista($cProceso_informes);
-//			echo "<br />" . $sSQLProceso_informes;
-			$rsProceso_informes = $conn->Execute($sSQLProceso_informes);
-			$cProceso_informes->setCodIdiomaInforme($rsProceso_informes->fields['codIdiomaInforme']);
-			$cProceso_informes->setIdTipoInforme($rsProceso_informes->fields['idTipoInforme']);
-			$cProceso_informes = $cProceso_informesDB->readEntidad($cProceso_informes);
+					if(is_file($_ficheroPDF)){
+						$valid_files[] = $_ficheroPDF;
+					//				echo "<br />Fichero encontrado:: " . $_ficheroPDF;
+					}else{
+						//$NO_valid_files[] = $_ficheroPDF;
+						//$error .= "<br />¡Fichero NO ENCONTRADO! - Se manda Generar :: " . basename($_ficheroPDF);
+						//$error .= "<br />¡" . constant("STR_FICHERO_NO_ENCONTRADO") . "! :: " . basename($_ficheroPDF);
+						
+						//Mandamos Generar el informe para que esté disponible en la descarga
+						//Parámetros por orden
+						// es proceso 1
+						// MODO 627
+						// fIdTipoInforme Prisma Informe completo 3
+						// fCodIdiomaIso2 Idioma del informe es
+						// fIdPrueba Prueba prisma 24
+						// fIdEmpresa Id de empresa  3788
+						// fIdProceso Id del proceso 3
+						// fIdCandidato Id Candidato 1
+						// fCodIdiomaIso2Prueba Idioma prueba es
+						// fIdBaremo Id Baremo, prisma no tiene , le pasamos 1
+	
+						//$cInformes_pruebas = new Informes_pruebas_empresas();
+						//$cInformes_pruebas->setIdPrueba($lista->fields['idPrueba']);
+						//$cInformes_pruebas->setCodIdiomaIso2($rsProceso_informes->fields['codIdiomaInforme']);
+						//$cInformes_pruebas->setIdTipoInforme($rsProceso_informes->fields['idTipoInforme']);
+						//$cInformes_pruebas->setIdEmpresa($rsProceso_informes->fields['idEmpresa']);
+						
+						//$sql_IPE = $cInformes_pruebas_empresasDB->readLista($cInformes_pruebas);
+						//$rsIPE = $conn->Execute($sql_IPE);
+						//if ($rsIPE->NumRows() > 0){
+						//	$cInformes_pruebas = $cInformes_pruebas_empresasDB->readEntidad($cInformes_pruebas);
+						//}else {
+						//	$cInformes_pruebas = new Informes_pruebas();
+						//	$cInformes_pruebas->setIdPrueba($lista->fields['idPrueba']);
+						//	$cInformes_pruebas->setCodIdiomaIso2($rsProceso_informes->fields['codIdiomaInforme']);
+						//	$cInformes_pruebas->setIdTipoInforme($rsProceso_informes->fields['idTipoInforme']);
+						//	$cInformes_pruebas = $cInformes_pruebasDB->readEntidad($cInformes_pruebas);
+						//}
+						//
+						//$cmdPost = constant("DIR_WS_GESTOR") . 'Informes_candidato.php?MODO=627
+						//	&fIdTipoInforme=' . $rsProceso_informes->fields['idTipoInforme'] . 
+						//	'&fCodIdiomaIso2=' . $rsProceso_informes->fields['codIdiomaIso2'] . 
+						//	'&fIdPrueba=' . $lista->fields['idPrueba'] . 
+						//	'&fIdEmpresa=' . $lista->fields['idEmpresa'] . 
+						//	'&fIdProceso=' . $lista->fields['idProceso'] . 
+						//	'&fIdCandidato=' . $lista->fields['idCandidato'] . 
+						//	'&fCodIdiomaIso2=' . $rsProceso_informes->fields['codIdiomaInforme'] . 
+						//	'&fIdBaremo=' . $_sIdBaremo;
+						
+						
+						
+						
+						//$cmdPost = 'constant("DIR_WS_GESTOR")' . 'Informes_candidato.php?MODO=627&fIdTipoInforme=' . $cInformes_pruebas->getIdTipoInforme() . '&fCodIdiomaIso2=' . $cInformes_pruebas->getCodIdiomaIso2() . '&fIdPrueba=' . $lista->fields['idPrueba'] . '&fIdEmpresa=' . $lista->fields['idEmpresa'] . '&fIdProceso=' . $lista->fields['idProceso'] . '&fIdCandidato=' . $lista->fields['idCandidato'] . '&fCodIdiomaIso2Prueba=' . $rsProceso_informes->fields['codIdiomaInforme'] . '&fIdBaremo=' . $_sIdBaremo;
+						//					echo "<br />" . $cmdPost;
+						//					echo "<br />" . constant("DIR_WS_GESTOR");
+						//$cUtilidades->backgroundPost($cmdPost);
+						
+						
+						//echo $cUtilidades->backgroundPost($cmdPost);
+						// Meter el fichero en el array del zip
+						//$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT_ADMIN"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . '/' : constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
+						//$_ficheroPDF = $spath . $sDirImg . $sNombre . ".pdf";
+						
 
-			//Miramos si ya esiste el pdf en caso que no esista lo generamos
-//			$sNombre = $cUtilidades->SEOTitulo($cPrueba->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $lista->fields['idEmpresa'] . "_" . $lista->fields['idProceso'] . "_" . $rsProceso_informes->fields['idTipoInforme'] . "_" . $rsProceso_informes->fields['codIdiomaInforme']);
-			$_sIdBaremo = $rsProceso_informes->fields['idBaremo'];
-//			echo "<br />" . $sSQLProceso_informes;
-			$_sIdBaremo = (empty($_sIdBaremo)) ? 1 : $_sIdBaremo;
-			$sNombre = $cUtilidades->SEOTitulo($cPrueba->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $lista->fields['idEmpresa'] . "_" . $lista->fields['idProceso'] . "_" . $rsProceso_informes->fields['idTipoInforme'] . "_" . $rsProceso_informes->fields['codIdiomaInforme'] . "_" . $_sIdBaremo);
-			$sDirImg="imgInformes/";
-			$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT_ADMIN"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . '/' : constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
-			$_ficheroPDF = $spath . $sDirImg . $sNombre . ".pdf";
+						//if(is_file($_ficheroPDF)){
+						//	$valid_files[] = $_ficheroPDF;
+						//}else{
+						//	$NO_valid_files[] = $_ficheroPDF;
+						//	//				$error .= "<br />¡Fichero NO ENCONTRADO! - Se manda Generar :: " . basename($_ficheroPDF);
+						//	$error .= "<br />¡" . constant("STR_FICHERO_NO_ENCONTRADO") . "! :: " . basename($_ficheroPDF);
+						//}
 
 
 
-			if(is_file($_ficheroPDF)){
-				$valid_files[] = $_ficheroPDF;
-//				echo "<br />Fichero encontrado:: " . $_ficheroPDF;
-			}else{
-				$NO_valid_files[] = $_ficheroPDF;
-//				$error .= "<br />¡Fichero NO ENCONTRADO! - Se manda Generar :: " . basename($_ficheroPDF);
-				$error .= "<br />¡" . constant("STR_FICHERO_NO_ENCONTRADO") . "! :: " . basename($_ficheroPDF);
-//					//Mandamos Generar el informe para que esté disponible en la descarga
-//					//Parámetros por orden
-//					// es proceso 1
-//					// MODO 627
-//					// fIdTipoInforme Prisma Informe completo 3
-//					// fCodIdiomaIso2 Idioma del informe es
-//					// fIdPrueba Prueba prisma 24
-//					// fIdEmpresa Id de empresa  3788
-//					// fIdProceso Id del proceso 3
-//					// fIdCandidato Id Candidato 1
-//					// fCodIdiomaIso2Prueba Idioma prueba es
-//					// fIdBaremo Id Baremo, prisma no tiene , le pasamos 1
-//
-//				    $cInformes_pruebas = new Informes_pruebas_empresas();
-//	    			$cInformes_pruebas->setIdPrueba($lista->fields['idPrueba']);
-//	    			$cInformes_pruebas->setCodIdiomaIso2($rsProceso_informes->fields['codIdiomaInforme']);
-//	    			$cInformes_pruebas->setIdTipoInforme($rsProceso_informes->fields['idTipoInforme']);
-//	    			$cInformes_pruebas->setIdEmpresa($rsProceso_informes->fields['idEmpresa']);
-//
-//					$sql_IPE = $cInformes_pruebas_empresasDB->readLista($cInformes_pruebas);
-//					$rsIPE = $conn->Execute($sql_IPE);
-//	    			if ($rsIPE->NumRows() > 0){
-//	    				$cInformes_pruebas = $cInformes_pruebas_empresasDB->readEntidad($cInformes_pruebas);
-//	    			}else {
-//		    			$cInformes_pruebas = new Informes_pruebas();
-//		    			$cInformes_pruebas->setIdPrueba($lista->fields['idPrueba']);
-//		    			$cInformes_pruebas->setCodIdiomaIso2($rsProceso_informes->fields['codIdiomaInforme']);
-//		    			$cInformes_pruebas->setIdTipoInforme($rsProceso_informes->fields['idTipoInforme']);
-//						$cInformes_pruebas = $cInformes_pruebasDB->readEntidad($cInformes_pruebas);
-//		   			}
-//
-//					$cmdPost = constant("DIR_WS_GESTOR") . 'Informes_candidato.php?MODO=627&fIdTipoInforme=' . $cInformes_pruebas->getIdTipoInforme() . '&fCodIdiomaIso2=' . $cInformes_pruebas->getCodIdiomaIso2() . '&fIdPrueba=' . $lista->fields['idPrueba'] . '&fIdEmpresa=' . $lista->fields['idEmpresa'] . '&fIdProceso=' . $lista->fields['idProceso'] . '&fIdCandidato=' . $lista->fields['idCandidato'] . '&fCodIdiomaIso2Prueba=' . $rsProceso_informes->fields['codIdiomaInforme'] . '&fIdBaremo=' . $_sIdBaremo;
-////					echo "<br />" . $cmdPost;
-//					$cUtilidades->backgroundPost($cmdPost);
+						/**************************************************/
 
+
+
+
+
+
+						// Redeclaración de variables para que se crea que recibe los parámetros por $_POST
+						$_POST['fIdPrueba'] = $lista->fields['idPrueba'];
+						$_POST['fCodIdiomaIso2'] = $rsProceso_informes->fields['codIdiomaInforme'];
+						$_POST['fIdTipoInforme'] = $rsProceso_informes->fields['idTipoInforme'];
+						$_POST['fIdEmpresa'] = $lista->fields['idEmpresa'];
+						$_POST['fIdProceso'] = $lista->fields['idProceso'];
+						$_POST['fIdBaremo'] = $_sIdBaremo;
+						$_POST['fIdCandidato'] = $lista->fields['idCandidato'];
+						$_POST['fCodIdiomaIso2Prueba'] = $rsProceso_informes->fields['codIdiomaInforme'];
+						$_POST['esZip'] = true;
+			
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Items/ItemsDB.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Items/Items.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Opciones/OpcionesDB.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Opciones/Opciones.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Opciones_valores/Opciones_valoresDB.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Opciones_valores/Opciones_valores.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Baremos_resultados/Baremos_resultadosDB.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Baremos_resultados/Baremos_resultados.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Baremos_resultados_competencias/Baremos_resultados_competenciasDB.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Baremos_resultados_competencias/Baremos_resultados_competencias.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Nivelesjerarquicos/NivelesjerarquicosDB.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Nivelesjerarquicos/Nivelesjerarquicos.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Secciones_informes/Secciones_informesDB.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Secciones_informes/Secciones_informes.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Textos_secciones/Textos_seccionesDB.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Textos_secciones/Textos_secciones.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Rangos_textos/Rangos_textosDB.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Rangos_textos/Rangos_textos.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Rangos_ir/Rangos_irDB.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Rangos_ir/Rangos_ir.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Rangos_ip/Rangos_ipDB.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Rangos_ip/Rangos_ip.php");
+		
+
+						$cTextos_seccionesDB = new Textos_seccionesDB($conn);
+						$cSecciones_informesDB = new Secciones_informesDB($conn);
+						$cRangos_ipDB = new Rangos_ipDB($conn);
+						$cRangos_irDB = new Rangos_irDB($conn);
+						$cRangos_textosDB = new Rangos_textosDB($conn);
+		
+						//Cambiar Dongels por Cliente/Prueba/Informe
+						//Miramos si tiene definido dongles por empresa
+						$cInformesPruebasTrf = new Informes_pruebas_empresas();
+						$cInformesPruebasTrf->setIdPrueba($_POST['fIdPrueba']);
+						$cInformesPruebasTrf->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
+						$cInformesPruebasTrf->setIdTipoInforme($_POST['fIdTipoInforme']);
+						$cInformesPruebasTrf->setIdEmpresa($_POST['fIdEmpresa']);
+		
+						$sql_IPE = $cInformes_pruebas_empresasDB->readLista($cInformesPruebasTrf);
+						$rsIPE = $conn->Execute($sql_IPE);
+						if ($rsIPE->NumRows() > 0){
+							$cInformesPruebasTrf = $cInformes_pruebas_empresasDB->readEntidad($cInformesPruebasTrf);
+						}else {
+							$cInformesPruebasTrf = new Informes_pruebas();
+							$cInformesPruebasTrf->setIdPrueba($_POST['fIdPrueba']);
+							$cInformesPruebasTrf->setIdTipoInforme($_POST['fIdTipoInforme']);
+							$cInformesPruebasTrf->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
+							$cInformesPruebasTrf= $cInformes_pruebasDB->readEntidad($cInformesPruebasTrf);
+							}
+						if ($_POST['fIdTipoInforme'] == "71") {	//FIT competencial
+							$cProceso_informes_fit =  new Proceso_informes();
+							$cProceso_informes_fitDB = new Proceso_informesDB($conn);	// Entidad DB
+		
+							$cProceso_informes_fit->setIdEmpresa($_POST['fIdEmpresa']);
+							$cProceso_informes_fit->setIdProceso($_POST['fIdProceso']);
+							$cProceso_informes_fit->setCodIdiomaIso2($_POST['fCodIdiomaIso2']);
+							$cProceso_informes_fit->setIdPrueba($_POST['fIdPrueba']);
+							$cProceso_informes_fit->setCodIdiomaInforme ('es');
+							$cProceso_informes_fit->setIdTipoInforme($_POST['fIdTipoInforme']);
+							$cProceso_informes_fit->setIdBaremo($_POST['fIdBaremo']);
+							$cProceso_informes_fitDB->insertar($cProceso_informes_fit);
+						}
+						//--
+
+						$cEmpresaDng = new Empresas();
+						$cEmpresaDng->setIdEmpresa($_POST['fIdEmpresa']);
+						$cEmpresaDng = $cEmpresasDB->readEntidad($cEmpresaDng);
+		
+						$_sPrepago = "1";
+						//Miramos si hay que descontar de la Matriz
+						$sDescuentaMatriz = $cEmpresaDng->getDescuentaMatriz();
+						$cMatrizDng = new Empresas();
+						if (!empty($sDescuentaMatriz)){
+							$cMatrizDng->setIdEmpresa($sDescuentaMatriz);
+							$cMatrizDng = $cEmpresasDB->readEntidad($cMatrizDng);
+							$_sPrepago = $cMatrizDng->getPrepago();
+						}else{
+							$_sPrepago = $cEmpresaDng->getPrepago();
+						}
+		
+						$dTotalCoste=$cInformesPruebasTrf->getTarifa();
+		
+						$bDescargar=false;
+						$cCandidato = new Candidatos();
+						$cCandidato->setIdEmpresa($_POST['fIdEmpresa']);
+						$cCandidato->setIdProceso($_POST['fIdProceso']);
+						$cCandidato->setIdCandidato($_POST['fIdCandidato']);
+		
+						$cCandidato =  $cCandidatosDB->readEntidad($cCandidato);
+		
+						$cPruebas = new Pruebas();
+						$cPruebas->setIdPrueba($_POST['fIdPrueba']);
+						$cPruebas->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+						$cPruebas = $cPruebasDB->readEntidad($cPruebas);
+
+						if ($_sPrepago == 0 || $_EmpresaLogada == constant("EMPRESA_PE") || $sLlamada == "Candidato"){
+							//Descargamos siempre si la empresa logada es PE o NO es por prepago
+							$bDescargar=true;
+						}else{
+							//Miramos si ya esiste el pdf, si existe el pdf es que ya fueron descontadas las unidades y no ha pasado un año
+							//Con lo que no habria que descontar nada aunque no tenga unidades
+							$sNombre = $cUtilidades->SEOTitulo($cPruebas->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $_POST['fIdEmpresa']. "_" .$_POST['fIdProceso'] . "_" . $_POST['fIdTipoInforme'] . "_" . $_POST['fCodIdiomaIso2'] . "_" . $_POST['fIdBaremo']);
+							$sDirImg="imgInformes/";
+							$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+							$_ficheroPDF = $spath . $sDirImg . $sNombre . ".pdf";
+							if(is_file($_ficheroPDF)){
+								$bDescargar=true;
+							}else{
+								if (!empty($sDescuentaMatriz)){
+									if($cInformesPruebasTrf->getTarifa() <= $cMatrizDng->getDongles()){
+										$bDescargar=true;
+									}else{
+										$bDescargar=false;
+									}
+								}else{
+									if($cInformesPruebasTrf->getTarifa() <= $cEmpresaDng->getDongles()){
+										$bDescargar=true;
+									}else{
+										if ($cEmpresaDng->getDongles() == 0){
+											$bDescargar=true;
+										}else{
+											$bDescargar=false;
+										}
+		
+									}
+								}
+							}
+						}
+
+						$bPDFGenerado = false;	//Indica si el fichero fue generado previamente
+						if($bDescargar){
+							//Miramos si ya esiste el pdf en caso que no esista lo generamos
+							//$sNombre = $cUtilidades->SEOTitulo($cPruebas->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $_POST['fIdEmpresa']. "_" .$_POST['fIdProceso'] . "_" . $_POST['fIdTipoInforme'] . "_" . $_POST['fCodIdiomaIso2']);
+							$sNombre = $cUtilidades->SEOTitulo($cPruebas->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $_POST['fIdEmpresa']. "_" .$_POST['fIdProceso'] . "_" . $_POST['fIdTipoInforme'] . "_" . $_POST['fCodIdiomaIso2'] . "_" . $_POST['fIdBaremo']);
+							$sDirImg="imgInformes/";
+							$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT_ADMIN"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . '/' : constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
+							
+							$_ficheroPDF = $spath . $sDirImg . $sNombre . ".pdf";
+							//echo "<br>" . $_ficheroPDF;
+
+						
+							if(is_file($_ficheroPDF)){
+								//De momento que siempre lo genere, si se quiere cambiar habría
+								//que incluir el idioma en el nombre del fichero
+								//y cambiarlo en los templates de generación
+								$bPDFGenerado = true;
+							}else{
+								$bPDFGenerado = false;
+							}
+
+							if (!$bPDFGenerado){
+								$cRespuestasPruebasItemsDB = new Respuestas_pruebas_itemsDB($conn);
+								$cItemsDB = new ItemsDB($conn);
+								$cNivelesjerarquicosDB = new NivelesjerarquicosDB($conn);
+								$cOpcionesDB = new OpcionesDB($conn);
+								$cOpciones_valoresDB = new Opciones_valoresDB($conn);
+								$cBaremos_resultadosDB = new Baremos_resultadosDB($conn);
+		
+								$idTipoPrueba = $cPruebas->getIdTipoPrueba();
+		
+								$idTipoInforme=$_POST['fIdTipoInforme'];
+		
+								$cRespuestasPruebasItems = new Respuestas_pruebas_items();
+								
+								$cRespuestasPruebasItems->setIdCandidato($_POST['fIdCandidato']);
+								$cRespuestasPruebasItems->setIdPrueba($_POST['fIdPrueba']);
+								$cRespuestasPruebasItems->setIdEmpresa($_POST['fIdEmpresa']);
+								$cRespuestasPruebasItems->setIdProceso($_POST['fIdProceso']);
+								$cRespuestasPruebasItems->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+								$cRespuestasPruebasItems->setOrderBy("idItem");
+								$cRespuestasPruebasItems->setOrder("ASC");
+		
+								$cIt = new Items();
+								$cIt->setIdPrueba($_POST['fIdPrueba']);
+								$cIt->setIdPruebaHast($_POST['fIdPrueba']);
+								$cIt->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+		
+								$sqlItemsPrueba= $cItemsDB->readLista($cIt);
+								$listaItemsPrueba = $conn->Execute($sqlItemsPrueba);
+
+								// Montamos la lista de respuestas para los parámetros enviados.
+								$sqlRespItems = $cRespuestasPruebasItemsDB->readLista($cRespuestasPruebasItems);
+								$listaRespItems = $conn->Execute($sqlRespItems);
+								
+								//Inicializamos la puntuación directa y el percentil que más tarde transformaremos
+								$iPDirecta = 0;
+								$iPercentil = 0;
+		
+								if($listaRespItems->recordCount()>0){
+									if ($idTipoPrueba != "20" && $idTipoPrueba != "6" && $idTipoPrueba != "7" ){
+										while(!$listaRespItems->EOF){
+		
+											//Leemos el item para saber cual es la opción correcta
+											$cItem = new Items();
+											$cItem->setIdItem($listaRespItems->fields['idItem']);
+											$cItem->setIdPrueba($listaRespItems->fields['idPrueba']);
+											$cItem->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+											$cItem = $cItemsDB->readEntidad($cItem);
+		
+											//Leemos la opción para saber en código de la misma
+											$cOpcion = new Opciones();
+											$cOpcion->setIdItem($listaRespItems->fields['idItem']);
+											$cOpcion->setIdPrueba($listaRespItems->fields['idPrueba']);
+											$cOpcion->setIdOpcion($listaRespItems->fields['idOpcion']);
+											$cOpcion->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+											//var_dump("test echo :: " . $cOpcion);
+											//die;
+											$cOpcion = $cOpcionesDB->readEntidad($cOpcion);
+											
+											//JOSH
+											//var_dump("test echo :: "."</br>" 
+											//.$listaRespItems->fields['idItem']."</br>" 
+											//.$listaRespItems->fields['idPrueba']."</br>"
+											//.$listaRespItems->fields['idOpcion']."</br>"
+											//.$listaRespItems->fields[$_POST['fCodIdiomaIso2Prueba']]."</br>");
+											////var_dump("test echo :: " . $listaRespItems . " // " .  $cOpcion . "// " . $conn);
+											//die;
+											$_sValor = $cUtilidades->getValorCalculadoPRUEBAS($listaRespItems, $cOpcion, $conn);
+		
+											//var_dump("test echo :: " . $listaRespItems->recordCount());
+											//die;
+											//Comparamos el código de la opción elegida con la opción correcta reflejada en el item
+											if(!empty(trim($cItem->getCorrecto())) && (strtoupper($cItem->getCorrecto()) == strtoupper($cOpcion->getCodigo())) ){
+												//Seteo a 1 el campo valor
+												$sSQLValor = "UPDATE respuestas_pruebas_items SET valor=" . $conn->qstr($_sValor, false);
+												$sSQLValor .= " WHERE";
+												$sSQLValor .= " idEmpresa='" . $_POST['fIdEmpresa'] . "'";
+												$sSQLValor .= " AND idProceso='" . $_POST['fIdProceso'] . "'";
+												$sSQLValor .= " AND idCandidato='" . $_POST['fIdCandidato'] . "'";
+												$sSQLValor .= " AND codIdiomaIso2='" . $_POST['fCodIdiomaIso2Prueba'] . "'";
+												$sSQLValor .= " AND idPrueba='" . $listaRespItems->fields['idPrueba'] . "'";
+												$sSQLValor .= " AND idItem='" . $listaRespItems->fields['idItem'] . "'";
+												$conn->Execute($sSQLValor);
+		
+												//Si coincide se le suma uno a la PDirecta.
+												$iPDirecta++;
+											}
+		
+											$listaRespItems->MoveNext();
+										}
+									}else{
+										$sqlPDirecta = "SELECT * FROM respuestas_pruebas_items ";
+										$sqlPDirecta .= "WHERE idEmpresa= " . $_POST['fIdEmpresa'] . " ";
+										$sqlPDirecta .= "AND idProceso= " . $_POST['fIdProceso'] . " ";
+										$sqlPDirecta .= "AND idCandidato= " . $_POST['fIdCandidato'] . " ";
+										$sqlPDirecta .= "AND idPrueba= " . $_POST['fIdPrueba'] . " ";
+										$sqlPDirecta .= "AND valor= 1 ";
+										$rsPDirecta = $conn->Execute($sqlPDirecta);
+										$iPDirecta = $rsPDirecta->recordCount();
+									}
+		
+									$cBaremos_resultados = new Baremos_resultados();
+									$cBaremos_resultados->setIdBaremo($_POST['fIdBaremo']);
+									$cBaremos_resultados->setIdPrueba($_POST['fIdPrueba']);
+		
+									$sqlBaremosResultados = $cBaremos_resultadosDB->readLista($cBaremos_resultados);
+
+									$listaBaremosResultados = $conn->Execute($sqlBaremosResultados);
+									$ipMin=0;
+									$ipMax=0;
+									// Recorremos la lista de los valores del baremo seleccionado para mirar el percentil que
+									// corresponde con la puntuación directa obtenida.
+									if($listaBaremosResultados->recordCount()>0){
+										while(!$listaBaremosResultados->EOF){
+		
+											$ipMin = $listaBaremosResultados->fields['puntMin'];
+											$ipMax = $listaBaremosResultados->fields['puntMax'];
+											if($ipMin <= $iPDirecta && $iPDirecta <= $ipMax){
+												$iPercentil = $listaBaremosResultados->fields['puntBaremada'];
+											}
+											$listaBaremosResultados->MoveNext();
+										}
+									}
+									
+									include('../Admin/constantesInformes/' .	$_POST['fCodIdiomaIso2'] .'.php');
+		
+									
+									$cRespPruebas = new Respuestas_pruebas();
+									$cRespPruebasDB = new Respuestas_pruebasDB($conn);
+									$cRespPruebas->setIdEmpresa($cCandidato->getIdEmpresa());
+									$cRespPruebas->setIdProceso($cCandidato->getIdProceso());
+									$cRespPruebas->setIdCandidato($cCandidato->getIdCandidato());
+									$cRespPruebas->setIdPrueba($cPruebas->getIdPrueba());
+									$cRespPruebas->setCodIdiomaIso2($cPruebas->getCodIdiomaIso2());
+									$cRespPruebas = $cRespPruebasDB->readEntidad($cRespPruebas);
+		
+									$cProceso = new Procesos();
+									$cProcesoDB	= new ProcesosDB($conn);
+									$cProceso->setIdEmpresa($cCandidato->getIdEmpresa());
+									$cProceso->setIdProceso($cCandidato->getIdProceso());
+									$cProceso = $cProcesoDB->readEntidad($cProceso);
+									
+									// Pa' ver erores
+									//error_reporting(E_ALL);ini_set('display_errors', 1);
+									
+									switch ($cPruebas->getIdTipoPrueba())
+									{
+										case 6:	//Motivaviones
+										case 7:	//Personalidad
+										case 11:	//FLASH tipo Personalidad
+											// Tipos de prueba de personalidad tipo Prisma
+											require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Bloques/BloquesDB.php");
+											require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Bloques/Bloques.php");
+											require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Escalas/EscalasDB.php");
+											require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Escalas/Escalas.php");
+											require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Escalas_items/Escalas_itemsDB.php");
+											require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Escalas_items/Escalas_items.php");
+											require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Tipos_competencias/Tipos_competenciasDB.php");
+											require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Tipos_competencias/Tipos_competencias.php");
+											require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Competencias/CompetenciasDB.php");
+											require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Competencias/Competencias.php");
+											require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Competencias_items/Competencias_itemsDB.php");
+											require_once(constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . constant("DIR_WS_COM") . "Competencias_items/Competencias_items.php");
+		
+											$cTipos_competenciasDB = new Tipos_competenciasDB($conn);
+											$cCompetenciasDB = new CompetenciasDB($conn);
+											$cCompetencias_itemsDB = new Competencias_itemsDB($conn);
+											$cBloquesDB = new BloquesDB($conn);
+											$cEscalasDB = new EscalasDB($conn);
+											$cEscalas_itemsDB = new Escalas_itemsDB($conn);
+
+											$include = constant("DIR_FS_DOCUMENT_ROOT_ADMIN").'Template/Informes_candidato/generaPrueba' . $cPruebas->getIdPrueba() . '.php';
+											include($include);
+											
+											$counter++;
+
+											//Para las de Personalidad
+											if (isset($aSQLPuntuacionesPPL) || isset($aSQLPuntuacionesC))
+											{
+												//Se guardan los resultados calculados en respuestas pruebas
+		
+												$cRespPruebas = new Respuestas_pruebas();
+												$cRespPruebasDB = new Respuestas_pruebasDB($conn);
+												$cRespPruebas->setIdEmpresa($cCandidato->getIdEmpresa());
+												$cRespPruebas->setIdProceso($cCandidato->getIdProceso());
+												$cRespPruebas->setIdCandidato($cCandidato->getIdCandidato());
+												$cRespPruebas->setIdPrueba($cPruebas->getIdPrueba());
+												$cRespPruebas->setCodIdiomaIso2($cPruebas->getCodIdiomaIso2());
+												$cRespPruebas = $cRespPruebasDB->readEntidad($cRespPruebas);
+		
+												$cProceso = new Procesos();
+												$cProcesoDB	= new ProcesosDB($conn);
+												$cProceso->setIdEmpresa($cCandidato->getIdEmpresa());
+												$cProceso->setIdProceso($cCandidato->getIdProceso());
+												$cProceso = $cProcesoDB->readEntidad($cProceso);
+		
+												//$_sBaremo=$cBaremos->getNombre();
+		
+												//Miramos primero si ya está guardado
+												$sSQL = "SELECT * FROM export_personalidad ";
+												$sSQL .= " WHERE ";
+												$sSQL .= " idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false);
+												$sSQL .= " AND idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false);
+												$sSQL .= " AND idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false);
+												$sSQL .= " AND idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false);
+												$sSQL .= " AND idBaremo=" . $conn->qstr($_POST["fIdBaremo"], false);
+												$sSQL .= " AND idTipoInforme=" . $conn->qstr($_POST['fIdTipoInforme'], false);
+		
+												$rsCuantos = $conn->Execute($sSQL);
+												if ($rsCuantos->NumRows() <= 0)
+												{
+													$cobrado=0;
+													if ($sLlamada=="Candidato"){
+														$cobrado=1;
+													}
+													$sSQL = "INSERT INTO export_personalidad (idEmpresa, descEmpresa, idProceso, descProceso, idCandidato, nombre, apellido1, apellido2, email, dni, idPrueba, descPrueba, fecPrueba, idBaremo, descBaremo, idTipoInforme, descTipoInforme, fecAltaProceso, idSexo,idEdad, idFormacion, idNivel, idArea, cobrado, fecAlta, fecMod, usuAlta, usuMod) VALUES ";
+													$sSQL .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getDescEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cCandidato->getNombre(), false) . "," . $conn->qstr($cCandidato->getApellido1(), false) . "," . $conn->qstr($cCandidato->getApellido2(), false) . "," . $conn->qstr($cCandidato->getMail(), false) . "," . $conn->qstr($cCandidato->getDni(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST["fIdBaremo"], false) . "," . $conn->qstr($_sBaremo, false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($sDescInforme, false) . "," . $conn->qstr($cProceso->getFecAlta(), false) . "," . $conn->qstr($cCandidato->getIdSexo(), false) . "," . $conn->qstr($cCandidato->getIdEdad(), false) . "," . $conn->qstr($cCandidato->getIdFormacion(), false) . "," . $conn->qstr($cCandidato->getIdNivel(), false) . "," . $conn->qstr($cCandidato->getIdArea(), false) . "," . $cobrado . ",now(),now()," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . ");";
+													
+													$conn->Execute($sSQL);
+		
+													//descSexo,descEdad,descFormacion,descNivel,descArea
+													$sSQLUPDATE = "UPDATE export_personalidad ep, sexos s SET ep.descSexo=s.nombre WHERE ep.idSexo=s.idSexo AND s.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+													$conn->Execute($sSQLUPDATE);
+
+													$sSQLUPDATE = "UPDATE export_personalidad ep, edades e SET ep.descEdad=e.nombre WHERE ep.idEdad=e.idEdad AND e.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+													$conn->Execute($sSQLUPDATE);
+
+													$sSQLUPDATE = "UPDATE export_personalidad ep, formaciones f SET ep.descFormacion=f.nombre WHERE ep.idFormacion=f.idFormacion AND f.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+													$conn->Execute($sSQLUPDATE);
+
+													$sSQLUPDATE = "UPDATE export_personalidad ep, nivelesjerarquicos n SET ep.descNivel=n.nombre WHERE ep.idNivel=n.idNivel AND n.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+													$conn->Execute($sSQLUPDATE);
+
+													$sSQLUPDATE = "UPDATE export_personalidad ep, areas a SET ep.descArea=a.nombre WHERE ep.idArea=a.idArea AND a.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+													$conn->Execute($sSQLUPDATE);
+
+													$sSQLUPDATE = "UPDATE export_personalidad ep, candidatos c SET ep.codIso2PaisProcedencia=c.codIso2PaisProcedencia WHERE ep.idEmpresa=c.idEmpresa AND ep.idProceso=c.idProceso AND ep.idCandidato=c.idCandidato AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+													$conn->Execute($sSQLUPDATE);
+													if (isset($aSQLPuntuacionesPPL) && count($aSQLPuntuacionesPPL) > 0)
+													{
+														$sValidar = "SELECT * FROM export_personalidad_laboral ";
+														$sValidar .= " WHERE ";
+														$sValidar .= " idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false);
+														$sValidar .= " AND idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false);
+														$sValidar .= " AND idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false);
+														$sValidar .= " AND idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false);
+														$sValidar .= " AND idBaremo=" . $conn->qstr($_POST["fIdBaremo"], false);
+														$sValidar .= " AND idTipoInforme=" . $conn->qstr($_POST['fIdTipoInforme'], false);
+														$rsValidar = $conn->Execute($sValidar);
+		
+														if ($rsValidar->recordCount() == 0){
+															for ($c=0;$c < count($aSQLPuntuacionesPPL); $c++){
+																$conn->Execute($aSQLPuntuacionesPPL[$c]);
+															}
+														}
+													}
+
+													if (isset($aSQLPuntuacionesC) && count($aSQLPuntuacionesC) > 0)
+													{
+														$sValidar = "SELECT * FROM export_personalidad_competencias ";
+														$sValidar .= " WHERE ";
+														$sValidar .= " idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false);
+														$sValidar .= " AND idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false);
+														$sValidar .= " AND idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false);
+														$sValidar .= " AND idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false);
+														$sValidar .= " AND idBaremo=" . $conn->qstr($_POST["fIdBaremo"], false);
+														$sValidar .= " AND idTipoInforme=" . $conn->qstr($_POST['fIdTipoInforme'], false);
+														$rsValidar = $conn->Execute($sValidar);
+		
+														if ($rsValidar->recordCount() == 0){
+															for ($c=0;$c < count($aSQLPuntuacionesC); $c++){
+																$conn->Execute($aSQLPuntuacionesC[$c]);
+															}
+															$conn->Execute($sSQLIdioma);
+		
+														}
+													}
+												}
+											}else{
+												$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] Sin calculos en informe: idEmpresa: " . $_POST['fIdEmpresa'] . " idProceso: " . $_POST['fIdProceso'] . " idCandidato: " . $_POST['fIdCandidato'] . " idPrueba: " . $_POST['fIdPrueba'];
+												error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+											}
+											break;
+										default:
+										//Poner switch por prueba PEDRO
+										switch ($_POST['fIdPrueba'])
+										{
+											case 48:	//KPMG
+											case 56:	//KPMG
+											case 57:	//KPMG
+											case 58:	//KPMG
+											case 59:	//KPMG
+											case 60:	//KPMG
+												include('../Admin/Template/Informes_candidato/generaPruebaKPMG.php');
+												break;
+											case 8:	//ELT
+											case 73:	//REDACCION es
+									
+											//Poner switch por prueba PEDRO
+											case 74:	//REDACCION en
+												include('../Admin/Template/Informes_candidato/generaPrueba' . $_POST['fIdPrueba'] . '.php');
+												break;
+											case 32:	//CIP
+												
+												include('../Admin/Template/Informes_candidato/generaTipo' . $idTipoInforme . '.php');
+												//var_dump("test echo :: " . $listaRespItems->recordCount());
+												//die;
+												//Para las de Personalidad
+	
+												if (isset($aSQLPuntuacionesPPL) || isset($aSQLPuntuacionesC))
+												{
+	
+													//Se guardan los resultados calculados en respuestas pruebas
+	
+													$cRespPruebas = new Respuestas_pruebas();
+													$cRespPruebasDB = new Respuestas_pruebasDB($conn);
+													$cRespPruebas->setIdEmpresa($cCandidato->getIdEmpresa());
+													$cRespPruebas->setIdProceso($cCandidato->getIdProceso());
+													$cRespPruebas->setIdCandidato($cCandidato->getIdCandidato());
+													$cRespPruebas->setIdPrueba($cPruebas->getIdPrueba());
+													$cRespPruebas->setCodIdiomaIso2($cPruebas->getCodIdiomaIso2());
+													$cRespPruebas = $cRespPruebasDB->readEntidad($cRespPruebas);
+	
+													$cProceso = new Procesos();
+													$cProcesoDB	= new ProcesosDB($conn);
+													$cProceso->setIdEmpresa($cCandidato->getIdEmpresa());
+													$cProceso->setIdProceso($cCandidato->getIdProceso());
+													$cProceso = $cProcesoDB->readEntidad($cProceso);
+	
+													//$_sBaremo = $cBaremos->getNombre();
+	
+													//Miramos primero si ya está guardado
+													$sSQL = "SELECT * FROM export_personalidad ";
+													$sSQL .= " WHERE ";
+													$sSQL .= " idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false);
+													$sSQL .= " AND idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false);
+													$sSQL .= " AND idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false);
+													$sSQL .= " AND idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false);
+													$sSQL .= " AND idBaremo=" . $conn->qstr($_POST["fIdBaremo"], false);
+													$sSQL .= " AND idTipoInforme=" . $conn->qstr($_POST['fIdTipoInforme'], false);
+													
+													$rsCuantos = $conn->Execute($sSQL);
+													if ($rsCuantos->NumRows() <= 0)
+													{
+	
+														$cobrado=0;
+														if ($sLlamada=="Candidato"){
+															$cobrado=1;
+														}
+														$sSQL = "INSERT INTO export_personalidad (idEmpresa, descEmpresa, idProceso, descProceso, idCandidato, nombre, apellido1, apellido2, email, dni, idPrueba, descPrueba, fecPrueba, idBaremo, descBaremo, idTipoInforme, descTipoInforme, fecAltaProceso, idSexo,idEdad, idFormacion, idNivel, idArea, cobrado, fecAlta, fecMod, usuAlta, usuMod) VALUES ";
+														$sSQL .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getDescEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cCandidato->getNombre(), false) . "," . $conn->qstr($cCandidato->getApellido1(), false) . "," . $conn->qstr($cCandidato->getApellido2(), false) . "," . $conn->qstr($cCandidato->getMail(), false) . "," . $conn->qstr($cCandidato->getDni(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST["fIdBaremo"], false) . "," . $conn->qstr($_sBaremo, false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($sDescInforme, false) . "," . $conn->qstr($cProceso->getFecAlta(), false) . "," . $conn->qstr($cCandidato->getIdSexo(), false) . "," . $conn->qstr($cCandidato->getIdEdad(), false) . "," . $conn->qstr($cCandidato->getIdFormacion(), false) . "," . $conn->qstr($cCandidato->getIdNivel(), false) . "," . $conn->qstr($cCandidato->getIdArea(), false) . "," . $cobrado . ",now(),now()," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . ");";
+	
+														$conn->Execute($sSQL);
+	
+														//descSexo,descEdad,descFormacion,descNivel,descArea
+														$sSQLUPDATE = "UPDATE export_personalidad ep, sexos s SET ep.descSexo=s.nombre WHERE ep.idSexo=s.idSexo AND s.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+														$conn->Execute($sSQLUPDATE);
+
+														$sSQLUPDATE = "UPDATE export_personalidad ep, edades e SET ep.descEdad=e.nombre WHERE ep.idEdad=e.idEdad AND e.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+														$conn->Execute($sSQLUPDATE);
+
+														$sSQLUPDATE = "UPDATE export_personalidad ep, formaciones f SET ep.descFormacion=f.nombre WHERE ep.idFormacion=f.idFormacion AND f.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+														$conn->Execute($sSQLUPDATE);
+
+														$sSQLUPDATE = "UPDATE export_personalidad ep, nivelesjerarquicos n SET ep.descNivel=n.nombre WHERE ep.idNivel=n.idNivel AND n.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+														$conn->Execute($sSQLUPDATE);
+
+														$sSQLUPDATE = "UPDATE export_personalidad ep, areas a SET ep.descArea=a.nombre WHERE ep.idArea=a.idArea AND a.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+														$conn->Execute($sSQLUPDATE);
+
+														$sSQLUPDATE = "UPDATE export_personalidad ep, candidatos c SET ep.codIso2PaisProcedencia=c.codIso2PaisProcedencia WHERE ep.idEmpresa=c.idEmpresa AND ep.idProceso=c.idProceso AND ep.idCandidato=c.idCandidato AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+														$conn->Execute($sSQLUPDATE);
+
+														if (isset($aSQLPuntuacionesPPL) && count($aSQLPuntuacionesPPL) > 0)
+														{
+															$sValidar = "SELECT * FROM export_personalidad_laboral ";
+															$sValidar .= " WHERE ";
+															$sValidar .= " idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false);
+															$sValidar .= " AND idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false);
+															$sValidar .= " AND idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false);
+															$sValidar .= " AND idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false);
+															$sValidar .= " AND idBaremo=" . $conn->qstr($_POST["fIdBaremo"], false);
+															$sValidar .= " AND idTipoInforme=" . $conn->qstr($_POST['fIdTipoInforme'], false);
+															$rsValidar = $conn->Execute($sValidar);
+	
+															if ($rsValidar->recordCount() == 0){
+																for ($c=0;$c < count($aSQLPuntuacionesPPL); $c++){
+																	//echo "<br />" . $aSQLPuntuacionesPPL[$c];
+																	$conn->Execute($aSQLPuntuacionesPPL[$c]);
+																	//$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesPPL[$c];
+																	//error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+																	//sleep(1);
+																}
+															}
+														}
+														if (isset($aSQLPuntuacionesC) && count($aSQLPuntuacionesC) > 0)
+														{
+															$sValidar = "SELECT * FROM export_personalidad_competencias ";
+															$sValidar .= " WHERE ";
+															$sValidar .= " idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false);
+															$sValidar .= " AND idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false);
+															$sValidar .= " AND idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false);
+															$sValidar .= " AND idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false);
+															$sValidar .= " AND idBaremo=" . $conn->qstr($_POST["fIdBaremo"], false);
+															$sValidar .= " AND idTipoInforme=" . $conn->qstr($_POST['fIdTipoInforme'], false);
+															$rsValidar = $conn->Execute($sValidar);
+	
+															if ($rsValidar->recordCount() == 0){
+																for ($c=0;$c < count($aSQLPuntuacionesC); $c++){
+																	//echo "<br />" . $aSQLPuntuacionesC[$c];
+																	$conn->Execute($aSQLPuntuacionesC[$c]);
+																	//$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesC[$c];
+																	//error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+																	//sleep(1);
+																}
+															}
+														}
+													}
+												}else{
+													$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] Sin calculos en informe: idEmpresa: " . $_POST['fIdEmpresa'] . " idProceso: " . $_POST['fIdProceso'] . " idCandidato: " . $_POST['fIdCandidato'] . " idPrueba: " . $_POST['fIdPrueba'];
+													error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+												}
+	
+	
+												break;
+											case 42:	//SOP
+												include('../Admin/Template/Informes_candidato/generaPrueba' . $_POST['fIdPrueba'] . '.php');
+	
+												//Para las de Personalidad
+												if (isset($aSQLPuntuacionesPPL) || isset($aSQLPuntuacionesC))
+												{
+													//Se guardan los resultados calculados en respuestas pruebas
+	
+													$cRespPruebas = new Respuestas_pruebas();
+													$cRespPruebasDB = new Respuestas_pruebasDB($conn);
+													$cRespPruebas->setIdEmpresa($cCandidato->getIdEmpresa());
+													$cRespPruebas->setIdProceso($cCandidato->getIdProceso());
+													$cRespPruebas->setIdCandidato($cCandidato->getIdCandidato());
+													$cRespPruebas->setIdPrueba($cPruebas->getIdPrueba());
+													$cRespPruebas->setCodIdiomaIso2($cPruebas->getCodIdiomaIso2());
+													$cRespPruebas = $cRespPruebasDB->readEntidad($cRespPruebas);
+	
+													$cProceso = new Procesos();
+													$cProcesoDB	= new ProcesosDB($conn);
+													$cProceso->setIdEmpresa($cCandidato->getIdEmpresa());
+													$cProceso->setIdProceso($cCandidato->getIdProceso());
+													$cProceso = $cProcesoDB->readEntidad($cProceso);
+	
+													//$_sBaremo = $cBaremos->getNombre();
+	
+													//Miramos primero si ya está guardado
+													$sSQL = "SELECT * FROM export_personalidad ";
+													$sSQL .= " WHERE ";
+													$sSQL .= " idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false);
+													$sSQL .= " AND idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false);
+													$sSQL .= " AND idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false);
+													$sSQL .= " AND idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false);
+													$sSQL .= " AND idBaremo=" . $conn->qstr($_POST["fIdBaremo"], false);
+													$sSQL .= " AND idTipoInforme=" . $conn->qstr($_POST['fIdTipoInforme'], false);
+	
+													$rsCuantos = $conn->Execute($sSQL);
+													if ($rsCuantos->NumRows() <= 0)
+													{
+														$cobrado=0;
+														if ($sLlamada=="Candidato"){
+															$cobrado=1;
+														}
+														$sSQL = "INSERT INTO export_personalidad (idEmpresa, descEmpresa, idProceso, descProceso, idCandidato, nombre, apellido1, apellido2, email, dni, idPrueba, descPrueba, fecPrueba, idBaremo, descBaremo, idTipoInforme, descTipoInforme, fecAltaProceso, idSexo,idEdad, idFormacion, idNivel, idArea, cobrado, fecAlta, fecMod, usuAlta, usuMod) VALUES ";
+														$sSQL .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getDescEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cCandidato->getNombre(), false) . "," . $conn->qstr($cCandidato->getApellido1(), false) . "," . $conn->qstr($cCandidato->getApellido2(), false) . "," . $conn->qstr($cCandidato->getMail(), false) . "," . $conn->qstr($cCandidato->getDni(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST["fIdBaremo"], false) . "," . $conn->qstr($_sBaremo, false) . "," . $conn->qstr($_POST['fIdTipoInforme'], false) . "," . $conn->qstr($sDescInforme, false) . "," . $conn->qstr($cProceso->getFecAlta(), false) . "," . $conn->qstr($cCandidato->getIdSexo(), false) . "," . $conn->qstr($cCandidato->getIdEdad(), false) . "," . $conn->qstr($cCandidato->getIdFormacion(), false) . "," . $conn->qstr($cCandidato->getIdNivel(), false) . "," . $conn->qstr($cCandidato->getIdArea(), false) . "," . $cobrado . ",now(),now()," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . ");";
+	
+														//echo "<br />3::" . $sSQL;
+														//$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $sSQL;
+														//error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+														$conn->Execute($sSQL);
+	
+														//descSexo,descEdad,descFormacion,descNivel,descArea
+														$sSQLUPDATE = "UPDATE export_personalidad ep, sexos s SET ep.descSexo=s.nombre WHERE ep.idSexo=s.idSexo AND s.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+														$conn->Execute($sSQLUPDATE);
+														// 										echo "<br />" . $sSQLUPDATE;
+														$sSQLUPDATE = "UPDATE export_personalidad ep, edades e SET ep.descEdad=e.nombre WHERE ep.idEdad=e.idEdad AND e.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+														$conn->Execute($sSQLUPDATE);
+														// 										echo "<br />" . $sSQLUPDATE;
+														$sSQLUPDATE = "UPDATE export_personalidad ep, formaciones f SET ep.descFormacion=f.nombre WHERE ep.idFormacion=f.idFormacion AND f.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+														$conn->Execute($sSQLUPDATE);
+														//echo "<br />" . $sSQLUPDATE;
+														$sSQLUPDATE = "UPDATE export_personalidad ep, nivelesjerarquicos n SET ep.descNivel=n.nombre WHERE ep.idNivel=n.idNivel AND n.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+														$conn->Execute($sSQLUPDATE);
+														// 										echo "<br />" . $sSQLUPDATE;
+														$sSQLUPDATE = "UPDATE export_personalidad ep, areas a SET ep.descArea=a.nombre WHERE ep.idArea=a.idArea AND a.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+														$conn->Execute($sSQLUPDATE);
+														// 										echo "<br />" . $sSQLUPDATE;
+														$sSQLUPDATE = "UPDATE export_personalidad ep, candidatos c SET ep.codIso2PaisProcedencia=c.codIso2PaisProcedencia WHERE ep.idEmpresa=c.idEmpresa AND ep.idProceso=c.idProceso AND ep.idCandidato=c.idCandidato AND ep.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ep.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ep.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ep.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+														$conn->Execute($sSQLUPDATE);
+														// 										echo "<br />" . $sSQLUPDATE;
+														//echo "<br />" . print_r($aSQLPuntuacionesPPL);
+														if (isset($aSQLPuntuacionesPPL) && count($aSQLPuntuacionesPPL) > 0)
+														{
+															$sValidar = "SELECT * FROM export_personalidad_laboral ";
+															$sValidar .= " WHERE ";
+															$sValidar .= " idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false);
+															$sValidar .= " AND idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false);
+															$sValidar .= " AND idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false);
+															$sValidar .= " AND idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false);
+															$sValidar .= " AND idBaremo=" . $conn->qstr($_POST["fIdBaremo"], false);
+															$sValidar .= " AND idTipoInforme=" . $conn->qstr($_POST['fIdTipoInforme'], false);
+															$rsValidar = $conn->Execute($sValidar);
+	
+															if ($rsValidar->recordCount() == 0){
+																for ($c=0;$c < count($aSQLPuntuacionesPPL); $c++){
+																	//echo "<br />" . $aSQLPuntuacionesPPL[$c];
+																	$conn->Execute($aSQLPuntuacionesPPL[$c]);
+																	//$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesPPL[$c];
+																	//error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+																	//sleep(1);
+																}
+															}
+														}
+														if (isset($aSQLPuntuacionesC) && count($aSQLPuntuacionesC) > 0)
+														{
+															$sValidar = "SELECT * FROM export_personalidad_competencias ";
+															$sValidar .= " WHERE ";
+															$sValidar .= " idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false);
+															$sValidar .= " AND idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false);
+															$sValidar .= " AND idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false);
+															$sValidar .= " AND idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false);
+															$sValidar .= " AND idBaremo=" . $conn->qstr($_POST["fIdBaremo"], false);
+															$sValidar .= " AND idTipoInforme=" . $conn->qstr($_POST['fIdTipoInforme'], false);
+															$rsValidar = $conn->Execute($sValidar);
+	
+															if ($rsValidar->recordCount() == 0){
+																for ($c=0;$c < count($aSQLPuntuacionesC); $c++){
+																	//echo "<br />" . $aSQLPuntuacionesC[$c];
+																	$conn->Execute($aSQLPuntuacionesC[$c]);
+																	//$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones PERSONALIDAD [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] SQL: " . $aSQLPuntuacionesC[$c];
+																	//error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+																	//sleep(1);
+																}
+															}
+														}
+													}
+												}else{
+													$sTypeError	=	"\n" . date('d/m/Y H:i:s') . " Guardando puntuaciones [" . $_SERVER['REMOTE_ADDR'] . "][" . $sLlamada . "][" . constant("MNT_EXPORTA") . "] Sin calculos en informe: idEmpresa: " . $_POST['fIdEmpresa'] . " idProceso: " . $_POST['fIdProceso'] . " idCandidato: " . $_POST['fIdCandidato'] . " idPrueba: " . $_POST['fIdPrueba'];
+													error_log($sTypeError . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+												}
+	
+												break;
+											default:
+												include('../Admin/Template/Informes_candidato/generaTipo' . $idTipoInforme . '.php');
+												break;
+										} // end switch
+	
+										if (($cPruebas->getIdTipoPrueba() == 2 || $cPruebas->getIdTipoPrueba() == 5) )
+										{
+												//Se guardan los resultados calculados en respuestas pruebas
+												$cRespPruebas = new Respuestas_pruebas();
+												$cRespPruebasDB = new Respuestas_pruebasDB($conn);
+												$cRespPruebas->setIdEmpresa($cCandidato->getIdEmpresa());
+												$cRespPruebas->setIdProceso($cCandidato->getIdProceso());
+												$cRespPruebas->setIdCandidato($cCandidato->getIdCandidato());
+												$cRespPruebas->setIdPrueba($cPruebas->getIdPrueba());
+												$cRespPruebas->setCodIdiomaIso2($cPruebas->getCodIdiomaIso2());
+												$cRespPruebas = $cRespPruebasDB->readEntidad($cRespPruebas);
+	
+												$cProceso = new Procesos();
+											$cProcesoDB	= new ProcesosDB($conn);
+											$cProceso->setIdEmpresa($cCandidato->getIdEmpresa());
+											$cProceso->setIdProceso($cCandidato->getIdProceso());
+											$cProceso = $cProcesoDB->readEntidad($cProceso);
+	
+											//Miramos primero si ya está guardado
+											$sSQL = "SELECT * FROM export_aptitudinales ";
+											$sSQL .= " WHERE ";
+											$sSQL .= " idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false);
+											$sSQL .= " AND idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false);
+											$sSQL .= " AND idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false);
+											$sSQL .= " AND idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false);
+											$sSQL .= " AND idBaremo=" . $conn->qstr($_POST["fIdBaremo"], false);
+	
+											$rsCuantos = $conn->Execute($sSQL);
+											if ($rsCuantos->NumRows() <= 0)
+											{
+													$sRan_test = strip_tags($sRan_test);
+												$sRan_test = trim($sRan_test,"\n\r");
+												$sRan_test = html_entity_decode($sRan_test);
+	
+												$cobrado=0;
+												if ($sLlamada=="Candidato"){
+													$cobrado=1;
+												}
+												$sSQL = "INSERT INTO export_aptitudinales (idEmpresa, descEmpresa, idProceso, descProceso, idCandidato, nombre, apellido1, apellido2, email, dni, idPrueba, descPrueba, fecPrueba, idBaremo, descBaremo, fecAltaProceso, correctas, contestadas,percentil, ir, ip, por, estilo, idSexo,idEdad, idFormacion, idNivel, idArea, cobrado, fecAlta, fecMod, usuAlta, usuMod) VALUES ";
+												$sSQL .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getDescEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cCandidato->getNombre(), false) . "," . $conn->qstr($cCandidato->getApellido1(), false) . "," . $conn->qstr($cCandidato->getApellido2(), false) . "," . $conn->qstr($cCandidato->getMail(), false) . "," . $conn->qstr($cCandidato->getDni(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST["fIdBaremo"], false) . "," . $conn->qstr($_sBaremo, false) . "," . $conn->qstr($cProceso->getFecAlta(), false) . "," . $conn->qstr($iPDirecta, false) . "," . $conn->qstr($listaRespItems->recordCount(), false) . "," . $conn->qstr($iPercentil, false) . "," . $conn->qstr($IR, false) . "," . $conn->qstr($IP, false) . "," . $conn->qstr($POR, false) . "," . $conn->qstr($sRan_test, false) . "," . $conn->qstr($cCandidato->getIdSexo(), false) . "," . $conn->qstr($cCandidato->getIdEdad(), false) . "," . $conn->qstr($cCandidato->getIdFormacion(), false) . "," . $conn->qstr($cCandidato->getIdNivel(), false) . "," . $conn->qstr($cCandidato->getIdArea(), false) . "," . $cobrado . ",now(),now()," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . ");";
+												$conn->Execute($sSQL);
+
+
+												//descSexo,descEdad,descFormacion,descNivel,descArea
+												$sSQLUPDATE = "UPDATE export_aptitudinales ea, sexos s SET ea.descSexo=s.nombre WHERE ea.idSexo=s.idSexo AND s.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ea.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ea.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ea.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ea.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+												$conn->Execute($sSQLUPDATE);
+
+												$sSQLUPDATE = "UPDATE export_aptitudinales ea, edades e SET ea.descEdad=e.nombre WHERE ea.idEdad=e.idEdad AND e.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ea.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ea.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ea.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ea.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+												$conn->Execute($sSQLUPDATE);
+
+												$sSQLUPDATE = "UPDATE export_aptitudinales ea, formaciones f SET ea.descFormacion=f.nombre WHERE ea.idFormacion=f.idFormacion AND f.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ea.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ea.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ea.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ea.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+												$conn->Execute($sSQLUPDATE);
+
+												$sSQLUPDATE = "UPDATE export_aptitudinales ea, nivelesjerarquicos n SET ea.descNivel=n.nombre WHERE ea.idNivel=n.idNivel AND n.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ea.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ea.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ea.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ea.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+												$conn->Execute($sSQLUPDATE);
+
+												$sSQLUPDATE = "UPDATE export_aptitudinales ea, areas a SET ea.descArea=a.nombre WHERE ea.idArea=a.idArea AND a.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ea.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ea.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ea.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ea.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+												$conn->Execute($sSQLUPDATE);
+
+												$sSQLUPDATE = "UPDATE export_aptitudinales ea, candidatos c SET ea.codIso2PaisProcedencia=c.codIso2PaisProcedencia WHERE ea.idEmpresa=c.idEmpresa AND ea.idProceso=c.idProceso AND ea.idCandidato=c.idCandidato AND ea.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ea.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ea.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ea.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+												$conn->Execute($sSQLUPDATE);
+
+											}
+										}
+										break;
+									}
+								}
+
+								//Miramos si hay que descontar y cuanto para informar al usuario.
+								$dTotalCoste = getDescuentoDongles($cCandidato->getIdEmpresa(), $cCandidato->getIdProceso(), $cCandidato->getIdCandidato(), $cPruebas->getCodIdiomaIso2(), $cPruebas->getIdPrueba(), $cInformesPruebasTrf->getCodIdiomaIso2(), $cInformesPruebasTrf->getIdTipoInforme(), $_POST['fIdBaremo'], $dTotalCoste, false);
+								$sMsgDescuento = sprintf(constant("MSG_SE_LE_DESCONTARAN_X_DONGLES"),$dTotalCoste);
+								$sNombre .= ".pdf";
+								
+							}else{
+								//No tiene respuestas, no se genera el informe.
+								if (($cPruebas->getIdTipoPrueba() == 2 || $cPruebas->getIdTipoPrueba() == 5) )
+								{
+									$cRespPruebas = new Respuestas_pruebas();
+									$cRespPruebasDB = new Respuestas_pruebasDB($conn);
+									$cRespPruebas->setIdEmpresa($_POST['fIdEmpresa']);
+									$cRespPruebas->setIdProceso($_POST['fIdProceso']);
+									$cRespPruebas->setIdCandidato($_POST['fIdCandidato']);
+									$cRespPruebas->setIdPrueba($_POST['fIdPrueba']);
+									$cRespPruebas->setCodIdiomaIso2($_POST['fCodIdiomaIso2Prueba']);
+									$cRespPruebas = $cRespPruebasDB->readEntidad($cRespPruebas);
+	
+									$cProceso = new Procesos();
+									$cProcesoDB	= new ProcesosDB($conn);
+									$cProceso->setIdEmpresa($_POST['fIdEmpresa']);
+									$cProceso->setIdProceso($_POST['fIdProceso']);
+									$cProceso = $cProcesoDB->readEntidad($cProceso);
+	
+									//Miramos primero si ya está guardado
+									$sSQL = "SELECT * FROM export_aptitudinales ";
+									$sSQL .= " WHERE ";
+									$sSQL .= " idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false);
+									$sSQL .= " AND idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false);
+									$sSQL .= " AND idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false);
+									$sSQL .= " AND idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false);
+									$sSQL .= " AND idBaremo=" . $conn->qstr($_POST["fIdBaremo"], false);
+
+									$rsCuantos = $conn->Execute($sSQL);
+									if ($rsCuantos->NumRows() <= 0)
+									{
+										$sRan_test = "";
+										$iPDirecta="";
+										$contestadas= 0;
+										$iPercentil=NULL;
+										$IR=NULL;
+										$IP=NULL;
+										$POR=NULL;
+	
+										$cobrado=0;
+										if ($sLlamada=="Candidato"){
+											$cobrado=1;
+										}
+										$sSQL = "INSERT INTO export_aptitudinales (idEmpresa, descEmpresa, idProceso, descProceso, idCandidato, nombre, apellido1, apellido2, email, dni, idPrueba, descPrueba, fecPrueba, idBaremo, descBaremo, fecAltaProceso, correctas, contestadas,percentil, ir, ip, por, estilo, idSexo,idEdad, idFormacion, idNivel, idArea, cobrado, fecAlta, fecMod, usuAlta, usuMod) VALUES ";
+										$sSQL .= "(" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getDescEmpresa(), false) . "," . $conn->qstr($cRespPruebas->getIdProceso(), false) . "," . $conn->qstr($cRespPruebas->getDescProceso(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cCandidato->getNombre(), false) . "," . $conn->qstr($cCandidato->getApellido1(), false) . "," . $conn->qstr($cCandidato->getApellido2(), false) . "," . $conn->qstr($cCandidato->getMail(), false) . "," . $conn->qstr($cCandidato->getDni(), false) . "," . $conn->qstr($cRespPruebas->getIdPrueba(), false) . "," . $conn->qstr($cRespPruebas->getDescPrueba(), false) . "," . $conn->qstr($cRespPruebas->getFecAlta(), false) . "," . $conn->qstr($_POST["fIdBaremo"], false) . "," . $conn->qstr($_sBaremo, false) . "," . $conn->qstr($cProceso->getFecAlta(), false) . "," . $conn->qstr($iPDirecta, false) . "," . $conn->qstr($contestadas, false) . "," . $conn->qstr($iPercentil, false) . "," . $conn->qstr($IR, false) . "," . $conn->qstr($IP, false) . "," . $conn->qstr($POR, false) . "," . $conn->qstr($sRan_test, false) . "," . $conn->qstr($cCandidato->getIdSexo(), false) . "," . $conn->qstr($cCandidato->getIdEdad(), false) . "," . $conn->qstr($cCandidato->getIdFormacion(), false) . "," . $conn->qstr($cCandidato->getIdNivel(), false) . "," . $conn->qstr($cCandidato->getIdArea(), false) . "," . $cobrado . ",now(),now()," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . "," . $conn->qstr($cRespPruebas->getIdCandidato(), false) . ");";
+										$conn->Execute($sSQL);
+										
+										//descSexo,descEdad,descFormacion,descNivel,descArea
+										$sSQLUPDATE = "UPDATE export_aptitudinales ea, sexos s SET ea.descSexo=s.nombre WHERE ea.idSexo=s.idSexo AND s.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ea.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ea.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ea.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ea.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+										$conn->Execute($sSQLUPDATE);
+
+										$sSQLUPDATE = "UPDATE export_aptitudinales ea, edades e SET ea.descEdad=e.nombre WHERE ea.idEdad=e.idEdad AND e.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ea.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ea.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ea.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ea.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+										$conn->Execute($sSQLUPDATE);
+
+										$sSQLUPDATE = "UPDATE export_aptitudinales ea, formaciones f SET ea.descFormacion=f.nombre WHERE ea.idFormacion=f.idFormacion AND f.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ea.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ea.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ea.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ea.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+										$conn->Execute($sSQLUPDATE);
+
+										$sSQLUPDATE = "UPDATE export_aptitudinales ea, nivelesjerarquicos n SET ea.descNivel=n.nombre WHERE ea.idNivel=n.idNivel AND n.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ea.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ea.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ea.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ea.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+										$conn->Execute($sSQLUPDATE);
+
+										$sSQLUPDATE = "UPDATE export_aptitudinales ea, areas a SET ea.descArea=a.nombre WHERE ea.idArea=a.idArea AND a.codIdiomaIso2=" . $conn->qstr($cRespPruebas->getCodIdiomaIso2(), false) . " AND ea.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ea.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ea.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ea.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+										$conn->Execute($sSQLUPDATE);
+
+										$sSQLUPDATE = "UPDATE export_aptitudinales ea, candidatos c SET ea.codIso2PaisProcedencia=c.codIso2PaisProcedencia WHERE ea.idEmpresa=c.idEmpresa AND ea.idProceso=c.idProceso AND ea.idCandidato=c.idCandidato AND ea.idEmpresa=" . $conn->qstr($cRespPruebas->getIdEmpresa(), false) . " AND ea.idProceso=" . $conn->qstr($cRespPruebas->getIdProceso(), false) . " AND ea.idCandidato=" . $conn->qstr($cRespPruebas->getIdCandidato(), false) . " AND ea.idPrueba=" . $conn->qstr($cRespPruebas->getIdPrueba(), false) . ";";
+										$conn->Execute($sSQLUPDATE);
+									}
+								}
+								
+							}
+						}else{
+							
+							//Si ya está generado sacamos el enlace
+							//Miramos si hay que descontar y cuanto para informar al usuario.
+							$dTotalCoste = getDescuentoDongles($cCandidato->getIdEmpresa(), $cCandidato->getIdProceso(), $cCandidato->getIdCandidato(), $cPruebas->getCodIdiomaIso2(), $cPruebas->getIdPrueba(), $cInformesPruebasTrf->getCodIdiomaIso2(), $cInformesPruebasTrf->getIdTipoInforme(), $_POST['fIdBaremo'], $dTotalCoste, false);
+							$sMsgDescuento = sprintf(constant("MSG_SE_LE_DESCONTARAN_X_DONGLES"),$dTotalCoste);
+							$sNombre .= ".pdf";
+						}
+					
+					
+								
+
+
+
+						/************************************************** */
+						
+						$sNombre = $cUtilidades->SEOTitulo($cPrueba->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $lista->fields['idEmpresa'] . "_" . $lista->fields['idProceso'] . "_" . $rsProceso_informes->fields['idTipoInforme'] . "_" . $rsProceso_informes->fields['codIdiomaInforme'] . "_" . $_sIdBaremo);
+						$sDirImg="imgInformes/";
+						$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT_ADMIN"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . '/' : constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
+						$_ficheroPDF = $spath . $sDirImg . $sNombre . ".pdf";
+						
+
+						//var_dump("is_file :: " . is_file($_ficheroPDF));
+						//var_dump("is_file :: " . $rsProceso_informes);
+
+						if(is_file($_ficheroPDF)){
+							$valid_files[] = $_ficheroPDF;
+						}else{
+							$NO_valid_files[] = $_ficheroPDF;
+							//$error .= "<br />¡Fichero NO ENCONTRADO! - Se manda Generar :: " . basename($_ficheroPDF);
+							$error .= "<br />¡" . constant("STR_FICHERO_NO_ENCONTRADO") . "! :: " . basename($_ficheroPDF);
+						}
+					}
+					$rsProceso_informes->MoveNext();
+				}
+				$lista->MoveNext();
 			}
 
-			$lista->MoveNext();
-		}
+			if(count($valid_files) > 0){
 
-if(count($valid_files) > 0){
+				$zip = new ZipArchive();
+				$zip_name = $spath . $sDirImg . time(). ".zip";
+				$GETzip_name = $sDirImg . time(). ".zip";
+				if($zip->open($zip_name, ZIPARCHIVE::CREATE)!==TRUE){
+					$error .= "<br />" . constant("STR_NO_SE_HA_PODIDO_CREAR_EL_ARCHIVO_ZIP");
+				}else{
+					foreach($valid_files as $file){
+						if(!$zip->addFile($file, basename($file))){
+							$error .= "<br />" . constant("STR_NO_SE_HA_PODIDO_ANIADIR_EL_FICHERO") . "::" . basename($file);
+						}
+					}
+					$zip->close();
+				}
+			} else {
+				$error .= "<br />" . constant("STR_NO_EXISTEN_INFORMES_VALIDOS_PARA_LA_DESCARGA");
+			}
 
-    $zip = new ZipArchive();
-    $zip_name = $spath . $sDirImg . time(). ".zip";
-    $GETzip_name = $sDirImg . time(). ".zip";
-    if($zip->open($zip_name, ZIPARCHIVE::CREATE)!==TRUE){
-        $error .= "<br />" . constant("STR_NO_SE_HA_PODIDO_CREAR_EL_ARCHIVO_ZIP");
-    }else{
-	    foreach($valid_files as $file){
-	    	if(!$zip->addFile($file, basename($file))){
-	        	$error .= "<br />" . constant("STR_NO_SE_HA_PODIDO_ANIADIR_EL_FICHERO") . "::" . basename($file);
-	    	}
-	    }
-	    $zip->close();
-    }
-} else {
-    $error .= "<br />" . constant("STR_NO_EXISTEN_INFORMES_VALIDOS_PARA_LA_DESCARGA");
-}
 			$lista->MoveFirst();
 			include('Template/Informes_candidato_zip/mntrespuestas_pruebasl.php');
 			break;
@@ -639,7 +1568,7 @@ if(count($valid_files) > 0){
 					$cPruebas = $cPruebasDB->readEntidad($cPruebas);
 
 					//Miramos si ya esiste el pdf en caso que no esista lo generamos
-//					$sNombre = $cUtilidades->SEOTitulo($cPruebas->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $_POST['fIdEmpresa'] . "_" . $_POST['fIdProceso'] . "_" . $_POST['fIdTipoInforme'] . "_" . $_POST['fCodIdiomaIso2']);
+					//$sNombre = $cUtilidades->SEOTitulo($cPruebas->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $_POST['fIdEmpresa'] . "_" . $_POST['fIdProceso'] . "_" . $_POST['fIdTipoInforme'] . "_" . $_POST['fCodIdiomaIso2']);
 					$sNombre = $cUtilidades->SEOTitulo($cPruebas->getNombre() . "_" . $cCandidato->getNombre() . "_" . $cCandidato->getApellido1() . "_" . $cCandidato->getMail() . "_" . $_POST['fIdEmpresa'] . "_" . $_POST['fIdProceso'] . "_" . $_POST['fIdTipoInforme'] . "_" . $_POST['fCodIdiomaIso2'] . "_" . $_POST['fIdBaremo']);
 					$sDirImg="imgInformes/";
 					$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT_ADMIN"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT_ADMIN") . '/' : constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
@@ -803,13 +1732,13 @@ if(count($valid_files) > 0){
 							<?php
 							echo "<br /><br />" . $sMsgDescuento . "<br />";
 							echo "<a href=\"#_\" title=\"Descargar\" onclick=\"javascript:abrirVentana('0','". base64_encode(constant('HTTP_SERVER'). $sDirImg . $sNombre)."');\">" . constant("STR_DESCARGAR") . "</a>";
-		//					header ( "Expires: 0");
-		//					header ( "Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT" );
-		//					header ( "Pragma: no-cache" );
-		//					header ( "Content-type: application/octet-stream; name=" . $sNombreFicheroExcel . ".xls");
-		//					header ( "Content-Disposition: attachment; filename=" . $sNombreFicheroExcel . ".xls");
-		//					header ( "Content-Description: MID Gera excel" );
-		//					print  ( $binDatosExcel);
+							//	header ( "Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT" );
+							//	header ( "Pragma: no-cache" );
+							//	header ( "Content-type: application/octet-stream; name=" . $sNombreFicheroExcel . ".xls");
+							//	header ( "Expires: 0");
+							//	header ( "Content-Disposition: attachment; filename=" . $sNombreFicheroExcel . ".xls");
+							//	header ( "Content-Description: MID Gera excel" );
+							//	print  ( $binDatosExcel);
 						}else{
 							?>
 							<script>
@@ -2128,6 +3057,7 @@ if(count($valid_files) > 0){
 			include('Template/Informes_candidato_zip/mntrespuestas_pruebas.php');
 			break;
 	} // end switch
+	
 	/*
 	* "Lee" los parametros recibidos en el request y los asocia a una determinada Entidad.
 	*/
@@ -2157,8 +3087,8 @@ if(count($valid_files) > 0){
 		$cEntidad->setFinalizado((isset($_POST["fFinalizado"])) ? $_POST["fFinalizado"] : "");
 		$cEntidad->setLeidoInstrucciones((isset($_POST["fLeidoInstrucciones"])) ? $_POST["fLeidoInstrucciones"] : "");
 		$cEntidad->setLeidoEjemplos((isset($_POST["fLeidoEjemplos"])) ? $_POST["fLeidoEjemplos"] : "");
-		$cEntidad->setMinutos_test((isset($_POST["fMinutos_test"])) ? $_POST["fMinutos_test"] : "");
-		$cEntidad->setSegundos_test((isset($_POST["fSegundos_test"])) ? $_POST["fSegundos_test"] : "");
+		//$cEntidad->setMinutos_test((isset($_POST["fMinutos_test"])) ? $_POST["fMinutos_test"] : "");
+		//$cEntidad->setSegundos_test((isset($_POST["fSegundos_test"])) ? $_POST["fSegundos_test"] : "");
 		$cEntidad->setFecAlta((isset($_POST["fFecAlta"])) ? $_POST["fFecAlta"] : "");
 		$cEntidad->setFecMod((isset($_POST["fFecMod"])) ? $_POST["fFecMod"] : "");
 		$cEntidad->setUsuAlta($_cEntidadUsuarioTK->getIdEmpresa());
@@ -2194,8 +3124,8 @@ if(count($valid_files) > 0){
 		$cEntidad->setLeidoInstruccionesHast((isset($_POST["LSTLeidoInstruccionesHast"]) && $_POST["LSTLeidoInstruccionesHast"] != "") ? $_POST["LSTLeidoInstruccionesHast"] : "");	$cEntidad->setBusqueda(constant("STR_LEIDO_INSTRUCCIONES") . " " . constant("STR_HASTA"), (isset($_POST["LSTLeidoInstruccionesHast"]) && $_POST["LSTLeidoInstruccionesHast"] != "" ) ? $_POST["LSTLeidoInstruccionesHast"] : "");
 		$cEntidad->setLeidoEjemplos((isset($_POST["LSTLeidoEjemplos"]) && $_POST["LSTLeidoEjemplos"] != "") ? $_POST["LSTLeidoEjemplos"] : "");	$cEntidad->setBusqueda(constant("STR_LEIDO_EJEMPLOS"), (isset($_POST["LSTLeidoEjemplos"]) && $_POST["LSTLeidoEjemplos"] != "" ) ? $_POST["LSTLeidoEjemplos"] : "");
 		$cEntidad->setLeidoEjemplosHast((isset($_POST["LSTLeidoEjemplosHast"]) && $_POST["LSTLeidoEjemplosHast"] != "") ? $_POST["LSTLeidoEjemplosHast"] : "");	$cEntidad->setBusqueda(constant("STR_LEIDO_EJEMPLOS") . " " . constant("STR_HASTA"), (isset($_POST["LSTLeidoEjemplosHast"]) && $_POST["LSTLeidoEjemplosHast"] != "" ) ? $_POST["LSTLeidoEjemplosHast"] : "");
-		$cEntidad->setMinutos_test((isset($_POST["LSTMinutos_test"]) && $_POST["LSTMinutos_test"] != "") ? $_POST["LSTMinutos_test"] : "");	$cEntidad->setBusqueda(constant("STR_MINUTOS_TEST"), (isset($_POST["LSTMinutos_test"]) && $_POST["LSTMinutos_test"] != "" ) ? $_POST["LSTMinutos_test"] : "");
-		$cEntidad->setSegundos_test((isset($_POST["LSTSegundos_test"]) && $_POST["LSTSegundos_test"] != "") ? $_POST["LSTSegundos_test"] : "");	$cEntidad->setBusqueda(constant("STR_SEGUNDOS_TEST"), (isset($_POST["LSTSegundos_test"]) && $_POST["LSTSegundos_test"] != "" ) ? $_POST["LSTSegundos_test"] : "");
+		//$cEntidad->setMinutos_test((isset($_POST["LSTMinutos_test"]) && $_POST["LSTMinutos_test"] != "") ? $_POST["LSTMinutos_test"] : "");	$cEntidad->setBusqueda(constant("STR_MINUTOS_TEST"), (isset($_POST["LSTMinutos_test"]) && $_POST["LSTMinutos_test"] != "" ) ? $_POST["LSTMinutos_test"] : "");
+		//$cEntidad->setSegundos_test((isset($_POST["LSTSegundos_test"]) && $_POST["LSTSegundos_test"] != "") ? $_POST["LSTSegundos_test"] : "");	$cEntidad->setBusqueda(constant("STR_SEGUNDOS_TEST"), (isset($_POST["LSTSegundos_test"]) && $_POST["LSTSegundos_test"] != "" ) ? $_POST["LSTSegundos_test"] : "");
 		$cEntidad->setFecAlta((isset($_POST["LSTFecAlta"]) && $_POST["LSTFecAlta"] != "") ? $_POST["LSTFecAlta"] : "");	$cEntidad->setBusqueda(constant("STR_FECHA_DE_ALTA"), (isset($_POST["LSTFecAlta"]) && $_POST["LSTFecAlta"] != "" ) ? $conn->UserDate($_POST["LSTFecAlta"],constant("USR_FECHA"),false) : "");
 		$cEntidad->setFecAltaHast((isset($_POST["LSTFecAltaHast"]) && $_POST["LSTFecAltaHast"] != "") ? $_POST["LSTFecAltaHast"] : "");	$cEntidad->setBusqueda(constant("STR_FECHA_DE_ALTA") . " " . constant("STR_HASTA"), (isset($_POST["LSTFecAltaHast"]) && $_POST["LSTFecAltaHast"] != "" ) ? $conn->UserDate($_POST["LSTFecAltaHast"],constant("USR_FECHA"),false) : "");
 		$cEntidad->setFecMod((isset($_POST["LSTFecMod"]) && $_POST["LSTFecMod"] != "") ? $_POST["LSTFecMod"] : "");	$cEntidad->setBusqueda(constant("STR_FECHA_DE_MODIFICACION"), (isset($_POST["LSTFecMod"]) && $_POST["LSTFecMod"] != "" ) ? $conn->UserDate($_POST["LSTFecMod"],constant("USR_FECHA"),false) : "");

@@ -363,6 +363,21 @@ class Export_personalidad
 		$this->idPrueba = $sCadena;
 	}
 	/**
+	* Devuelve el contenido de la propiedad idPrueba
+	* @return int(11)
+	*/
+	function getIdTipoInforme(){
+		return $this->idTipoInforme;
+	}
+	/**
+	* Fija el contenido de la propiedad idPrueba
+	* @param idPrueba
+	* @return void
+	*/
+	function setIdTipoInforme($sCadena){
+		$this->idTipoInforme = $sCadena;
+	}
+	/**
 	* Devuelve el contenido de la propiedad idPruebaHast
 	* @return int(11)
 	*/

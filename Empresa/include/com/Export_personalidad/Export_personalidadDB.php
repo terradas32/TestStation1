@@ -542,6 +542,11 @@ class Export_personalidadDB
 			$and = true;
 			$sql .="idPrueba IN (" . $cEntidad->getIdPrueba() . ")";
 		}
+		if ($cEntidad->getIdTipoInforme() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="idTipoInforme = ". $cEntidad->getIdTipoInforme() . "";
+		} 
 		if ($cEntidad->getDescPrueba() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;

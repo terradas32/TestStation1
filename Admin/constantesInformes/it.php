@@ -3,6 +3,8 @@
 define("STR_PIE_INFORMES" 												, "è un marchio registrato da Psicólogos Empresariales. La riproduzione totale o parziale di questa relazione con qualsiasi mezzo, viola i diritti d'Autore");
 define("STR_NOMBRE_APELLIDOS"											, "Nome e Cognome");
 define("STR_FECHA_INFORME"												, "Data della Relazione");
+define("STR_FECHA_INFORME_DIAN"											, "Fecha finalización");
+define("STR_IDENTIFICADOR"												, "Número de Cédula");
 define("STR_INTRODUCCION" 												, "Introduzione");
 define("STR_PUNTUACION_DIRECTA" 										, "Punteggio Diretto");
 define("STR_PUNTUACION_PERCENTIL" 										, "Punteggio Percentile ");
@@ -384,11 +386,196 @@ define("STR_PRISMA_DIRIGIR_A_OTROS_DEF"									, "Funciones y/o puestos que req
 define("STR_PRISMA_INDICADORES_DE_AJUSTE_A_LAS_COMPETENCIAS"			, "INDICADORES DE AJUSTE A LAS COMPETENCIAS");
 define("STR_PRISMA_DEFINICION_DE_LAS_COMPETENCIAS"						, "DEFINICIÓN DE LAS COMPETENCIAS");
 define("STR_PRISMA_NOMBRE_INFORME_TXT"									, "Perfil de<br /><strong>personalidad<br />laboral</strong>");
+define("STR_PRISMA_NOMBRE_INFORME_NARRATIVO_TXT"						, "Informe Narrativo Experto");
+define("PRISMA_NARRATIVO_INTP1" 										, "Este informe está basado en las respuestas de el/la Sr/Sra. @usuario@ a un cuestionario de autoevaluación: el cuestionario de competencias y personalidad laboral Prisma. Este cuestionario le invita a describir su comportamiento, preferencias y actitudes en relación a distintos aspectos de su vida laboral.");
+define("PRISMA_NARRATIVO_INTP2" 										, "Durante el mismo, ha tenido que elegir la afirmación que más se ajusta, y la que menos, entre bloques de tres comportamientos posibles. Sus respuestas se han comparado con las de un grupo amplio y relevante para obtener un perfil de las preferencias percibidas de el/la Sr/Sra. @usuario@ respecto a las distintas maneras de comportarse en el trabajo, agrupadas en 4 áreas principales: Energías y motivaciones, Control Emocional y Tolerancia al Estrés, Orientación a la relación y a las personas, Estilo de pensamiento y potencial de recursos mentales.");
+define("PRISMA_NARRATIVO_INTP3" 										, "Este informe describe el perfil de personalidad de el/la Sr/Sra. @usuario@ y debe tratarse como confidencial. Al considerar los resultados del cuestionario, es importante tener en cuenta que representa su propia visión y el modo en que percibe sus propias conductas, en lugar del modo en que terceras personas podrían describir su personalidad. La precisión de este informe depende de la franqueza y sinceridad con la que se completó el cuestionario, así como de su propio autoconocimiento. Por lo tanto, los comentarios que se realicen en este informe deben considerarse como algo orientativo, fiable, aunque no infalible. Este autoinforme puede proporcionar importantes indicadores acerca del estilo propio del/de la Sr/Sra. @usuario@ en el trabajo, y es probable que nos permita predecir en gran medida su comportamiento en distintas situaciones.");
+define("PRISMA_NARRATIVO_INTP4" 										, "Tenga en cuenta que el cuestionario describe el estilo de conducta que prefiere el/la Sr/Sra. @usuario@, pero no sus capacidades. El cuestionario aporta una descripción amplia de su estilo actual y, por lo tanto, el informe es necesariamente general. La vida útil de los datos contenidos en el informe se considera que está entre 18 y 24 meses, en función de las circunstancias personales y el puesto de trabajo. Si se han producido cambios significativos en su vida o si existe un cambio significativo en el puesto, debería volver a completar el cuestionario.");
+define("PRISMA_NARRATIVO_INTP5" 										, "Si le preocupa algo con relación al contenido de este informe, diríjase a alguien que haya recibido una formación completa en el uso del cuestionario Prisma.");
+define("STR_ESTILO_ORENTACION_NARR_PRISMA" 								, "ESTILO DE ORIENTACIÓN A LA RELACIÓN Y A LAS PERSONAS");
+define("STR_ESTILO_PENSAMIENTO_NARR_PRISMA" 							, "ESTILO DE PENSAMIENTO Y RECURSOS MENTALES");
+define("STR_NUM_PREGUNTAS_ERRONEAS" 									, "Número de preguntas erróneas");
+define("STR_NUM_PREGUNTAS_BLANCO" 										, "Número de preguntas en blanco");
+define("STR_VOCABULARIO"		 										, "VOCABULARIO");
+define("STR_NUMERO_TOTAL_DE_PREGUNTAS_REFERENTES_AL_VOCABULARIO"		, "Número total de preguntas referentes al vocabulario");
+define("STR_GRAMATICA"													, "GRAMÁTICA");
+define("STR_NUMERO_TOTAL_DE_PREGUNTAS_REFERENTES_A_GRAMATICA"			, "Número total de preguntas referentes a gramática");
+define("STR_COMPRENSION"		 										, "COMPRENSIÓN");
+define("STR_NUMERO_TOTAL_DE_PREGUNTAS_REFERENTES_A_COMPRENSION_ESCRITA"			, "Número total de preguntas referentes a comprensión escrita");
+define("STR_NUMERO_TOTAL_DE_PREGUNTAS_REFERENTES_A_COMPRENSION_HABLADA"			, "Número total de preguntas referentes a comprensión hablada");
+define("STR_NUMERO_TOTAL_DE_PREGUNTAS_REFERENTES_A_COMPRENSION"			, "Número total de preguntas referentes a comprensión");
+define("STR_PRISMA_ESCALAS_DIFERENCIALES"								, "ESCALAS DIFERENCIALES");
+define("STR_CIP_NOMBRE_INFORME_TXT"									, "<strong>Inventario de<br />Orientación<br />Profesional CIP</strong>");
+define("STR_CIP_BIENVENIDO_INFORME_ORIENTACION_PROFESIONAL_TXT"									, "Bienvenido/a  al Informe de Orientación Profesional");
+define("STR_CIP_INTRO_P1"						, "Este informe ha sido elaborado a partir de las respuestas y ejercicios realizados por @candidato_prueba@.<br /><br />El objetivo esencial de este informe es apoyar el proceso de orientación para @candidato_prueba@ sobre las profesiones y/o carreras profesionales en las que ha demostrado especial interés y/o preferencia a lo largo de las respuestas dadas en el cuestionario CIP, y ayudarle a conocer mejor las capacidades que podrían favorecer el éxito en su elección o que, por el contrario, podrían implicarle algún grado de dificultad.");
+define("STR_SOP_NOMBRE_INFORME_TXT"									, "<strong><font size='+2'>SOP</font> - Sistema de Orientación Profesional</strong>");
+define("STR_SOP_BIENVENIDO_INFORME_ORIENTACION_PROFESIONAL_TXT"									, "INFORME DE:");
+define("STR_SOP_INTRO_P1"						, "Este informe ha sido elaborado a partir de las respuestas y ejercicios realizados por @candidato_prueba@.<br /><br />El objetivo esencial de este informe es apoyar el proceso de orientación para @candidato_prueba@ sobre las profesiones y/o carreras profesionales en las que ha demostrado especial interés y/o preferencia a lo largo de las respuestas dadas en el cuestionario SOP, y ayudarle a conocer mejor las capacidades que podrían favorecer el éxito en su elección o que, por el contrario, podrían implicarle algún grado de dificultad.");
+define("STR_CONTENIDO_DEL_INFORME"						, "Contenidos del informe");
+define("STR_APARTADO_1"						, "Apartado 1: ÁREAS PROFESIONALES PREFERENTES");
+define("STR_CIP_INTRO_P2"						, "En la primera parte del informe, se representa el gráfico que identifica el grado de interés (en porcentaje) que ha mostrado la persona hacia los campos profesionales y/o carreras profesionales generales asociadas que se han valorado.<br /><br />Este gráfico se acompaña de una breve síntesis escrita  identificando, según los datos cuantitativos obtenidos, las carreras y/o actividades que serían prioritarias y más motivantes para @candidato_prueba@.");
+define("STR_SOP_INTRO_P2"						, "En la primera parte del informe, se representa el gráfico que identifica el grado de interés (en porcentaje) que ha mostrado la persona hacia los campos profesionales y/o carreras profesionales generales asociadas que se han valorado.<br /><br />Este gráfico se acompaña de una breve síntesis escrita  identificando, según los datos cuantitativos obtenidos, las carreras y/o actividades que serían prioritarias y más motivantes para @candidato_prueba@.");
+define("STR_APARTADO_2"						, "Apartado 2: ÁREA APTITUDES");
+define("STR_CIP_INTRO_P3"						, "En este apartado, aparecen representadas las puntuaciones obtenidas en los test de aptitudes realizados por el/la estudiante (rendimiento en la prueba) en una escala de percentiles. Esta puntuación final representa el percentil obtenido (representado  de 0 a 100) o lo que es lo mismo, la comparativa de los resultados obtenidos con una muestra significativa de estudiantes de similar edad y características académicas.");
+define("STR_SOP_INTRO_P3"						, "En este apartado, aparecen representadas las puntuaciones obtenidas en los test de aptitudes realizados por el/la estudiante (rendimiento en la prueba) en una escala de percentiles. Esta puntuación final representa el percentil obtenido (representado  de 0 a 100) o lo que es lo mismo, la comparativa de los resultados obtenidos con una muestra significativa de estudiantes de similar edad y características académicas.");
+define("STR_APARTADO_3"						, "Apartado 3: ORIENTACIÓN PROFESIONAL");
+define("STR_CIP_INTRO_P4"						, "En este apartado se integra la información relativa a las carreras o actividades asociadas a las capacidades en las que @candidato_prueba@ ha demostrado tener especial fortaleza y aquellas que, por el rendimiento obtenido, podrían indicar algún tipo de dificultad.<br /><br />La motivación por un ámbito concreto de actividad profesional constituye un elemento esencial para el éxito posterior. Sin embargo, el que la persona cuente con determinadas capacidades o aptitudes, favorece e incrementa las posibilidades de rápida asimilación y aprendizaje de conceptos y/o habilidades asociadas a las carreras y profesiones en las que querría trabajar a futuro.<br /><br />La integración entre ambos aspectos permite una visión muy rica para poder tomar decisiones adecuadas.  Por ello, el informe nos aporta una interpretación cualitativa que asocia ambos parámetros (Interés + Capacidad) para conocer con mayor exactitud las potencialidades de @candidato_prueba@.");
+define("STR_SOP_INTRO_P4"						, "En este apartado se integra la información relativa a las carreras o actividades asociadas a las capacidades en las que @candidato_prueba@ ha demostrado tener especial fortaleza y aquellas que, por el rendimiento obtenido, podrían indicar algún tipo de dificultad.<br /><br />La motivación por un ámbito concreto de actividad profesional constituye un elemento esencial para el éxito posterior. Sin embargo, el que la persona cuente con determinadas capacidades o aptitudes, favorece e incrementa las posibilidades de rápida asimilación y aprendizaje de conceptos y/o habilidades asociadas a las carreras y profesiones en las que querría trabajar a futuro.<br /><br />La integración entre ambos aspectos permite una visión muy rica para poder tomar decisiones adecuadas.  Por ello, el informe nos aporta una interpretación cualitativa que asocia ambos parámetros (Interés + Capacidad) para conocer con mayor exactitud las potencialidades de @candidato_prueba@.");
+define("STR_INTEGRACION"						, "Integración");
+define("STR_APARTADO_4"						, "Apartado 4: HABILIDADES");
+define("STR_CIP_INTRO_P5"						, "Este apartado es opcional y sólo aparecerá en el informe en caso de haber aplicado la prueba que permite su evaluación. ");
+define("STR_SOP_INTRO_P5"						, "De cara a la orientación, es importante tener siempre en cuenta que la motivación o interés (vocación) por un ámbito concreto de actividad profesional constituye un elemento esencial para el éxito posterior (1ª Parte del Informe o Gráfico de Áreas Profesionales Preferentes del SOP).<br /><br />Sin embargo, el que la persona cuente con determinadas capacidades o aptitudes, favorece e incrementa las posibilidades de rápida asimilación y aprendizaje de conceptos y/o habilidades asociadas a las carreras y profesiones en las que se deben aplicar.<br /><br />La integración entre ambos aspectos, nos puede dar una orientación muy rica para poder tomar decisiones adecuadas.  Por ello, el informe nos aporta una interpretación cualitativa que asocia ambos parámetros (Interés + Capacidad) para conocer con mayor exactitud las potencialidades de @candidato_prueba@.");
+define("STR_CIP_AREAS_PROFESIONALES_PREFERENTES_CIP", "ÁREAS PROFESIONALES PREFERENTES CIP");
+define("STR_CIP_AREAS_PROFESIONALES_PREFERENTES_CIP_TXT", "A continuación se presentan los resultados obtenidos a partir de las respuestas dadas al  cuestionario de intereses profesionales realizado:");
+define("STR_CIP_SINTESIS_DEL_PERFIL", "SÍNTESIS DEL PERFIL");
+define("STR_CIP_SINTESIS_DEL_PERFIL_P1", "A partir de las puntuaciones obtenidas, @candidato_prueba@ demuestra:");
+define("STR_CIP_SINTESIS_DEL_PERFIL_P2", "Un interés muy elevado por actividades relacionadas con:");
+define("STR_CIP_SINTESIS_DEL_PERFIL_P3", "Un interés elevado por actividades relacionadas con:");
+define("STR_CIP_SINTESIS_DEL_PERFIL_P4", "Un interés moderado por actividades relacionadas con:");
+define("STR_CIP_SINTESIS_DEL_PERFIL_P5", "Un interés bajo por actividades relacionadas con:");
+define("STR_CIP_SINTESIS_DEL_PERFIL_P6", "Poco o ningún interés por actividades relacionadas con:");
+define("STR_CIP_NINGUNA", "Ninguna");
+define("STR_CIP_AREAS_DE_APTITUDES", "ÁREAS DE APTITUDES");
+define("STR_CIP_AREAS_DE_APTITUDES_P1", "Resultados en una escala de 0 a 100 correspondientes al rendimiento obtenido en las pruebas de aptitud realizadas.  La puntuación obtenida en cada test ha sido comparada con una muestra significativa de estudiantes que han respondido también al  CIP.");
+define("STR_CIP_ORIENTACION_PROFESIONAL", "ORIENTACIÓN PROFESIONAL");
+define("STR_CIP_ORIENTACION_PROFESIONAL_P1", "A continuación, indicamos las carreras que mejor se adecuarían a los resultados obtenidos en los ejercicios de aptitudes realizados:");
+define("STR_CIP_AREA_DE_INTERES", "Área de interés");
+define("STR_CIP_AREA_DE_INTERES_RV", "<strong style=\"font-weight: bold;\">Razonamiento<br />Verbal</strong><br /><font style=\"font-size:9px;\">Análisis e intepretación<br />de información escrita y hablada.<br />Redacción escritos.<br />Actividades de<br />comunicación.</font>");
+define("STR_CIP_AREA_DE_INTERES_RN", "<strong style=\"font-weight: bold;\">Razonamiento<br />Numérico</strong><br /><font style=\"font-size:9px;\">Calcular o chequear<br />datos.<br />Realizar operaciones de cálculo.<br />Manejar cifras,<br />estadísticas, ratios.<br />Analizar financieramente.</font>");
+define("STR_CIP_AREA_DE_INTERES_RL", "<strong style=\"font-weight: bold;\">Razonamiento<br />Lógico</strong><br /><font style=\"font-size:9px;\">Crear nuevos conceptos.<br />Desarrollar nuevos<br />enfoques.<br />Responder a preguntas<br />por qué o cómo.<br />Resolución problemas<br />lógicos.</font>");
+define("STR_CIP_AREA_DE_INTERES_RE", "<strong style=\"font-weight: bold;\">Razonamiento Espacial</strong><br /><font style=\"font-size:9px;\">Representar figuras o<br />espacios mentalmente.<br />Trabajar en varios planos.<br />Rotar figuras o modelos<br />en el espacio.<br />Manejar mapas, planos<br />y/o diseños gráficos.</font>");
+define("STR_CIP_INTERPRETACION", "INTERPRETACIÓN");
+define("STR_CIP_INTERPRETACION_P1", "Dispone ya de una capacidad óptima para el desarrollo de contenidos referidos a la carrera indicada.");
+define("STR_CIP_INTERPRETACION_P2", "Dispone de potencialidad para el desarrollo	de contenidos referidos a la carrera indicada.");
+define("STR_CIP_INTERPRETACION_P3", "Podría tener algunas dificultades o requerir más esfuerzos en algunos contenidos de la carrera indicada.");
+define("STR_CIP_INTERPRETACION_P4", "No hay resultados en este test.");
+define("STR_CIP_INTERPRETACION_P5", "No es una capacidad crítica en la carrera, aunque pueda facilitar algunos aspectos complementarios.");
+define("STR_CIP_ESCALA", "Escala");
+define("STR_CIP_VERBAL", "VERBAL");
+define("STR_CIP_LOGICO", "LOGICO");
+define("STR_CIP_NUMERICO", "NUMERICO");
+define("STR_CIP_ESPACIAL", "ESPACIAL");
+
+define("STR_PRUEBAS_ADMISION_NIVEL_GRADO"						, "Pruebas Admisión Nivel Grado");
+define("STR_PRISMA_AREA_DE_FORTALEZA","ÁREA DE FORTALEZA");
+define("STR_PRISMA_SIEMPRE","SIEMPRE");
+
+define("STR_INFORME_DE_ATENCION_COMERCIAL","INFORME DE ATENCIÓN COMERCIAL");
+define("STR_BAJO_POTENCIAL_0_A_35","Bajo Potencial: 0 a 35");
+define("STR_MEDIO_POTENCIAL_36_A_70","Medio Potencial: 36 a 70");
+define("STR_ALTO_POTENCIAL_71_A_100","Alto Potencial: 71 a 100");
+define("STR_PRISMA_PERFIL_DE_COMPETENCIAS_PASCUAL"			, "PERFIL DE COMPETENCIAS");
+define("STR_PRISMA_PERFIL_DE_COMPETENCIAS_PASCUAL_INTRO_P1"	, "Este Perfil describe cómo se ha definido la persona que ha respondido al cuestionario Prisma  con respecto a los comportamientos del Cuestionario Prisma asociados a la definición de los Valores, Competencias Corporativas y Específicas de Corporación Empresarial Pascual.");
+define("STR_PRISMA_PERFIL_DE_COMPETENCIAS_PASCUAL_INTRO_P2"	, "Los resultados obtenidos en el perfil, son una puntuación global, y por tanto deben ser considerados como un indicador orientativo de los aspectos más destacados y de las áreas de desarrollo, en base a las respuestas que se han dado en el cuestionario. Para profundizar en los detalles del perfil, recomendamos acudir al informe narrativo o informe de interpretación automática que aparece a continuación.");
+define("STR_PRISMA_PERFIL_DE_COMPETENCIAS_PASCUAL_INTRO_P3"	, "Recordar que, el cuestionario al que la persona ha respondido, obliga a elegir entre 3 frases que reflejan conductas o situaciones laborales, la que mejor y peor le describe. Con este método, no puede lograr altas puntuaciones en todas las competencias.");
+define("STR_PRISMA_DEFINICION_DE_LAS_COMPETENCIAS_PASCUAL"	, "DEFINICIÓN DE LAS COMPETENCIAS Y VALORES GLP");
+
+define("STR_JN36_PERFIL_PSICOLOGICO_HUMANO_DE_JESUS_DE_NAZARET"		, "PERFIL PSICOLÓGICO-HUMANO<br />PERSONAL E INDIVIDUALIZADO");
+define("STR_JN36_BAJO"												, "Bajo");
+define("STR_JN36_ME_BA"												, "Me.-Ba.");
+define("STR_JN36_MEDIO"												, "Medio");
+define("STR_JN36_ME_AL"												, "Me.-Al.");
+define("STR_JN36_ALTO"												, "Alto");
+define("STR_JN36_TU_PERFIL"											, "Tu Perfil");
+define("STR_JN36_PUNTOS"											, "puntos");
+define("STR_JN36_ZONA_BAJA"											, "ZONA BAJA");
+define("STR_JN36_ZONA_MEDIA_BAJA"									, "ZONA MEDIA BAJA");
+define("STR_JN36_ZONA_MEDIA"										, "ZONA MEDIA");
+define("STR_JN36_ZONA_MEDIA_ALTA"									, "ZONA MEDIA ALTA");
+define("STR_JN36_ZONA_ALTA"											, "ZONA ALTA");
+define("STR_JN36_COLOR_AZUL"										, "COLOR AZUL");
+define("STR_JN36_COLOR_AMARILLO"									, "COLOR AMARILLO");
+define("STR_JN36_COLOR_VERDE"										, "COLOR VERDE");
+define("STR_JN36_COLOR_NARANJA"										, "COLOR NARANJA");
+define("STR_JN36_COLOR_ROSA"										, "COLOR ROSA");
+define("STR_JN36_INFORME_PERSONAL_E_INDIVIDUALIZADO"				, "INFORME PERSONAL E INDIVIDUALIZADO");
+define("STR_JN36_PIE_INFORMES" 										, "es una marca registrada. La reproducción total o parcial de este Informe por cualquier medio, infringe los derechos de Copyright.");
+define("STR_JN36_O_MAS" 											, " o más");
+
+define("STR_INFORME_DE_ORIENTACION_COMERCIAL" 											, "INFORME DE ORIENTACIÓN COMERCIAL");
+define("STR_TOC_INFORME_EXPERTO" 											, "TOC INFORME EXPERTO");
+define("GRAFICO_DEL_PERFIL_COMPETENCIAL" 											, "GRÁFICO DEL PERFIL COMPETENCIAL");
+define("STR_NIVEL_DE_COMPETENCIAS_PRIORITARIAS" 											, "Nivel de competencias prioritarias");
+define("STR_NIVEL_DE_TOLERANCIA_AL_ESTRES" 											, "Nivel de tolerancia al estrés");
+define("STR_NIVEL_DE_COMPETENCIAS_SECUNDARIAS" 											, "Nivel de competencias secundarias");
+
+define("STR_ORIENTACION_AL_CLIENTE" 											, "Orientación al Cliente");
+define("STR_ORIENTACION_A_RESULTADOS" 											, "Orientación a Resultados");
+define("STR_COMUNICACION_PERSUASIVA" 											, "Comunicación Persuasiva");
+define("STR_DESARROLLO_DE_RELACIONES" 											, "Desarrollo de Relaciones	");
+define("STR_TOMA_DE_DECISIONES" 											, "Toma de Decisiones");
+define("STR_TOLERANCIA_AL_ESTRES" 											, "Tolerancia al Estrés");
+define("STR_ORIENTACION_A_LA_CALIDAD" 											, "Orientación a la Calidad");
+define("STR_PLANIFICACION_ORGANIZACION" 											, "Planificación / Organización");
+define("STR_ESPECIALIZACION" 											, "Especialización");
+define("STR_ANALISIS_Y_SOLUCION_DE_PROBLEMAS" 											, "Análisis y Solución de Problemas");
+
+define("STR_NIVEL_BAJO" 								, "Nivel Bajo");
+define("STR_NIVEL_MEDIO" 								, "Nivel Medio");
+define("STR_NIVEL_ALTO" 								, "Nivel Alto");
+
+define("STR_CML_INFORME_DE_MOTIVACIONES_LABORALES" 								, "INFORME DE MOTIVACIONES LABORALES");
+define("STR_CML_PERFIL_DE_MOTIVACIONES" 								, "PERFIL DE MOTIVACIONES");
+define("STR_CML_COMENTARIOS" 								, "COMENTARIOS");
+
+define("STR_SEAS_TEST_CONOCIMIENTOS_P1" 											, "Estas puntuaciones están basadas en las respuestas dadas por el/la candidato/a a una serie de preguntas relacionadas con aspectos técnicos del trabajo de Asesor según la especialidad a la que está optando. No obstante, este resultado sólo es información complementaria al resto de datos contemplados en este informe.");
+define("STR_SEAS_TEST_CONOCIMIENTOS_P2" 											, "Las barras indican la autovaloración que el/la candidato/a hace de su nivel de conocimientos en comparación con la puntuación real obtenida tras contestar al Test.");
+define("STR_SEAS_TEST_MEMORIA_P1" 											, "Esta prueba tiene como objetivo evaluar la capacidad del candidato/a para memorizar datos relacionados con los clientes, de su vida personal, profesional, datos relacionados con vehículos adquiridos, averías que ha tenido, etc. Los análisis previos del perfil de un Asesor demuestran que son datos utilizados frecuentemente por los asesores en su relación con los clientes, y que correlacionan positivamente con desempeños de éxito.");
+define("STR_SEAS_TEST_MEMORIA_P2" 											, "No obstante, este resultado sólo es información complementaria al resto de datos contemplados en este informe.");
+define("STR_SEAS_TEST_FLEXIBILIDAD_MENTAL_P1"								, "Esta prueba mide la capacidad de una persona para modificar el enfoque, encontrar alternativas variadas a la hora de resolver problemas y la flexibilidad de comportamiento para la adaptación a cambios de situación. Es un test de dificultad y valor de predicción probado para puestos que impliquen variedad de tareas y necesidad de dar respuesta a imprevistos continuos.");
+
+define("STR_PRISMA_PERFIL_DE_COMPETENCIAS_105"			, "Perfil de Competencias");
+define("STR_PRISMA_PERFIL_DE_COMPETENCIAS_128"			, "Perfil de Competencias");
+define("STR_PRISMA_SINTESIS_DEL_PERFIL_DE_COMPETENCIAS_105"			, "PERFIL DE COMPETENCIAS");
+define("STR_PRISMA_SINTESIS_DEL_PERFIL_DE_COMPETENCIAS_105_INTRO_P1"	, "Este Perfil describe cómo se ha definido la persona que ha respondido al cuestionario Prisma con respecto a los comportamientos del Cuestionario Prisma asociados a la definición de las Competencias de Banco Hipotecario.");
+define("STR_PRISMA_SINTESIS_DEL_PERFIL_DE_COMPETENCIAS_105_INTRO_P2"	, "Los resultados obtenidos en el perfil son una puntuación global, y por tanto deben ser considerados como un indicador orientativo de los aspectos más destacados y de las áreas de desarrollo, en base a las respuestas que se han dado en el cuestionario.");
+define("STR_PRISMA_SINTESIS_DEL_PERFIL_DE_COMPETENCIAS_105_INTRO_P3"	, "El cuestionario Prisma obliga a la persona que lo responde a elegir entre 3 frases que reflejan conductas o situaciones laborales, la que mejor y peor le describe. Con este método, no se puede lograr altas puntuaciones en todas las competencias.");
+
+define("STR_105_AREA_CLAVE_DE_MEJORA_BR"								, "Aún no<br /> desarrollado");
+define("STR_105_AREA_DE_POTENCIAL_DESARROLLO"						, "Necesita<br /> mejorar");
+define("STR_105_AREA_DE_DESARROLLO_2BR"								, "Alcanza lo <br />esperado");
+define("STR_105_AREA_DE_POTENCIAL_FORTALEZA"							, "Supera lo <br /> esperado");
+define("STR_105_AREA_DE_FORTALEZA_2BR"								, "Ejemplo a <br />seguir e <br /> influyente");
+
+define("STR_105_AREA_CLAVE_DE_MEJORA"								, "ÁREA CLAVE DE MEJORA");
+define("STR_105_AREA_POTENCIAL_DESARROLLO"							, "ÁREA POTENCIAL DESARROLLO");
+define("STR_105_AREA_EN_DESARROLLO"									, "ÁREA EN DESARROLLO");
+define("STR_105_AREA_POTENCIAL_FORTALEZA"							, "ÁREA POTENCIAL FORTALEZA");
+define("STR_105_AREA_DE_FORTALEZA"									, "ÁREA DE FORTALEZA");
+
 define("STR_105_DETALLE DIMENSIONES_COMPETENCIAS"					, "DETALLE DIMENSIONES POR CADA UNA DE LAS COMPETENCIAS");
 define("STR_105_INFORME_ORIENTADO_A_COMPETENCIAS_INTRO_P1"			, "A continuación, se muestra el detalle de las puntuaciones obtenidas en cada una de las dimensiones que componen a su vez las Competencias de Banco Hipotecario.");
+
+define("STR_128_DETALLE DIMENSIONES_COMPETENCIAS"					, "DETALLE DIMENSIONES POR CADA UNA DE LAS COMPETENCIAS");
+define("STR_128_INFORME_ORIENTADO_A_COMPETENCIAS_INTRO_P1"			, "A continuación, se muestra el detalle de las puntuaciones obtenidas en cada una de las dimensiones que componen a su vez las Competencias de Asitur.");
+
 
 define("STR_PRISMA_SINTESIS_DEL_PERFIL_DE_COMPETENCIAS_106_INTRO_P1"	, "Este Perfil describe cómo se ha definido la persona que ha respondido al cuestionario CEL16 con respecto a los comportamientos del CEL16 asociados a la definición de las Competencias de Banco Hipotecario.");
 define("STR_PRISMA_SINTESIS_DEL_PERFIL_DE_COMPETENCIAS_106_INTRO_P2"	, "Los resultados obtenidos en el perfil son una puntuación global, y por tanto deben ser considerados como un indicador orientativo de los aspectos más destacados y de las áreas de desarrollo, en base a las respuestas que se han dado en el cuestionario.");
 define("STR_PRISMA_SINTESIS_DEL_PERFIL_DE_COMPETENCIAS_106_INTRO_P3"	, "El cuestionario CEL16 obliga a la persona que lo responde a elegir entre 3 frases que reflejan conductas o situaciones laborales, la que mejor y peor le describe. Con este método, no se puede lograr altas puntuaciones en todas las competencias.");
+
+define("STR_PRISMA_SINTESIS_DEL_PERFIL_DE_COMPETENCIAS_128"			, "PERFIL DE COMPETENCIAS");
+define("STR_PRISMA_SINTESIS_DEL_PERFIL_DE_COMPETENCIAS_128_INTRO_P1"	, "Este Perfil describe cómo se ha definido la persona que ha respondido al cuestionario CEL16 con respecto a los comportamientos del CEL16 asociados a la definición de las Competencias de Asitur.");
+define("STR_PRISMA_SINTESIS_DEL_PERFIL_DE_COMPETENCIAS_128_INTRO_P2"	, "Los resultados obtenidos en el perfil son una puntuación global, y por tanto deben ser considerados como un indicador orientativo de los aspectos más destacados y de las áreas de desarrollo, en base a las respuestas que se han dado en el cuestionario.");
+define("STR_PRISMA_SINTESIS_DEL_PERFIL_DE_COMPETENCIAS_128_INTRO_P3"	, "El cuestionario CEL16 obliga a la persona que lo responde a elegir entre 3 frases que reflejan conductas o situaciones laborales, la que mejor y peor le describe. Con este método, no se puede lograr altas puntuaciones en todas las competencias.");
+
+define("STR_DEF_CANDIDATO"                         , "Participante");
+define("STR_PD"                         , "PD");
+define("STR_PC"                         , "PT");
+define("STR_COMPRENSION_ESCRITA"                         , "COMPRENSIÓN ESCRITA");
+define("STR_COMPRENSION_HABLADA"                         , "COMPRENSIÓN HABLADA");
+define("STR_RESULTADOS_ELT_ESCRITO"                         , "Resultados ELT Advanced (incluye Vocabulario, Gramática y Compresión Escrita)");
+define("STR_RESULTADOS_ELT_HABLADA"                         , "Resultados ELT Advanced (incluye Compresión Hablada)");
+define("STR_SR_A"                         , "Sr/a");
+
+define("STR_BIP_INTRO_P1" 											, "Este Perfil describe cómo se ha definido la persona que ha respondido al cuestionario Prisma con respecto a los comportamientos del cuestionario asociados a la definición de las Competencias de las Fuerzas Militares de Colombia.");
+define("STR_BIP_INTRO_P2" 											, "Los resultados obtenidos en el perfil son una puntuación global, y por tanto deben ser considerados como un indicador orientativo de los aspectos más destacados y de las áreas de desarrollo, en base a las respuestas que se han dado en el cuestionario.");
+define("STR_BIP_INTRO_P3" 											, "El Cuestionario Prisma obliga a la persona a elegir entre 3 frases, cuál es la que mejor y la que peor describe su manera de ser o de actuar.");
+define("STR_BIP_INTRO_P4" 											, "El Perfil General tiene 16 escalas. Estas escalas se agrupan en 9 factores que corresponden a 4 grandes áreas de la personalidad laboral:");
+define("STR_BIP_INTRO_P5" 											, "- ENERGÍAS Y MOTIVACIONES.");
+define("STR_BIP_INTRO_P6" 											, "- CONTROL EMOCIONAL Y TOLERANCIA AL ESTRÉS.");
+define("STR_BIP_INTRO_P7" 											, "- ESTILOS DE RELACIÓN (Orientación a la relación, a las personas e Influencia, ascendencia y mando).");
+define("STR_BIP_INTRO_P8" 											, "- ESTILOS DE PROCESAMIENTO MENTAL (Competencias analíticas, Potencial de Recursos Mentales, Flexibilidad y Estilo de Trabajo).");
+define("STR_BIP_INTRO_P9" 											, "");
 
 ?>

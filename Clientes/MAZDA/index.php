@@ -23,19 +23,29 @@ $cEntidadIdiomas	= new Idiomas();  // Entidad
 $cEntidadIdiomas->setActivoBack(1);
 $sqlIdiomas = $cEntidadIdiomasDB->readLista($cEntidadIdiomas);
 $listaIdiomas = $conn->Execute($sqlIdiomas);
+
+$nonce = bin2hex(random_bytes(16));
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $sLang;?>" xml:lang="<?php echo $sLang;?>">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="WIZARD, WI2.2 www.azulpomodoro.com" />
+		<!-- <meta http-equiv="Content-Security-Policy" content="
+			style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; 
+			font-src 'self' data: https://fonts.gstatic.com; 
+			img-src 'self' https://maps.gstatic.com;
+			default-src 'self' https://test-station.com/codigo/jQuery1.4.2.js;
+			script-src 'self' https://test-station.com/codigo/jQuery1.4.2.js 'nonce-<?php echo $nonce; ?>' 'unsafe-inline';
+		"> -->
 <?php include('include/metatags.php');?>
 	<link rel="shortcut icon" href="favicon.ico" />
-	<link media="screen" type="text/css" href="<?php echo constant("HTTP_SERVER");?>estilos/jquery.bxslider.css" rel="stylesheet" />
+	<link media="screen" type="text/css" href="<?php echo constant("HTTPS_SERVER");?>estilos/jquery.bxslider.css" rel="stylesheet" />
 	<link rel="stylesheet" href="estilos/estilos-comunes.css" type="text/css" />
 	<script type="text/javascript" src="codigo/jQuery1.4.2.js"></script>
 	<script type="text/javascript" src="codigo/jquery.tools.min.js"></script>
-	<script type="text/javascript" src="<?php echo constant("HTTP_SERVER");?>codigo/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript" src="<?php echo constant("HTTPS_SERVER");?>codigo/jquery-1.11.0.min.js"></script>
 	<?php include_once('include/codigos.php');?>
 	<?php include_once 'include/codigosHome.php';?>
 <!--[if lte IE 7]>
@@ -45,7 +55,7 @@ $listaIdiomas = $conn->Execute($sqlIdiomas);
 //<![CDATA[
 function cambiaIdioma(){
 	var f=document.forms[0];
-	location.replace("<?php echo constant("HTTP_SERVER") ;?>?fLang=" + f.fIdiomas.value);
+	location.replace("<?php echo constant("HTTPS_SERVER") ;?>?fLang=" + f.fIdiomas.value);
 }
 //]]>
 </script>
@@ -55,7 +65,10 @@ function cambiaIdioma(){
 <div id="pagina">
     <div id="head" class="portada">
         <div class="logo">
-            <a href="http://www.people-experts.com/" target="_blank" title="<?php echo constant("STR_INICIO");?>"><img src="graf/logo.jpg" alt="<?php echo constant("NOMBRE_EMPRESA");?> <?php echo constant("STR_INICIO");?>" title="<?php echo constant("NOMBRE_EMPRESA");?> <?php echo constant("STR_INICIO");?>" /></a>
+            <a href="http://www.people-experts.com/" target="_blank" title="<?php echo constant("STR_INICIO");?>">
+				<!-- <img src="graf/logo.jpg" alt="<?php echo constant("NOMBRE_EMPRESA");?> <?php echo constant("STR_INICIO");?>" title="<?php echo constant("NOMBRE_EMPRESA");?> <?php echo constant("STR_INICIO");?>" /> -->
+				<img src="https://test-station.com/Admin/graf/logo.jpg" alt="<?php echo constant("NOMBRE_EMPRESA");?> <?php echo constant("STR_INICIO");?>" title="<?php echo constant("NOMBRE_EMPRESA");?> <?php echo constant("STR_INICIO");?>" />
+            </a>
         </div><!-- Fin de logo -->
         <div id="banderas">
 <!--             <ul class="band_portada"> -->
@@ -77,7 +90,7 @@ function cambiaIdioma(){
 
     </div><!-- Fin de la cabecera -->
     <div class="cargaSlider">
-				<p style="text-align: center;"><img alt="Cargando" src="<?php echo constant('HTTP_SERVER')?>estilos/images/ajax-loader.png" /></p>
+				<p style="text-align: center;"><img alt="Cargando" src="<?php echo constant('HTTPS_SERVER')?>estilos/images/ajax-loader.png" /></p>
 				<script type="text/javascript">
 					$(function(){
 						cargaSlider();
@@ -87,9 +100,9 @@ function cambiaIdioma(){
     <div id="cuerpo">
         <div id="accesos">
             <ul id="lista_accesos">
-                <li class="candidatos"><a href="<?php echo constant("HTTP_SERVER");?>Candidato/?fLang=<?php echo $sLang;?>" title="<?php echo constant("STR_CANDIDATO") ;?>"><?php echo constant("STR_CANDIDATO") ;?></a></li>
-                <li class="empresa"><a href="<?php echo constant("HTTP_SERVER");?>Empresa/?fLang=<?php echo $sLang;?>" title="<?php echo constant("STR_EMPRESA");?>"><?php echo constant("STR_EMPRESA") ;?></a></li>
-<!--            <li class="administracion"><a href="<?php echo constant("HTTP_SERVER");?>Admin/?fLang=<?php echo $sLang;?>" title="<?php echo constant("STR_ADMINISTRACION") ;?>"><?php echo constant("STR_ADMINISTRACION") ;?></a></li> -->
+                <li class="candidatos"><a href="<?php echo constant("HTTPS_SERVER");?>Candidato/?fLang=<?php echo $sLang;?>" title="<?php echo constant("STR_CANDIDATO") ;?>"><?php echo constant("STR_CANDIDATO") ;?></a></li>
+                <li class="empresa"><a href="<?php echo constant("HTTPS_SERVER");?>Empresa/?fLang=<?php echo $sLang;?>" title="<?php echo constant("STR_EMPRESA");?>"><?php echo constant("STR_EMPRESA") ;?></a></li>
+<!--            <li class="administracion"><a href="<?php echo constant("HTTPS_SERVER");?>Admin/?fLang=<?php echo $sLang;?>" title="<?php echo constant("STR_ADMINISTRACION") ;?>"><?php echo constant("STR_ADMINISTRACION") ;?></a></li> -->
             </ul>
         </div><!-- Fin de accesos -->
     </div><!-- Fin de cuerpo -->
@@ -99,9 +112,8 @@ function cambiaIdioma(){
     </div>
  -->
     <div id="pie">
-        <p class="dweb"><a href="http://www.azulpomodoro.com" target="_blank" title="<?php echo constant("STR_DISENO_DESARROLLO");?>"><?php echo constant("STR_DISENO_DESARROLLO");?></a></p>
-        <p class="copy dweb"><a href="http://www.people-experts.com" target="_blank" title="Expertos en personas"><?php echo constant("NOMBRE_EMPRESA");?></a> - <?php echo constant("STR_DERECHOS_RESERVADOS");?></p>
-        <p class="copy dweb"><a href="<?php echo constant("HTTP_SERVER")?>legal.html" target="_blank" title="<?php echo constant("STR_AVISO_LEGAL");?>"><?php echo constant("STR_AVISO_LEGAL");?></a></p>
+        <!-- <p class="dweb"><a href="http://www.azulpomodoro.com" target="_blank" title="<?php echo constant("STR_DISENO_DESARROLLO");?>"><?php echo constant("STR_DISENO_DESARROLLO");?></a></p>
+         --><p class="copy dweb"><a href="http://www.people-experts.com" target="_blank" title="Expertos en personas"><?php echo constant("NOMBRE_EMPRESA");?></a> - <?php echo constant("STR_DERECHOS_RESERVADOS");?></p>
     </div><!-- Fin de pie -->
 </div><!-- Fin de la pagina -->
 <input type="hidden" name="fLang" value="<?php echo $sLang;?>" />

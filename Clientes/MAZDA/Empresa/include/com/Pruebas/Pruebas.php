@@ -226,7 +226,7 @@ class Pruebas
 	* @return varchar(255)
 	*/
 	function getDuracion(){
-		return $this->duracion;
+		return $this->duracion == "" ? 0 : $this->duracion;
 	}
 	/**
 	* Fija el contenido de la propiedad duracion
@@ -235,6 +235,21 @@ class Pruebas
 	*/
 	function setDuracion($sCadena){
 		$this->duracion = $sCadena;
+	}
+	/**
+	* Devuelve el contenido de la propiedad duracion2
+	* @return varchar(255)
+	*/
+	function getDuracion2(){
+		return $this->duracion2 == "" ? 0 : $this->duracion2;
+	}
+	/**
+	* Fija el contenido de la propiedad duracion
+	* @param duracion2
+	* @return void
+	*/
+	function setDuracion2($sCadena){
+		$this->duracion2 = $sCadena;
 	}
 	/**
 	* Devuelve el contenido de la propiedad logoPrueba

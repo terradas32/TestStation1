@@ -303,7 +303,7 @@ class Pruebas
 	* @return varchar(255)
 	*/
 	function getDuracion(){
-		return $this->duracion;
+		return $this->duracion == "" ? 0 : $this->duracion;
 	}
 	/**
 	* Fija el contenido de la propiedad duracion
@@ -318,7 +318,7 @@ class Pruebas
 	* @return varchar(255)
 	*/
 	function getDuracion2(){
-		return $this->duracion2;
+		return $this->duracion2 == "" ? 0 : $this->duracion2;
 	}
 	/**
 	* Fija el contenido de la propiedad duracion

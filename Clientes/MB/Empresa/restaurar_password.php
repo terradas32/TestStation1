@@ -135,8 +135,8 @@ if (isset($_GET['sTK']))
         </div><!-- Fin de accesos -->
     </div><!-- Fin de cuerpo -->
     <div id="pie">
-        <p class="dweb"><a href="http://www.azulpomodoro.com" title="Diseño Web"><?php echo constant("STR_DISENO_DESARROLLO");?></a></p>
-        <p class="copy"><?php echo constant("NOMBRE_EMPRESA");?> - <?php echo constant("STR_DERECHOS_RESERVADOS");?></p>
+        <!-- <p class="dweb"><a href="http://www.azulpomodoro.com" title="Diseño Web"><?php echo constant("STR_DISENO_DESARROLLO");?></a></p>
+         --><p class="copy"><?php echo constant("NOMBRE_EMPRESA");?> - <?php echo constant("STR_DERECHOS_RESERVADOS");?></p>
     </div><!-- Fin de pie -->
 </div><!-- Fin de la pagina -->
 <script type="text/javascript">// Script para Autocompletar "off" y que valide con la W3C
@@ -176,7 +176,7 @@ if (isset($_GET['sTK']))
 			$mail->SMTPAuth   = true;                               //Enable SMTP authentication
 			$mail->Username = constant("MAILUSERNAME");             //SMTP username
 			$mail->Password = constant("MAILPASSWORD");             //SMTP password
-			$mail->SMTPSecure = 'tls';							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+			$mail->SMTPSecure = constant("MAIL_ENCRYPTION");							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
 			$mail->Port      = constant("PORTMAIL");                                //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
 
@@ -186,7 +186,7 @@ if (isset($_GET['sTK']))
 
 			//Con la propiedad Mailer le indicamos que vamos a usar un
 			//servidor smtp
-			$mail->Mailer = $mail->Mailer = constant("MAILER");;
+			$mail->Mailer = constant("MAILER");
 
 			//Asignamos a Host el nombre de nuestro servidor smtp
 			$mail->Host = constant("HOSTMAIL");
@@ -202,14 +202,15 @@ if (isset($_GET['sTK']))
 			//queremos que vea el usuario que lee nuestro correo
 
 			//$mail->From = $cFROM->getMail();
-			$mail->From = constant("MAILUSERNAME");
+			$mail->From = constant("EMAIL_CONTACTO");
 			$mail->AddReplyTo($cFROM->getMail(), $cFROM->getNombre());
 			$mail->FromName = $cFROM->getNombre();
+				$nomEmpresa = $cFROM->getNombre();
 
 			//Asignamos asunto y cuerpo del mensaje
 			//El cuerpo del mensaje lo ponemos en formato html, haciendo
 			//que se vea en negrita
-			$mail->Subject = $sSubject;
+			$mail->Subject = $nomEmpresa . " - " . $sSubject;
 			$mail->Body = $sBody;
 
 			//Definimos AltBody por si el destinatario del correo no admite

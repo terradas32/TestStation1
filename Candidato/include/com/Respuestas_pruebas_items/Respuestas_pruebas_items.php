@@ -41,6 +41,8 @@ class Respuestas_pruebas_items
 		var $orden;
 		var $ordenHast;
 		var $valor;
+		var $id_tri;
+		var $index_tri;
 		var $fecAlta;
 		var $fecAltaHast;
 		var $fecMod;
@@ -81,6 +83,8 @@ class Respuestas_pruebas_items
 		$this->orden			= "";
 		$this->ordenHast			= "";
 		$this->valor			= "";
+		$this->id_tri			= "";
+		$this->index_tri			= "";
 		$this->fecAlta			= "";
 		$this->fecAltaHast			= "";
 		$this->fecMod			= "";
@@ -457,7 +461,39 @@ class Respuestas_pruebas_items
 	function setValor($sCadena){
 		$this->valor = $sCadena;
 	}
+
+	/**
+	* Devuelve el contenido de la propiedad id_tri
+	* @return varchar
+	*/
+	function getId_tri(){
+		return $this->id_tri;
+	}
+	/**
+	* Fija el contenido de la propiedad id_tri
+	* @param id_tri
+	* @return void
+	*/
+	function setId_tri($sCadena){
+		$this->id_tri = $sCadena;
+	}
 	
+	/**
+	* Devuelve el contenido de la propiedad index_tri
+	* @return varchar
+	*/
+	function getIndex_tri(){
+		return $this->index_tri;
+	}
+	/**
+	* Fija el contenido de la propiedad index_tri
+	* @param index_tri
+	* @return void
+	*/
+	function setIndex_tri($sCadena){
+		$this->index_tri = $sCadena;
+	}
+
 	/**
 	* Devuelve el contenido de la propiedad fecAlta
 	* @return datetime

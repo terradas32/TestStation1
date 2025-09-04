@@ -2,140 +2,959 @@
 /*////////////
 Generales
 ////////////////*/
-html, body{ font-family:Arial, Helvetica, sans-serif;}
-.pagina{ width:794px; height:1146px; margin:auto; position: relative;border: 1px solid white;}
-.portada{ width:794px; height:1204px; margin:auto; position:relative;}
-.textos{ font-size:12px;}
-.textos_prisma{ font-size:15px;line-height: 1.5em;text-align: justify;}
-.textos_prisma p{ text-align: justify;}
-.invisible{ display:none;}
-.cabecera{ height:60px; width:auto; margin-bottom:2px; line-height:45px; color:#999;}
-.cabecera div{ float:left;}
-.cabecera .nombre, .cabecera .fecha{ width:368px; height:60px;}
-.cabecera .nombre p{ margin-left:20px;}
-.cabecera .fecha p{ float:right; margin-right:20px;}
-.cabecera .logo{ width:58px; }
-.desarrollo{ width:739px; height:auto; margin:auto; background:#93b1d3; overflow:hidden;position:absolute;top:55px;left:27px;/*border: 1px solid white;*/}
-.piePagina{ height:30px; width:auto;}
-.piePagina p{ font-size:10px; text-align:center; color:#999; line-height:30px;}
-.subtitulo{ font-size:21px; font-weight:bold; color:#FFF; text-align:center; line-height:70px;}
-.subtitulo_prisma{ font-size:20px; font-weight:bold; color:#FFF; text-align:left; line-height:70px;}
-.encabezado{ font-size:14px; font-weight:bold; margin-bottom:20px;}
-.caja{ width:704px; height:auto; margin:auto; background:#FFF; border:2px solid #0077be; margin-bottom:60px; padding:10px 5px; overflow:hidden;}
-.caja .textos, .caja ul{ font-size:15px; margin-bottom:20px; }
-.caja img{ margin-bottom:20px;}
-.caja ul{ margin-left:35px;}
-.caja ul li{font-size:15px; margin-bottom:20px;}
-.caja .textos span{ text-decoration:underline;}
+html {
+    margin: 0;
+}
+
+html,
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+* {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    /*margin: 5mm 15mm 10mm 15mm;*/
+}
+
+.pagina {
+    width: 680px;
+    height: 1050px;
+    margin: auto;
+    position: relative;
+    page-break-before: avoid;
+}
+
+.portada {
+    margin: auto;
+}
+
+.portada_fin {
+    margin: auto;
+}
+
+.textos {
+    font-size: 12px;
+}
+
+ul.textos {
+    list-style: disc !important;
+}
+
+.textos_prisma {
+    font-size: 13px;
+    line-height: 1.5em;
+    text-align: justify;
+}
+
+.textos_prisma p {
+    text-align: justify;
+}
+
+.invisible {
+    display: none;
+}
+
+.cabecera {
+    height: 36px;
+    width: auto;
+    margin-bottom: 2px;
+    line-height: 36px;
+    color: #999;
+}
+
+.cabecera div {
+    float: left;
+}
+
+.cabecera .nombre,
+.cabecera .fecha {
+    width: 45%;
+    /*height:60px;*/
+}
+
+.cabecera .nombre p {
+    /*margin-left:20px;*/
+}
+
+.cabecera .fecha p {
+    float: right;
+    /*margin-right:20px;*/
+}
+
+.cabecera .logo {
+    width: 10%;
+}
+
+.cabecera .logo img {
+    height: 28px;
+}
+
+.desarrollo {
+    width: 679px;
+    height: auto;
+    margin: auto;
+    background: #93b1d3;
+    overflow: hidden;
+    position: absolute;
+    top: 38px;
+    /*left:27px;border: 1px solid white;*/
+}
+
+.piePagina {
+    height: 30px;
+    width: auto;
+}
+
+.piePagina p {
+    font-size: 10px;
+    text-align: center;
+    color: #999;
+    line-height: 30px;
+}
+
+.subtitulo {
+    font-size: 15px;
+    font-weight: bold;
+    color: #FFF;
+    text-align: center;
+    line-height: 27px;
+}
+
+.subtitulo_prisma {
+    font-size: 14px;
+    font-weight: bold;
+    color: #FFF;
+    text-align: left;
+    line-height: 25px;
+}
+
+.encabezado {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.caja {
+    width: 664px;
+    height: auto;
+    margin: auto;
+    background: #FFF;
+    border: 2px solid #0077be;
+    margin-bottom: 60px;
+    padding: 5px 5px;
+    overflow: hidden;
+}
+
+.caja .textos,
+.caja ul {
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+
+.caja img {
+    margin-bottom: 20px;
+}
+
+.caja ul {
+    margin-left: 35px;
+}
+
+.caja ul li {
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+
+.caja .textos span {
+    text-decoration: underline;
+}
+
 /*Portada*/
-#txt_infome{ position:absolute; top:320px; left:20px; text-align:right; padding:34px 0px;}
-#txt_infome p{ font-size: 36px;}
-#txt_infome p strong{ font-weight: bold;}
-#txt_infome_narrativo{ position:absolute; top:320px; left:20px; text-align:right; padding:34px 0px;}
-#txt_infome_narrativo p{ font-size: 34px;}
-#txt_infome_narrativo p strong{ font-weight: bold;}
-#informe{ width:360px; height:55px; position:absolute; top:846px; left:216px; padding:34px 0px;}
-.titulo{ width:276px; height:96px; /*background:url(img/logo.jpg) top left no-repeat;*/ position:absolute; top:0; left:50px;}
-#informe p{ margin-left:36px; margin-bottom:19px;}
-#informe p strong{ font-weight:bold;}
-#copy{ color:#656565; position:absolute; top:1074px; left:215px; }
+#txt_infome {
+    padding: 34px 0px 34px 0px;
+}
+
+#txt_infome p {
+    font-size: 30px;
+    text-align: center;
+    margin-top: 300px;
+    margin-bottom: 200px;
+}
+
+#txt_infome p strong {
+    font-weight: bold;
+}
+
+#txt_infome_narrativo {
+    text-align: right;
+    padding: 34px 0px 34px 0px;
+}
+
+#txt_infome_narrativo p {
+    font-size: 34px;
+}
+
+#txt_infome_narrativo p strong {
+    font-weight: bold;
+}
+
+#logo_empresa {
+    max-height: 90px;
+    display: block;
+}
+
+#informe {
+    padding: 34px 0px 34px 0px;
+    border: 1px solid grey;
+    width: 300px;
+    margin: 50px auto 0px auto;
+}
+
+.titulo {
+    width: 276px;
+    height: 96px;
+    text-align: center;
+}
+
+#informe p {
+    text-align: center;
+    padding: 10px 0px 10px 0px;
+}
+
+#informe p strong {
+    font-weight: bold;
+}
+
+#copy {
+    color: #656565;
+    position: absolute;
+    top: 950px;
+    left: 142px;
+}
+
 /*Pagina Personalidad*/
-#personalidad{ width:730px; height:auto; margin:auto; border-top:0; background:#FFF; font-size:12px; text-align:center; color:#fff;}
-#personalidad td{border:1px solid #8796aa;}
-#personalidad .azul{ background:#93b1d3; border-top:1px solid #93b1d3; border-bottom:2px solid #8796aa; border-left:none;}
-#personalidad h2{ font-size:18px; text-align:center; font-weight:bold; color:#fff;}
-#personalidad .celS{ background:#4b4b4b; border-right:1px solid #ccc;}
-#personalidad .celS p{padding:2px 0;text-align:center;}
-#personalidad td.last{ border-right:none;}
-#personalidad .celI{ background:#6a6a6c; border-bottom:2px solid #8796aa; border-right:1px solid #ccc;}
-#personalidad .celI p{padding:2px 0;text-align:center;}
-#personalidad .simbol{ background:#f3f3f3;text-align: center;}
-#personalidad .simbol img{ width:30px;text-align: center;/*height: 27px;*/}
-#personalidad .number{ color:#324050; font-size:20px; font-weight:bolder; width:36px; height:27px;}
-#personalidad .number p{ text-align:center;}
-#personalidad .tablaTitu{border-bottom:1px solid #8796AA; background:#93b1d3; width:150px; font-weight:bold; text-align:left; padding-left:3px;}
-#personalidad .descripcion{ color:#000000; text-align:left; font-size:9px; padding-left:3px;}
+.numberEscala {
+    float: left;
+    margin: 0;
+    padding-right: 7.25%;
+}
+
+#personalidad {
+    width: 676px;
+    height: auto;
+    margin: auto;
+    border-top: 0;
+    background: #FFF;
+    font-size: 10px;
+    text-align: center;
+    color: #fff;
+}
+
+#personalidad td {
+    border: 1px solid #8796aa;
+}
+
+#personalidad .azul {
+    background: #93b1d3;
+    border-top: 1px solid #93b1d3;
+    border-bottom: 2px solid #8796aa;
+    border-left: none;
+}
+
+#personalidad h2 {
+    font-size: 15px;
+    text-align: center;
+    font-weight: bold;
+    color: #fff;
+}
+
+#personalidad .celS {
+    background: #4b4b4b;
+    border-right: 1px solid #ccc;
+    font-size: 7pt;
+}
+
+#personalidad .celS p {
+    padding: 1px 0;
+    text-align: center;
+}
+
+#personalidad td.last {
+    border-right: none;
+}
+
+#personalidad .celI {
+    width: 28px;
+    background: #6a6a6c;
+    border-bottom: 2px solid #8796aa;
+    border-right: 1px solid #ccc;
+    font-size: 7pt;
+}
+
+#personalidad .celI p {
+    padding: 1px 0;
+    text-align: center;
+    white-space: nowrap;
+}
+
+#personalidad .simbol {
+    background: #f3f3f3;
+    text-align: center;
+}
+
+#personalidad .simbol img {
+    text-align: center;
+    height: 16px;
+}
+
+#personalidad .number {
+    height: 28px;
+    color: #324050;
+    font-size: 15px;
+    font-weight: bolder;
+    width: 30px;
+}
+
+#personalidad .number p {
+    text-align: center;
+}
+
+#personalidad .tablaTitu {
+    border-bottom: 1px solid #8796AA;
+    background: #93b1d3;
+    width: 120px;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 2px;
+}
+
+#personalidad .descripcion {
+    color: #000000;
+    text-align: left;
+    font-size: 9px;
+    padding-left: 2px;
+}
+
 /*Pagina Perfil General*/
-#perfilGeneral{width:730px; height:auto; margin:auto; margin-bottom:56px; border-top:0; background:#FFF; font-size:11px; text-align:center; color:#fff;}
-#perfilGeneral .simbol img{ width:30px;text-align: center;/*height: 27px;*/}
-.perfilGeneral .cabeceraPerfil td{ height:52px; border-bottom:4px solid #93b1d3;}
-.cabeceraPerfil .pLinea{ background:#828282;}
-.cabeceraPerfil .pLinea p{ font-size:16px; font-weight:bold;text-align: center;}
-.cabeceraPerfil td{ border-left:2px solid #93b1d3;text-align: center;}
-.perfilGeneral .tablaTitu{ background:#475464; font-size:14px; font-weight:bold;text-align: center;}
+#perfilGeneral {
+    width: 670px;
+    height: auto;
+    margin: auto;
+    margin-bottom: 56px;
+    border-top: 0;
+    background: #FFF;
+    font-size: 11px;
+    text-align: center;
+    color: #fff;
+}
+
+#perfilGeneral .simbol img {
+    width: 30px;
+    text-align: center;
+    /*height: 27px;*/
+}
+
+.perfilGeneral .cabeceraPerfil td {
+    height: 52px;
+    border-bottom: 4px solid #93b1d3;
+}
+
+.cabeceraPerfil .pLinea {
+    background: #828282;
+}
+
+.cabeceraPerfil .pLinea p {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.cabeceraPerfil td {
+    border-left: 2px solid #93b1d3;
+    text-align: center;
+}
+
+.perfilGeneral .tablaTitu {
+    background: #475464;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
 /*Pagina Competencias*/
-.competencias{width:730px; height:auto; margin:auto; margin-bottom:15px; border:0; font-size:11px; text-align:center; color:#fff;}
-.competencias .tablaTitu{ width:174px; height:114px; background:#475464;}
-.competencias .pLinea td{ border-bottom:6px solid #93b1d3;}
-.competencias .descripcion{ width:310px; background:#fff; padding:4px;}
-.competencias .descripcion .intro{ color:#475464; text-align:left; font-weight:bold; margin-bottom:5px;}
-.competencias .descripcion .textos{color:#4c4b4b; text-align:left; font-size:12px; line-height:14px;}
-.competencias .tablaTitu p{ font-size:15px; font-weight:bold;text-align: center;}
-.competencias .subTabla{ background:#475464;}
-.competencias .subTabla table{ margin:auto;}
-.competencias .subTabla table td{ border:none; text-align: center;}
-.competencias .subTabla .cel{ border:1px solid #c2c2c2; height:16px; width:38px; background:#fff;}
-.competencias .subTabla .cel p{ color:#000; font-size:12px;text-align: center;}
-.competencias .subTabla .cel img{height:15px; width:30px;padding: 1px 3px;}
-.indicadores{width:730px; height:auto; margin:auto; border:0; margin-bottom:135px; font-size:11px; text-align:center; color:#fff;}
-.indicadores .tablaTitu{ width:20%;}
-.indicadores .tablaTitu p{ font-size:15px; font-weight:bold;text-align: center;}
-.indicadores .simbol{ height:46px; background:#fff; border:1px solid #6b788a;text-align: center;}
-.indicadores .simbol img{ width:100px; height: 25px;padding-left:10px;text-align: center;}
-.indicadores .descripcion{ color:#000; font-size:13px; font-weight:bold;text-align: center;}
-.indicadores .descripcion strong{ font-size:18px;text-align: center;}
-/*Pagina Definiciones*/
-.definiciones{width:730px; height:auto; margin:auto; margin-bottom:10px; border:0; font-size:11px; text-align:center; color:#fff;}
-.definiciones .tablaTitu{ height:60px; width:291px; background:#FFF; border-bottom:2px solid #475464; border-left:1px solid #475464;}
-.definiciones .tablaTitu td{ height:60px; width:291px; background:#FFF; border-bottom:1px solid #475464; border-left:1px solid #475464;}
-.definiciones .tablaTitu p{ color:#475464; font-size:14px; font-weight:bold;text-align:center;}
-.definiciones .descripcion{ background:#475464; padding:10px; border-bottom:2px solid #fff;}
-.definiciones .descripcion td{ background:#475464; padding:10px; border-bottom:1px solid #fff;}
-.definiciones .descripcion .textos{ text-align:left; font-size:12px;}
+.competencias {
+    width: 670px;
+    height: auto;
+    margin: auto;
+    margin-bottom: 15px;
+    border: 0;
+    font-size: 11px;
+    text-align: center;
+    color: #fff;
+}
+
+.competencias .tablaTitu {
+    width: 150px;
+    /*height:114px;*/
+    background: #475464;
+}
+
+.competencias .pLinea td {
+    border-bottom: 6px solid #93b1d3;
+}
+
+.competencias .descripcion {
+    width: 310px;
+    background: #fff;
+    padding: 4px;
+}
+
+.competencias .descripcion .intro {
+    color: #475464;
+    text-align: left;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.competencias .descripcion .textos {
+    color: #4c4b4b;
+    text-align: left;
+    font-size: 11px;
+    line-height: 14px;
+}
+
+.competencias .tablaTitu p {
+    font-size: 13px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.competencias .subTabla {
+    background: #475464;
+}
+
+.competencias .subTabla table {
+    margin: auto;
+}
+
+.competencias .subTabla table td {
+    border: none;
+    text-align: center;
+}
+
+.competencias .subTabla .cel {
+    border: 1px solid #c2c2c2;
+    height: 16px;
+    width: 34px;
+    background: #fff;
+}
+
+.competencias .subTabla .cel p {
+    color: #000;
+    font-size: 12px;
+    text-align: center;
+}
+
+.competencias .subTabla .cel img {
+    height: 15px;
+    width: 30px;
+    padding: 1px 3px;
+}
+
+.indicadores {
+    width: 670px;
+    height: auto;
+    margin: auto;
+    border: 0;
+    margin-bottom: 135px;
+    font-size: 11px;
+    text-align: center;
+    color: #fff;
+}
+
+.indicadores .tablaTitu {
+    width: 20%;
+}
+
+.indicadores .tablaTitu p {
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.indicadores .simbol {
+    height: 46px;
+    background: #fff;
+    border: 1px solid #6b788a;
+    text-align: center;
+}
+
+.indicadores .simbol img {
+    width: 100px;
+    height: 25px;
+    padding-left: 10px;
+    text-align: center;
+}
+
+.indicadores .descripcion {
+    color: #000;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.indicadores .descripcion strong {
+    font-size: 18px;
+    text-align: center;
+}
+
+/*Desglose de competencias*/
+.competencias {
+    width: 670px;
+    height: auto;
+    margin: auto;
+    margin-bottom: 15px;
+    border: 0;
+    font-size: 11px;
+    text-align: center;
+    color: #fff;
+}
+
+.competencias .tablaTitu {
+    width: 150px;
+    /*height:114px;*/
+    background: #475464;
+}
+
+.competencias .pLinea td {
+    border-bottom: 6px solid #93b1d3;
+}
+
+.competencias .descripcion {
+    width: 310px;
+    background: #fff;
+    padding: 4px;
+}
+
+.competencias .descripcion .intro {
+    color: #475464;
+    text-align: left;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.competencias .descripcion .textos {
+    color: #4c4b4b;
+    text-align: left;
+    font-size: 11px;
+    line-height: 14px;
+}
+
+.competencias .tablaTitu p {
+    font-size: 13px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.competencias .subTabla {
+    background: #475464;
+}
+
+.competencias .subTabla table {
+    margin: auto;
+}
+
+.competencias .subTabla table td {
+    border: none;
+    text-align: center;
+}
+
+/*Pagina Desglose*/
+.definiciones {
+    font-family: Arial, Helvetica, sans-serif !important;
+    width: 670px;
+    height: auto;
+    margin: auto;
+    margin-bottom: 10px;
+    border: 0;
+    font-size: 11px;
+    text-align: center;
+    color: #fff;
+}
+
+.titCab {
+    font-family: Arial, Helvetica, sans-serif !important;
+    font-size: 12px;
+    padding: 5px 10px 5px 10px;
+    font-weight: 600;
+}
+
+.desgloseTitTd {
+    background: #475464;
+    text-align: left;
+    padding: 8px 0px 8px 5px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.desgloseTitTdPunt {
+    background: #475464;
+    text-align: center;
+    padding: 5px 0px 5px 0px;
+    font-size: 12pt;
+    font-weight: bold;
+}
+
+.desgloseNom {
+    text-align: left;
+    padding: 4px 4px 4px 4px;
+    background: #fff;
+    color: #4c4b4b;
+    line-height: 14px;
+    border-bottom: 3px solid #93b1d3;
+}
+
+.desgloseDes {
+    text-align: left;
+    padding: 4px 4px 4px 4px;
+    background: #fff;
+    color: #4c4b4b;
+    line-height: 14px;
+    border-bottom: 3px solid #93b1d3;
+}
+
+.desglosePor {
+    text-align: center;
+    padding: 4px 4px 4px 4px;
+    background: #fff;
+    color: #4c4b4b;
+    line-height: 14px;
+    border-bottom: 3px solid #93b1d3;
+}
+
+.desglosePun {
+    text-align: center;
+    padding: 4px 4px 4px 4px;
+    background: #fff;
+    color: #4c4b4b;
+    line-height: 14px;
+    border-bottom: 3px solid #93b1d3;
+    font-size: 10pt;
+    font-weight: bold;
+}
+
 /*Pagina Sintesis*/
-.sintesis{width:600px; height:auto; margin:auto; margin-bottom:10px; border:0; font-size:11px; text-align:center; color:#fff;}
-.sintesis .subtitulo{ line-height:22px; color:#475464; font-size:18px;}
-.sintesis .cel{ width:50px; height:28px; background:#6a6a6c; border-left: 1px solid #fff; font-size:8px;padding: 2px 4px;text-align: center; /*line-height:8px;*/}
-.sintesis .cel p{text-align: center;}
-.sintesis .number{ width:36px; height:28px; background:#fff;border-bottom:2px solid #b4b4b4; color:#475464; font-size:18px; font-weight:bold;}
-.sintesis .number p{text-align: center;}
-.sintesis .celS{ width:38px; height:28px; background:#fff; border-left:1px solid #b4b4b4; border-bottom:2px solid #b4b4b4;text-align: center;}
-.sintesis .celS img{ width:30px; height:15px;text-align: center;}
-.sintesis .tablaTitu{ background:#475464;border-bottom:2px solid #b4b4b4; font-size:11px; font-weight:bold;text-align: center; width: 200px;}
-.sintesis .tablaTitu p{text-align: center;}
+.sintesis {
+    width: 670px;
+    height: auto;
+    margin: auto;
+    margin-bottom: 10px;
+    border: 0;
+    font-size: 11px;
+    text-align: center;
+    color: #fff;
+}
+
+.sintesis .subtitulo {
+    line-height: 20px;
+    color: #475464;
+    font-size: 17px;
+}
+
+.sintesis .cel {
+    width: 50px;
+    height: 28px;
+    background: #6a6a6c;
+    border-left: 1px solid #fff;
+    font-size: 8pt;
+    white-space: nowrap;
+    padding: 2px 4px;
+    text-align: center;
+    /*line-height:8px;*/
+}
+
+.sintesis .cel p {
+    text-align: center;
+}
+
+.sintesis .number {
+    width: 36px;
+    height: 28px;
+    background: #fff;
+    border-bottom: 2px solid #b4b4b4;
+    color: #475464;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.sintesis .number p {
+    text-align: center;
+}
+
+.sintesis .celS {
+    width: 38px;
+    height: 28px;
+    background: #fff;
+    border-left: 1px solid #b4b4b4;
+    border-bottom: 2px solid #b4b4b4;
+    text-align: center;
+}
+
+.sintesis .celS img {
+    width: 30px;
+    height: 15px;
+    text-align: center;
+}
+
+.sintesis .tablaTitu {
+    background: #475464;
+    border-bottom: 2px solid #b4b4b4;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+    width: 200px;
+}
+
+.sintesis .tablaTitu p {
+    text-align: center;
+}
+
 /*Pagina Liderazgo*/
-#liderazgo{width:730px; height:auto; margin:auto; border:0; text-align:center; margin-bottom:3px; font-size:11px; color:#fff;}
-#liderazgo .simbol img{ width:30px;text-align: center;/*height: 27px;*/}
-.liderazgo h2{font-size: 18px;}
-.liderazgo .cel{ width:45px; height:36px; border-left:1px solid #ccd5d6;}
-.liderazgo .simbol{width:45px; height:auto; border-left:1px solid #ccd5d6; border-bottom:2px solid #ccd5d6; background:#f3f3f3;text-align: center;}
-.liderazgo .descripcion{ /*width:368px; height:auto;*/ background:#f3f3f3;border-bottom:2px solid #ccd5d6; text-align:left; color:#000;font-size: 10px; padding: 3px 2px; }
-.liderazgo .descripcion ul{ padding:0 5px;}
-.liderazgo .tablaTitu{ width:96px; height:auto; background:#93b1d5;border-bottom:2px solid #ccd5d6;}
-.liderazgo .tablaTitu p{ font-size:12px; font-weight:bold; text-align:left; padding-left:5px;}
+#liderazgo {
+    width: 670px;
+    height: auto;
+    margin: auto;
+    border: 0;
+    text-align: center;
+    margin-bottom: 3px;
+    font-size: 11px;
+    color: #fff;
+}
+
+#liderazgo .simbol img {
+    width: 30px;
+    text-align: center;
+    /*height: 27px;*/
+}
+
+.liderazgo h2 {
+    font-size: 18px;
+}
+
+.liderazgo .cel {
+    width: 45px;
+    height: 36px;
+    border-left: 1px solid #ccd5d6;
+}
+
+.liderazgo .simbol {
+    width: 45px;
+    height: auto;
+    border-left: 1px solid #ccd5d6;
+    border-bottom: 2px solid #ccd5d6;
+    background: #f3f3f3;
+    text-align: center;
+}
+
+.liderazgo .descripcion {
+    /*width:368px; height:auto;*/
+    background: #f3f3f3;
+    border-bottom: 2px solid #ccd5d6;
+    text-align: left;
+    color: #000;
+    font-size: 8.5px;
+    padding: 3px 2px;
+}
+
+.liderazgo .descripcion ul {
+    padding: 0 5px;
+}
+
+.liderazgo .tablaTitu {
+    width: 96px;
+    height: auto;
+    background: #93b1d5;
+    border-bottom: 2px solid #ccd5d6;
+}
+
+.liderazgo .tablaTitu p {
+    font-size: 12px;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 5px;
+}
+
 /*Pagina Estadistica*/
-.estadistica{width:650px; height:auto; margin:auto; border:0; /*text-align:center; margin-bottom:150px;*/ font-size:11px; color:#fff;}
-.estadistica td{ height:20px;}
-.estadistica p{ color:#4e7794; font-size:16px;}
-.estadistica .bg_estadistica{ /*background:url(img/bg_estadistica.jpg) repeat;*/background:#FFFFFF; width:435px; height:auto; border-left:3px solid #4e7187;}
-.estadistica .number{width:37.81px; height:auto; text-align:right;}
-.estadistica .tension{height:20px;background:#7f5ba1; float:left;}
-.estadistica .confianza{height:20px;background:#facb49; float:left;}
-.estadistica .resistencia{height:20px;background:#facb49; float:left;}
-.estadistica .actitud{height:20px;background:#c0ce05; float:left;}
-.estadistica .autodominio{height:20px;background:#7F5BA1; float:left;}
-.estadistica .control{height:20px;background:#7F5BA1; float:left;}
+.estadistica {
+    width: 650px;
+    height: auto;
+    margin: auto;
+    border: 0;
+    /*text-align:center; margin-bottom:150px;*/
+    font-size: 11px;
+    color: #fff;
+}
+
+.estadistica td {
+    height: 20px;
+}
+
+.estadistica p {
+    color: #4e7794;
+    font-size: 12px;
+}
+
+.estadistica .bg_estadistica {
+    /*background:url(img/bg_estadistica.jpg) repeat;*/
+    background: #FFFFFF;
+    /*width:435px;*/
+    height: auto;
+    border-left: 3px solid #4e7187;
+}
+
+.estadistica .number {
+    width: 10px;
+    height: auto;
+    text-align: right;
+}
+
+.estadistica .tension {
+    height: 20px;
+    background: #7f5ba1;
+    float: left;
+}
+
+.estadistica .confianza {
+    height: 20px;
+    background: #facb49;
+    float: left;
+}
+
+.estadistica .resistencia {
+    height: 20px;
+    background: #facb49;
+    float: left;
+}
+
+.estadistica .actitud {
+    height: 20px;
+    background: #c0ce05;
+    float: left;
+}
+
+.estadistica .autodominio {
+    height: 20px;
+    background: #7F5BA1;
+    float: left;
+}
+
+.estadistica .control {
+    height: 20px;
+    background: #7F5BA1;
+    float: left;
+}
+
 /*Pagina Estresores*/
-.estresores{width:730px; height:auto; margin:auto; border:0; margin-bottom:50px; text-align:center; font-size:11px; color:#fff;}
-.estresores h2{ color:#37647f; font-size:17px; font-weight:bold;}
-.estresores .cel{ width:64px; height:25px; background:#c8c8c8; border:1px solid #e5e4e4; border-spacing:10px;}
-.estresores .simbol{width:70px; height:25px; background:#fff; border-left:1px solid #e0dfdf; border-bottom:2px solid #e0dfdf;text-align: center;}
-.estresores .simbol img{width:62px; height:16px;}
-.estresores .tablaTitu{ width:315px; height:15px; background:#37647f; border:4px solid #93b1d3; border-right:none; font-size:14px; font-weight:bold;}
-.estresores .number{ background:#fff; border:4px solid #93b1d3; border-right:none; color:#37647f; font-size:16px; font-weight:bold; width: 40px;}
+.estresores {
+    width: 630px;
+    height: auto;
+    margin: auto;
+    border: 0;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 11px;
+    color: #fff;
+}
+
+.estresores h2 {
+    color: #37647f;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.estresores .cel {
+    width: 44px;
+    height: 25px;
+    background: #c8c8c8;
+    border: 1px solid #e5e4e4;
+    border-spacing: 10px;
+}
+
+.estresores .simbol {
+    width: 70px;
+    height: 25px;
+    background: #fff;
+    border-left: 1px solid #e0dfdf;
+    border-bottom: 2px solid #e0dfdf;
+    text-align: center;
+}
+
+.estresores .simbol img {
+    /*width:62px;*/
+    height: 16px;
+}
+
+.estresores .tablaTitu {
+    /*width:215px;*/
+    height: 15px;
+    background: #37647f;
+    border: 4px solid #93b1d3;
+    border-right: none;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.estresores .number {
+    background: #fff;
+    border: 4px solid #93b1d3;
+    border-right: none;
+    color: #37647f;
+    font-size: 16px;
+    font-weight: bold;
+    width: 30px;
+}
+
 /*Pagina /*Pagina Estresores*/
-.definicionesEstresores{width:730px; height:auto; margin:auto; border:0; text-align:center; font-size:11px;}
-.definicionesEstresores .tablaTitu{ width:280px; height:54px; background:#fff; border-bottom:2px solid #b4dbdb; color:#37647f; font-size:16px; font-weight:bold;}
-.definicionesEstresores .descripcion{ background:#407595; border-bottom:2px solid #b4dbdb; color:#fff; text-align:left; padding:0 5px;}
-.definicionesEstresores .descripcion p{font-size: 11px;}
-#imgContraportada{left: 170px;position: absolute;top: 120px;width: 500px;}
+.definicionesEstresores {
+    width: 670px;
+    height: auto;
+    margin: auto;
+    border: 0;
+    text-align: center;
+    font-size: 11px;
+}
+
+.definicionesEstresores .tablaTitu {
+    width: 280px;
+    /*height:54px;*/
+    background: #fff;
+    border-bottom: 2px solid #b4dbdb;
+    color: #37647f;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.definicionesEstresores .descripcion {
+    background: #407595;
+    border-bottom: 2px solid #b4dbdb;
+    color: #fff;
+    text-align: left;
+    padding: 0 5px;
+}
+
+.definicionesEstresores .descripcion p {
+    font-size: 11px;
+}
+
+#imgContraportada {
+    /*left: 170px;position: absolute;top: 120px;width: 500px;*/
+}
+
+hr {
+    page-break-after: always;
+    border: 0;
+    margin: 0;
+    padding: 0;
+}

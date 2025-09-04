@@ -1,4 +1,5 @@
 <?php
+// CRON cada 30 min
 // Ignorar los abortos hechos por el usuario y permitir que el script
 // se ejecute para siempre
 ignore_user_abort(true);
@@ -84,17 +85,30 @@ echo date("Y-m-d H:i:s");
 			$sSQL = "TRUNCATE TABLE `respuestas_pruebas_resultados_fit`";
 			$conn->Execute($sSQL);
 			//Cargamoso la tabla con los guardados en la úlitmas 4 horas
-            $sSQL = '
-            INSERT INTO respuestas_pruebas_resultados_fit (idEmpresa, descEmpresa, idProceso, descProceso, idCandidato, descCandidato, codIdiomaIso2, descIdiomaIso2, idPrueba, descPrueba, finalizado, leidoInstrucciones, leidoEjemplos, minutos_test, segundos_test, minutos2_test, segundos2_test, pantalla, campoLibre, veces, fecAlta, fecMod, usuAlta, usuMod)
-            SELECT rp.idEmpresa, rp.descEmpresa, rp.idProceso, rp.descProceso, rp.idCandidato, rp.descCandidato, rp.codIdiomaIso2, rp.descIdiomaIso2, rp.idPrueba, rp.descPrueba, rp.finalizado, rp.leidoInstrucciones, rp.leidoEjemplos, rp.minutos_test, rp.segundos_test, rp.minutos2_test, rp.segundos2_test, 0, rp.campoLibre, 0, rp.fecAlta, rp.fecMod, rp.usuAlta, rp.usuMod
-            FROM respuestas_pruebas rp,  proceso_informes pi
-            WHERE rp.fecAlta >= NOW() - INTERVAL 2 DAY 
-            AND rp.finalizado=1
-            AND rp.idEmpresa = pi.idEmpresa
-            AND rp.idProceso = pi.idProceso
-            AND rp.codIdiomaIso2 = pi.codIdiomaIso2
-            AND rp.idPrueba = pi.idPrueba
-            AND pi.idTipoInforme = 71
+            /* $sSQL = '
+            INSERT INTO respuestas_pruebas_resultados_fit (idEmpresa, descEmpresa, idProceso, descProceso, idCandidato, descCandidato, codIdiomaIso2, descIdiomaIso2, idPrueba, descPrueba, finalizado, leidoInstrucciones, leidoEjemplos, minutos_test, segundos_test, minutos2_test, segundos2_test, campoLibre, fecAlta, fecMod, usuAlta, usuMod)
+            SELECT rp.idEmpresa, rp.descEmpresa, rp.idProceso, rp.descProceso, rp.idCandidato, rp.descCandidato, rp.codIdiomaIso2, rp.descIdiomaIso2, rp.idPrueba, rp.descPrueba, rp.finalizado, rp.leidoInstrucciones, rp.leidoEjemplos, rp.minutos_test, rp.segundos_test, rp.minutos2_test, rp.segundos2_test, rp.campoLibre, rp.fecAlta, rp.fecMod, rp.usuAlta, rp.usuMod
+			FROM respuestas_pruebas rp, proceso_informes pi
+			WHERE rp.idEmpresa = pi.idEmpresa
+			AND rp.idProceso = pi.idProceso
+			AND rp.codIdiomaIso2 = pi.codIdiomaIso2
+			AND rp.idPrueba = pi.idPrueba
+			AND pi.idTipoInforme = 71
+			AND rp.finalizado=1
+			AND rp.idEmpresa = 5897
+			AND rp.idProceso = 15
+            '; */
+			$sSQL = '
+            INSERT INTO respuestas_pruebas_resultados_fit (idEmpresa, descEmpresa, idProceso, descProceso, idCandidato, descCandidato, codIdiomaIso2, descIdiomaIso2, idPrueba, descPrueba, finalizado, leidoInstrucciones, leidoEjemplos, minutos_test, segundos_test, minutos2_test, segundos2_test, campoLibre, fecAlta, fecMod, usuAlta, usuMod)
+            SELECT rp.idEmpresa, rp.descEmpresa, rp.idProceso, rp.descProceso, rp.idCandidato, rp.descCandidato, rp.codIdiomaIso2, rp.descIdiomaIso2, rp.idPrueba, rp.descPrueba, rp.finalizado, rp.leidoInstrucciones, rp.leidoEjemplos, rp.minutos_test, rp.segundos_test, rp.minutos2_test, rp.segundos2_test, rp.campoLibre, rp.fecAlta, rp.fecMod, rp.usuAlta, rp.usuMod
+			FROM respuestas_pruebas rp, proceso_informes pi
+			WHERE (rp.fecMod >= NOW() - INTERVAL 2 DAY OR pi.fecMod >= NOW() - INTERVAL 2 DAY)
+			AND rp.idEmpresa = pi.idEmpresa
+			AND rp.idProceso = pi.idProceso
+			AND rp.codIdiomaIso2 = pi.codIdiomaIso2
+			AND rp.idPrueba = pi.idPrueba
+			AND pi.idTipoInforme = 71
+			AND rp.finalizado=1
             ';
 
 			$conn->Execute($sSQL);

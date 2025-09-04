@@ -220,7 +220,7 @@ class ItemsDB
 	function modificar($cEntidad)
 	{
 		$aux			= $this->conn;
-	require_once(constant("DIR_WS_COM") . "Upload.php");
+		require_once(constant("DIR_WS_COM") . "Upload.php");
 		$img0 = new Upload("fPath1");
 		$img0->bAutoRenombrar = false;
 		$img0->bSobreEscribir = true;
@@ -458,6 +458,53 @@ class ItemsDB
 					$cEntidad->setFecMod($arr['fecMod']);
 					$cEntidad->setUsuAlta($arr['usuAlta']);
 					$cEntidad->setUsuMod($arr['usuMod']);
+
+					$cEntidad->setIdTipoRazonamiento($arr['idTipoRazonamiento']);
+					$cEntidad->setId($arr['id']);
+					$cEntidad->setIndex_tri($arr['index_tri']);
+			}
+		}else{
+			
+			echo(constant("ERR"));
+			$this->msg_Error	= array();
+			$sTypeError	=	date('d/m/Y H:i:s') . " Error SQL [readEntidad][ItemsDB]";
+			$this->msg_Error[]	= $sTypeError;
+			error_log($sTypeError . " ->\t" . $sql . "\n", 3, constant("DIR_FS_PATH_NAME_LOG"));
+			exit;
+		
+		}
+		return $cEntidad;
+	}
+	function readEntidadId($cEntidad)
+	{
+		$aux			= $this->conn;
+	
+		$sql = "SELECT * FROM items WHERE ";
+		$sql  .="id=" . $aux->qstr($cEntidad->getId(), false) . " AND codIdiomaIso2=" . $aux->qstr($cEntidad->getCodIdiomaIso2(), false) . " ";
+		$rs = $aux->Execute($sql);
+		if ($rs){
+			while ($arr = $rs->FetchRow()){
+					$cEntidad->setIdItem($arr['id']);
+					$cEntidad->setIdItem($arr['idItem']);
+					$cEntidad->setIdPrueba($arr['idPrueba']);
+					$cEntidad->setCodIdiomaIso2($arr['codIdiomaIso2']);
+					$cEntidad->setEnunciado($arr['enunciado']);
+					$cEntidad->setDescripcion($arr['descripcion']);
+					$cEntidad->setPath1($arr['path1']);
+					$cEntidad->setPath2($arr['path2']);
+					$cEntidad->setPath3($arr['path3']);
+					$cEntidad->setPath4($arr['path4']);
+					$cEntidad->setCorrecto($arr['correcto']);
+					$cEntidad->setOrden($arr['orden']);
+					$cEntidad->setBajaLog($arr['bajaLog']);
+					$cEntidad->setFecAlta($arr['fecAlta']);
+					$cEntidad->setFecMod($arr['fecMod']);
+					$cEntidad->setUsuAlta($arr['usuAlta']);
+					$cEntidad->setUsuMod($arr['usuMod']);
+					
+					$cEntidad->setIdTipoRazonamiento($arr['idTipoRazonamiento']);
+					$cEntidad->setId($arr['id']);
+					$cEntidad->setIndex_tri($arr['index_tri']);
 			}
 		}else{
 			
@@ -507,6 +554,10 @@ class ItemsDB
 					$cEntidad->setFecMod($arr['fecMod']);
 					$cEntidad->setUsuAlta($arr['usuAlta']);
 					$cEntidad->setUsuMod($arr['usuMod']);
+					
+					$cEntidad->setIdTipoRazonamiento($arr['idTipoRazonamiento']);
+					$cEntidad->setId($arr['id']);
+					$cEntidad->setIndex_tri($arr['index_tri']);
 			}
 		}else{
 			
@@ -639,6 +690,20 @@ class ItemsDB
 			$and = true;
 			$sql .="usuMod=" . $aux->qstr($cEntidad->getUsuMod(), false);
 		}
+		if ($cEntidad->getIdTipoRazonamiento() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="idTipoRazonamiento=" . $aux->qstr($cEntidad->getIdTipoRazonamiento(), false);
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="discriminacion IS NOT NULL";
+		}
+		if ($cEntidad->getIndex_tri() != ""){
+			$sql .= $this->getSQLWhere($and);
+			$and = true;
+			$sql .="index_tri IN (" . $cEntidad->getIndex_tri() . ")";
+		}
+		
 		if ($cEntidad->getOrderBy() != ""){
 			$sql .=" ORDER BY " . $cEntidad->getOrderBy();
 			if ($cEntidad->getOrder() != ""){

@@ -93,7 +93,7 @@ include_once ('include/conexion.php');
 		case constant("MNT_MODIFICAR"):
 			$cEntidad = readEntidad($cEntidad);
 			quitaImg($cEntidad, $cEntidadDB, false);
-			if ($cEntidadDB->modificar($cEntidad))
+			if ($cEntidadDB->modificarSinPass($cEntidad))
 			{
 			    $_POST['MODO']    = constant("MNT_MODIFICAR");
 				include('Template/Empresa/mntempresaa.php');

@@ -284,4 +284,73 @@
 		}
 		return $hDatosRetorno;
 	}
+
+	function excel_encrypt_payload(array $payload, string $key): string {
+		$iv = random_bytes(12); // GCM IV recomendado: 96 bits
+		$json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+		$tag = '';
+		$cipher = openssl_encrypt($json, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+		// token = iv (12) + tag (16) + cipher
+		return rtrim(strtr(base64_encode($iv . $tag . $cipher), '+/', '-_'), '=');
+	}
+
+	function excel_decrypt_token(string $token, string $key): ?array {
+		$bin = base64_decode(strtr($token, '-_', '+/'), true);
+		if ($bin === false || strlen($bin) < 12 + 16) return null;
+		$iv  = substr($bin, 0, 12);
+		$tag = substr($bin, 12, 16);
+		$cipher = substr($bin, 28);
+		$json = openssl_decrypt($cipher, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+		if ($json === false) return null;
+		$data = json_decode($json, true);
+		return is_array($data) ? $data : null;
+	}
+
+	function excel_sign(string $token, string $hmacKey): string {
+		return hash_hmac('sha256', $token, $hmacKey);
+	}
+
+	function excel_safe_equals(string $a, string $b): bool {
+		return function_exists('hash_equals') ? hash_equals($a, $b) : $a === $b;
+	}
+
+	function is_safe_entity_name($nombre) {
+		return (bool)preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $nombre);
+	}
+
+	function obtenerClavePlantilla(): ?string
+	{
+		static $cache = null;
+		if ($cache !== null) return $cache;
+
+		$incluyente = null;
+
+		// 1) Intentar con el frame que incluye directamente este archivo
+		$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		foreach ($trace as $frame) {
+			if (!empty($frame['file']) && $frame['file'] !== __FILE__ && basename($frame['file']) !== 'SeguridadTemplate.php') {
+				$incluyente = $frame['file'];
+				break;
+			}
+		}
+
+		// 2) Fallback: si no encontramos, probamos con el script principal
+		if ($incluyente === null && !empty($_SERVER['SCRIPT_FILENAME'])) {
+			$incluyente = $_SERVER['SCRIPT_FILENAME'];
+		}
+
+		if ($incluyente === null) {
+			return $cache = null;
+		}
+
+		$base = basename($incluyente); // p.ej. "mntABC123sl.php"
+
+		// 3) Extraer <clave> de "mnt<clave>sl.php"
+		if (preg_match('/^mnt(?P<clave>.+)(?=l(?:[A-Za-z0-9_-]+)?\.php$)/i', $base, $m)) {
+			return $cache = $m['clave'];
+		}
+
+		// 4) Si no coincide el patrón, no podemos inferir la clave
+		return $cache = 'tabla_export';
+	}
 ?>

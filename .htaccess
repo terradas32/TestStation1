@@ -1,0 +1,109 @@
+#########################
+#  IMPORTANTE !!!       #
+# Recuerda este fichero #
+# siempre con permisos: #
+#       644             #
+#########################
+
+#Options +FollowSymlinks
+# Activar RewriteEngine
+RewriteEngine On
+
+# RewriteCond %{HTTPS} !=on
+# RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
+
+RewriteCond %{DOCUMENT_ROOT}/mantenimiento.php -f
+RewriteCond %{SCRIPT_FILENAME} !mantenimiento.php
+RewriteCond %{REQUEST_URI} !\.(css|gif|ico|jpg|js|png|swf|txt)$
+ErrorDocument 503 /mantenimiento.php
+Header Set Cache-Control "max-age=0, no-store"
+
+#PARA UTILIZAR CACHE
+SetOutputFilter DEFLATE
+Header unset ETag
+FileETag None
+<FilesMatch "\.(js|css|ico|pdf|jpg|jpeg|png|gif)$">
+Header set Cache-Control "public"
+Header set Expires "Thu, 15 Apr 2020 20:00:00 GMT"
+Header unset Last-Modified
+</FilesMatch>
+#FIN PARA UTILIZAR CACHE
+
+#Metidas por Pedro
+DefaultLanguage es_ES
+AddDefaultCharset utf-8
+
+#previene los directorios que ya existan
+RewriteCond %{SCRIPT_FILENAME} !-d
+#ignora ficheros que ya existan
+RewriteCond %{SCRIPT_FILENAME} !-f
+#Fin Metidas por Pedro
+
+# Reescribir la URL solicitada por el usuario
+#   Entrada:  clientes/NOMBRE/
+#   Salida: clientes.php?id=NOMBRE
+
+
+
+RewriteRule ^grabaprueba1/?$ grabaprueba1.php
+RewriteRule ^Prueba/?$ pruebas.php
+
+#php_flag display_errors On
+
+<ifModule mod_expires.c>
+ExpiresActive On
+ExpiresDefault "access plus 604800 seconds"
+ExpiresByType text/html "access plus 604800 seconds"
+ExpiresByType image/gif "access plus 604800 seconds"
+ExpiresByType image/jpeg "access plus 604800 seconds"
+ExpiresByType image/png "access plus 604800 seconds"
+ExpiresByType text/css "access plus 2592000 seconds"
+ExpiresByType text/javascript "access plus 604800 seconds"
+ExpiresByType application/x-javascript "access plus 604800 seconds"
+</ifModule>
+
+
+
+<IfModule mod_rewrite.c>
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    
+    ErrorDocument 403 /404
+    
+    #Security Headers
+    <IfModule mod_headers.c> 
+        Header set X-XSS-Protection "1; mode=block"
+        Header always append X-Frame-Options SAMEORIGIN
+        Header set X-Content-Type-Options nosniff
+        Header set Referrer-Policy: no-referrer 
+        # Disable server signature
+        Header set ServerSignature "Off"
+        Header set ServerTokens "Prod"
+        # Control Cross-Domain Policies
+        Header set X-Permitted-Cross-Domain-Policies "master-only"
+        # Cabecera Content-Security-Policy
+        Header set X-Content-Security-Policy "allow 'self';"
+
+        # Header para asegurar que las cookies sean HttpOnly y Secure
+        Header always edit Set-Cookie ^(.*)$ $1;HttpOnly;Secure
+
+        # Permitir peticiones desde cualquier origen (CORS)
+        Header set Access-Control-Allow-Origin "*"
+
+        Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+    </IfModule>
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_URI} !^/server-status$ [NC]
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+Options -Indexes

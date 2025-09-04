@@ -5,7 +5,8 @@
     	require_once("include/SeguridadTemplate.php");
     }
 ?>
-<script src="https://cdn.tiny.cloud/1/19u4q91vla6r5niw2cs7kaymfs18v3j11oizctq52xltyrf4/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<!-- <script src="https://cdn.tiny.cloud/1/19u4q91vla6r5niw2cs7kaymfs18v3j11oizctq52xltyrf4/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script> -->
+	<script language="javascript" type="text/javascript" src="codigo/tinymce/tinymce.min.js"></script>
 
 <table cellspacing="2" cellpadding="0" width="100%" border="0">
 	<tr style="display:none">

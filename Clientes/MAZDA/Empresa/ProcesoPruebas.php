@@ -843,7 +843,6 @@ include_once ('include/conexion.php');
 					break;	
 				}
 				if(isset($_POST['fEjemplo']) && $_POST['fEjemplo']==1){
-					//echo "entra";
 					$cEjemplos = readListaEjemplos($cEjemplos);
 					if (isset($_POST["fReordenar"]) &&  !empty($_POST["fReordenar"])){
 						$bInit=true;

@@ -107,8 +107,8 @@ class CandidatosDB
 		$sql .= $aux->qstr($cEntidad->getEnvDiploma(), false) . ",";
 
 
-		$sql .= $aux->qstr($cEntidad->getInformado(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getFinalizado(), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getInformado()), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getFinalizado()), false) . ",";
 		$sql .= $aux->DBDate($cEntidad->getFechaFinalizado()) . ",";
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->sysTimeStamp . ",";
@@ -210,7 +210,7 @@ class CandidatosDB
 		$sql .= "apellido2=" . $aux->qstr($cEntidad->getApellido2(), false) . ", ";
 		$sql .= "dni=" . $aux->qstr($cEntidad->getDni(), false) . ", ";
 		$sql .= "mail=" . $aux->qstr($cEntidad->getMail(), false) . ", ";
-		$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+		$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 		$sql .= "idTratamiento=" . $aux->qstr($cEntidad->getIdTratamiento(), false) . ", ";
 		$sql .= "idSexo=" . $aux->qstr($cEntidad->getIdSexo(), false) . ", ";
 		$sql .= "idEdad=" . $aux->qstr($cEntidad->getIdEdad(), false) . ", ";
@@ -230,9 +230,9 @@ class CandidatosDB
 		$sql .= (trim($cEntidad->getCertificada()) != "") ? "certificada=" . $aux->qstr($cEntidad->getCertificada(), false) . "," : "";
 		$sql .= (trim($cEntidad->getEnvDiploma()) != "") ? "envDiploma=" . $aux->qstr($cEntidad->getEnvDiploma(), false) . "," : "";
 
-		$sql .= (trim($cEntidad->getInformado()) != "") ? "informado=" . $aux->qstr($cEntidad->getInformado(), false) . "," : "";
-		$sql .= (trim($cEntidad->getFinalizado()) != "") ? "finalizado=" . $aux->qstr($cEntidad->getFinalizado(), false) . "," : "";
-		//$sql .= "finalizado=" . $aux->qstr($cEntidad->getFinalizado(), false) . ", ";
+		$sql .= (trim($cEntidad->getInformado()) != "") ? "informado=" . $aux->qstr(intval($cEntidad->getInformado()), false) . "," : "";
+		$sql .= (trim($cEntidad->getFinalizado()) != "") ? "finalizado=" . $aux->qstr(intval($cEntidad->getFinalizado()), false) . "," : "";
+		//$sql .= "finalizado=" . $aux->qstr(intval($cEntidad->getFinalizado()), false) . ", ";
 		$sql .= (trim($cEntidad->getFechaFinalizado()) != "") ? "fechaFinalizado=" . $aux->qstr($cEntidad->getFechaFinalizado(), false) . "," : "";
 		//$sql .= "fechaFinalizado=" . $aux->DBDate($cEntidad->getFechaFinalizado()) . ",";
 		$sql .= "fecMod=" . $aux->sysTimeStamp . ",";
@@ -706,7 +706,7 @@ class CandidatosDB
 		if ($cEntidad->getInformado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="informado>=" . $aux->qstr($cEntidad->getInformado(), false);
+			$sql .="informado>=" . $aux->qstr(intval($cEntidad->getInformado()), false);
 		}
 		if ($cEntidad->getInformadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -716,7 +716,7 @@ class CandidatosDB
 		if ($cEntidad->getFinalizado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="finalizado>=" . $aux->qstr($cEntidad->getFinalizado(), false);
+			$sql .="finalizado>=" . $aux->qstr(intval($cEntidad->getFinalizado()), false);
 		}
 		if ($cEntidad->getFinalizadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -975,7 +975,7 @@ class CandidatosDB
 		if ($cEntidad->getInformado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="informado>=" . $aux->qstr($cEntidad->getInformado(), false);
+			$sql .="informado>=" . $aux->qstr(intval($cEntidad->getInformado()), false);
 		}
 		if ($cEntidad->getInformadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -985,7 +985,7 @@ class CandidatosDB
 		if ($cEntidad->getFinalizado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="finalizado>=" . $aux->qstr($cEntidad->getFinalizado(), false);
+			$sql .="finalizado>=" . $aux->qstr(intval($cEntidad->getFinalizado()), false);
 		}
 		if ($cEntidad->getFinalizadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);

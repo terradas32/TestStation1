@@ -349,7 +349,7 @@ include_once ('include/conexion.php');
 					$sql = $cEntidadDB->readListaIN($cEntidad);
 				}
 			}
-			echo "<br />" . $sql;
+			// echo "<br />" . $sql;
 			$pager = new ADODB_Pager($conn,$sql,'respuestas_pruebas');
 			if ($bInit)	$pager->curr_page=1;
 			$pager->showPageLinks = true;
@@ -2152,8 +2152,8 @@ if(count($valid_files) > 0){
 		$cEntidad->setFinalizado((isset($_POST["fFinalizado"])) ? $_POST["fFinalizado"] : "");
 		$cEntidad->setLeidoInstrucciones((isset($_POST["fLeidoInstrucciones"])) ? $_POST["fLeidoInstrucciones"] : "");
 		$cEntidad->setLeidoEjemplos((isset($_POST["fLeidoEjemplos"])) ? $_POST["fLeidoEjemplos"] : "");
-		$cEntidad->setMinutos_test((isset($_POST["fMinutos_test"])) ? $_POST["fMinutos_test"] : "");
-		$cEntidad->setSegundos_test((isset($_POST["fSegundos_test"])) ? $_POST["fSegundos_test"] : "");
+		//$cEntidad->setMinutos_test((isset($_POST["fMinutos_test"])) ? $_POST["fMinutos_test"] : "");
+		//$cEntidad->setSegundos_test((isset($_POST["fSegundos_test"])) ? $_POST["fSegundos_test"] : "");
 		$cEntidad->setFecAlta((isset($_POST["fFecAlta"])) ? $_POST["fFecAlta"] : "");
 		$cEntidad->setFecMod((isset($_POST["fFecMod"])) ? $_POST["fFecMod"] : "");
 		$cEntidad->setUsuAlta($_cEntidadUsuarioTK->getIdUsuario());
@@ -2191,8 +2191,8 @@ if(count($valid_files) > 0){
 		$cEntidad->setLeidoInstruccionesHast((isset($_POST["LSTLeidoInstruccionesHast"]) && $_POST["LSTLeidoInstruccionesHast"] != "") ? $_POST["LSTLeidoInstruccionesHast"] : "");	$cEntidad->setBusqueda(constant("STR_LEIDO_INSTRUCCIONES") . " " . constant("STR_HASTA"), (isset($_POST["LSTLeidoInstruccionesHast"]) && $_POST["LSTLeidoInstruccionesHast"] != "" ) ? $_POST["LSTLeidoInstruccionesHast"] : "");
 		$cEntidad->setLeidoEjemplos((isset($_POST["LSTLeidoEjemplos"]) && $_POST["LSTLeidoEjemplos"] != "") ? $_POST["LSTLeidoEjemplos"] : "");	$cEntidad->setBusqueda(constant("STR_LEIDO_EJEMPLOS"), (isset($_POST["LSTLeidoEjemplos"]) && $_POST["LSTLeidoEjemplos"] != "" ) ? $_POST["LSTLeidoEjemplos"] : "");
 		$cEntidad->setLeidoEjemplosHast((isset($_POST["LSTLeidoEjemplosHast"]) && $_POST["LSTLeidoEjemplosHast"] != "") ? $_POST["LSTLeidoEjemplosHast"] : "");	$cEntidad->setBusqueda(constant("STR_LEIDO_EJEMPLOS") . " " . constant("STR_HASTA"), (isset($_POST["LSTLeidoEjemplosHast"]) && $_POST["LSTLeidoEjemplosHast"] != "" ) ? $_POST["LSTLeidoEjemplosHast"] : "");
-		$cEntidad->setMinutos_test((isset($_POST["LSTMinutos_test"]) && $_POST["LSTMinutos_test"] != "") ? $_POST["LSTMinutos_test"] : "");	$cEntidad->setBusqueda(constant("STR_MINUTOS_TEST"), (isset($_POST["LSTMinutos_test"]) && $_POST["LSTMinutos_test"] != "" ) ? $_POST["LSTMinutos_test"] : "");
-		$cEntidad->setSegundos_test((isset($_POST["LSTSegundos_test"]) && $_POST["LSTSegundos_test"] != "") ? $_POST["LSTSegundos_test"] : "");	$cEntidad->setBusqueda(constant("STR_SEGUNDOS_TEST"), (isset($_POST["LSTSegundos_test"]) && $_POST["LSTSegundos_test"] != "" ) ? $_POST["LSTSegundos_test"] : "");
+		//$cEntidad->setMinutos_test((isset($_POST["LSTMinutos_test"]) && $_POST["LSTMinutos_test"] != "") ? $_POST["LSTMinutos_test"] : "");	$cEntidad->setBusqueda(constant("STR_MINUTOS_TEST"), (isset($_POST["LSTMinutos_test"]) && $_POST["LSTMinutos_test"] != "" ) ? $_POST["LSTMinutos_test"] : "");
+		//$cEntidad->setSegundos_test((isset($_POST["LSTSegundos_test"]) && $_POST["LSTSegundos_test"] != "") ? $_POST["LSTSegundos_test"] : "");	$cEntidad->setBusqueda(constant("STR_SEGUNDOS_TEST"), (isset($_POST["LSTSegundos_test"]) && $_POST["LSTSegundos_test"] != "" ) ? $_POST["LSTSegundos_test"] : "");
 		$cEntidad->setFecAlta((isset($_POST["LSTFecAlta"]) && $_POST["LSTFecAlta"] != "") ? $_POST["LSTFecAlta"] : "");	$cEntidad->setBusqueda(constant("STR_FECHA_DE_ALTA"), (isset($_POST["LSTFecAlta"]) && $_POST["LSTFecAlta"] != "" ) ? $conn->UserDate($_POST["LSTFecAlta"],constant("USR_FECHA"),false) : "");
 		$cEntidad->setFecAltaHast((isset($_POST["LSTFecAltaHast"]) && $_POST["LSTFecAltaHast"] != "") ? $_POST["LSTFecAltaHast"] : "");	$cEntidad->setBusqueda(constant("STR_FECHA_DE_ALTA") . " " . constant("STR_HASTA"), (isset($_POST["LSTFecAltaHast"]) && $_POST["LSTFecAltaHast"] != "" ) ? $conn->UserDate($_POST["LSTFecAltaHast"],constant("USR_FECHA"),false) : "");
 		$cEntidad->setFecMod((isset($_POST["LSTFecMod"]) && $_POST["LSTFecMod"] != "") ? $_POST["LSTFecMod"] : "");	$cEntidad->setBusqueda(constant("STR_FECHA_DE_MODIFICACION"), (isset($_POST["LSTFecMod"]) && $_POST["LSTFecMod"] != "" ) ? $conn->UserDate($_POST["LSTFecMod"],constant("USR_FECHA"),false) : "");

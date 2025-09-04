@@ -508,7 +508,7 @@ include_once ('include/conexion.php');
 												if ($rsValidar->recordCount() == 0){
 													for ($c=0;$c < count($aSQLPuntuacionesPPL); $c++){
 														$conn->Execute($aSQLPuntuacionesPPL[$c]);
-														sleep(1);
+														//sleep(1);
 													}
 												}
 											}
@@ -528,7 +528,7 @@ include_once ('include/conexion.php');
 												if ($rsValidar->recordCount() == 0){
 													for ($c=0;$c < count($aSQLPuntuacionesC); $c++){
 														$conn->Execute($aSQLPuntuacionesC[$c]);
-														sleep(1);
+														//sleep(1);
 													}
 													$conn->Execute($sSQLIdioma);
 
@@ -646,7 +646,7 @@ include_once ('include/conexion.php');
 															for ($c=0;$c < count($aSQLPuntuacionesPPL); $c++){
 																//echo "<br />" . $aSQLPuntuacionesPPL[$c];
 																$conn->Execute($aSQLPuntuacionesPPL[$c]);
-																sleep(1);
+																//sleep(1);
 															}
 														}
 													}
@@ -666,7 +666,7 @@ include_once ('include/conexion.php');
 															for ($c=0;$c < count($aSQLPuntuacionesC); $c++){
 																//echo "<br />" . $aSQLPuntuacionesC[$c];
 																$conn->Execute($aSQLPuntuacionesC[$c]);
-																sleep(1);
+																//sleep(1);
 															}
 														}
 													}
@@ -764,7 +764,7 @@ include_once ('include/conexion.php');
 															for ($c=0;$c < count($aSQLPuntuacionesPPL); $c++){
 																//echo "<br />" . $aSQLPuntuacionesPPL[$c];
 																$conn->Execute($aSQLPuntuacionesPPL[$c]);
-																sleep(1);
+																//sleep(1);
 															}
 														}
 													}
@@ -784,7 +784,7 @@ include_once ('include/conexion.php');
 															for ($c=0;$c < count($aSQLPuntuacionesC); $c++){
 																//echo "<br />" . $aSQLPuntuacionesC[$c];
 																$conn->Execute($aSQLPuntuacionesC[$c]);
-																sleep(1);
+																//sleep(1);
 															}
 														}
 													}

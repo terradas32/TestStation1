@@ -176,6 +176,7 @@
 	// Se ocultan todos los botones, ya que este tipo en cuanto hay 2 seleccionados pasa página
 	?>
 	<script>
+		MathJax.typeset();	
 		ocultomuestro(0,0,0);
 		if ("<?php echo $_POST['fIdPrueba']?>" == "13")
 		{

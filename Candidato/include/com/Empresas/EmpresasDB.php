@@ -122,8 +122,8 @@ class EmpresasDB
 		$sql .= "idEmpresa" . ",";
 		$sql .= "nombre" . ",";
 		$sql .= "cif" . ",";
-		$sql .= (trim($cEntidad->getUsuario()) != "") ? "usuario" . "," : "";
-	  	$sql .= (trim($cEntidad->getPassword()) != "") ? "password" . "," : "";
+		$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? "usuario" . "," : "";
+	  	$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password" . "," : "";
 		$sql .= "mail" . ",";
 		$sql .= "mail2" . ",";
 		$sql .= "mail3" . ",";
@@ -155,8 +155,8 @@ class EmpresasDB
 		$sql .= $aux->qstr($newId, false) . ",";
 		$sql .= $aux->qstr($cEntidad->getNombre(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getCif(), false) . ",";
-		$sql .= (trim($cEntidad->getUsuario()) != "") ? $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
-    	$sql .= (trim($cEntidad->getPassword()) != "") ? $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+		$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
+    	$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 		$sql .= $aux->qstr($cEntidad->getMail(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getMail2(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getMail3(), false) . ",";
@@ -298,9 +298,9 @@ class EmpresasDB
 			$sql = "UPDATE empresas SET ";
 			$sql .= "nombre=" . $aux->qstr($cEntidad->getNombre(), false) . ", ";
 			$sql .= "cif=" . $aux->qstr($cEntidad->getCif(), false) . ", ";
-	  		$sql .= (trim($cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
+	  		$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
 //En Candidatos NO se modifica la pass ya que básicamente se desuentan donguel de empresa
-//	  		$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+//	  		$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 			$sql .= "mail=" . $aux->qstr($cEntidad->getMail(), false) . ", ";
 			$sql .= "mail2=" . $aux->qstr($cEntidad->getMail2(), false) . ", ";
 			$sql .= "mail3=" . $aux->qstr($cEntidad->getMail3(), false) . ", ";
@@ -428,8 +428,8 @@ class EmpresasDB
 							$sql .= "pathLogo=" . $aux->qstr($cEntidad->getPathLogo(), false) . ", ";
 						$sql .= "nombre=" . $aux->qstr($cEntidad->getNombre(), false) . ", ";
 						$sql .= "cif=" . $aux->qstr($cEntidad->getCif(), false) . ", ";
-				  		$sql .= (trim($cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
-				  		$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+				  		$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
+				  		$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 						$sql .= "mail=" . $aux->qstr($cEntidad->getMail(), false) . ", ";
 						$sql .= "mail2=" . $aux->qstr($cEntidad->getMail2(), false) . ", ";
 						$sql .= "mail3=" . $aux->qstr($cEntidad->getMail3(), false) . ", ";
@@ -516,8 +516,8 @@ class EmpresasDB
 					$sql .= "pathLogo=" . $aux->qstr($cEntidad->getPathLogo(), false) . ", ";
 				$sql .= "nombre=" . $aux->qstr($cEntidad->getNombre(), false) . ", ";
 				$sql .= "cif=" . $aux->qstr($cEntidad->getCif(), false) . ", ";
-	  			$sql .= (trim($cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
-	  			$sql .= (trim($cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
+	  			$sql .= (trim(is_null($cEntidad->getUsuario()) ? "" : $cEntidad->getUsuario()) != "") ? "usuario=" . $aux->qstr($cEntidad->getUsuario(), false) . "," : "";
+	  			$sql .= (trim(is_null($cEntidad->getPassword()) ? "" : $cEntidad->getPassword()) != "") ? "password=" . $aux->qstr(password_hash($cEntidad->getPassword(), PASSWORD_BCRYPT), false) . "," : "";
 				$sql .= "mail=" . $aux->qstr($cEntidad->getMail(), false) . ", ";
 				$sql .= "mail2=" . $aux->qstr($cEntidad->getMail2(), false) . ", ";
 				$sql .= "mail3=" . $aux->qstr($cEntidad->getMail3(), false) . ", ";

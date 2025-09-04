@@ -65,7 +65,7 @@ function cargaSlider(){
 	$.ajax({
 		type: "POST",
 		cache: false,
-	    url : '<?php echo constant("HTTP_SERVER")?>Template/sliderImg.php',
+	    url : '<?php echo constant("HTTPS_SERVER")?>Template/sliderImg.php',
         success : function (data){
         	$contenidoAjax.html(data);        	
 	    	

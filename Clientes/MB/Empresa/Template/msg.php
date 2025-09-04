@@ -34,8 +34,8 @@
         </div><!-- Fin de accesos -->
     </div><!-- Fin de cuerpo -->
     <div id="pie">
-        <p class="dweb"><a href="http://www.azulpomodoro.com" title="Diseño Web"><?php echo constant("STR_DISENO_DESARROLLO");?></a></p>
-        <p class="copy">Psicólogos Empresariales - <?php echo constant("STR_DERECHOS_RESERVADOS");?></p>
+        <!-- <p class="dweb"><a href="http://www.azulpomodoro.com" title="Diseño Web"><?php echo constant("STR_DISENO_DESARROLLO");?></a></p>
+         --><p class="copy">Psicólogos Empresariales - <?php echo constant("STR_DERECHOS_RESERVADOS");?></p>
     </div><!-- Fin de pie -->
 </div><!-- Fin de la pagina -->
 </body>

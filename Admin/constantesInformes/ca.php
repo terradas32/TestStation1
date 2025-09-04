@@ -3,6 +3,8 @@
 define("STR_PIE_INFORMES", "és una marca registrada per Psicólogos Empresariales. La reproducció total o parcial d'aquest Informe per qualsevol mitjà, infringeix els drets de Copyright.");
 define("STR_NOMBRE_APELLIDOS", "Nom i Cognoms");
 define("STR_FECHA_INFORME", "Data de l'Informe");
+define("STR_FECHA_INFORME_DIAN", "Finish date");
+define("STR_IDENTIFICADOR", "Número de Cédula");
 define("STR_INTRODUCCION", "Introducció");
 define("STR_INTRODUCCION_CAPS", "INTRODUCCIÓ");
 define("STR_PUNTUACION_DIRECTA", "Puntuació Directa");

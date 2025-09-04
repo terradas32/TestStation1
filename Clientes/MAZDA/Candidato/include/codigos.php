@@ -65,7 +65,7 @@ function cargaSlider(){
 	$.ajax({
 		type: "POST",
 		cache: false,
-	    url : '<?php echo constant("HTTP_SERVER")?>Template/sliderImg.php',
+	    url : '<?php echo constant("HTTPS_SERVER")?>Template/sliderImg.php',
         success : function (data){
         	$contenidoAjax.html(data);        	
 	    	
@@ -97,7 +97,7 @@ $(window).load(function(){
 })
 
 function abrirVentana(bImg, file){
-	preurl ="<?php echo constant('HTTP_SERVER')?>view.php?bImg=" + bImg + "&File=" + file;
+	preurl ="<?php echo constant('HTTPS_SERVER')?>view.php?bImg=" + bImg + "&File=" + file;
 	prename = "File";
 	var miv=window.open(preurl, prename,"height=150,width=150,status=no,toolbar=no,menubar=no,location=no,scrollbars=yes,resizable=yes");
 	miv.focus();

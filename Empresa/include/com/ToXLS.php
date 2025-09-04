@@ -68,7 +68,7 @@ class ToXLS
 			for ($i = 0; $i < $iColTabla; $i++)
 			{
 				$nombrefield=$result->FetchField($i);
-				$sDato= str_replace(array("\r", "\n", "<br>", "<br />"), array("", chr(10), chr(10), chr(10)), html_entity_decode(strip_tags($row[$nombrefield->name], "<br><br />"),ENT_QUOTES,"UTF-8" ));
+				$sDato= str_replace(array("\r", "\n", "<br>", "<br />", '"'), array("", chr(10), chr(10), chr(10), "''"), html_entity_decode(strip_tags($row[$nombrefield->name], "<br><br />"),ENT_QUOTES,"UTF-8" ));
 				$binDatosExcel .='"' . $sDato . '";';
 			}
 			$xExcel++;

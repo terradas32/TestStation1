@@ -12,6 +12,8 @@ class Informes_pruebas_empresas
 	**/
 		var $iCont; //Contador Global
 		var $aBusqueda; //Parámetros del buscador.
+		var $idEmpresa;
+		var $idEmpresaHast;
 		var $sOrderBy; //Campo order de la query de búsqueda.
 		var $sOrder; //Orden DESC ASC.
 		var $sLineasPagina; //Líneas por página.

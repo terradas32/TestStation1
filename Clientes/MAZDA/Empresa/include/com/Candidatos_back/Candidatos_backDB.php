@@ -129,8 +129,8 @@ class Candidatos_backDB
 		$sql .= $aux->qstr($cEntidad->getTelefono(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getEstadoCivil(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getNacionalidad(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getInformado(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getFinalizado(), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getInformado()), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getFinalizado()), false) . ",";
 		$sql .= $aux->DBDate($cEntidad->getFechaFinalizado()) . ",";
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->sysTimeStamp . ",";
@@ -247,8 +247,8 @@ class Candidatos_backDB
 		$sql .= "telefono=" . $aux->qstr($cEntidad->getTelefono(), false) . ", ";
 		$sql .= "estadoCivil=" . $aux->qstr($cEntidad->getEstadoCivil(), false) . ", ";
 		$sql .= "nacionalidad=" . $aux->qstr($cEntidad->getNacionalidad(), false) . ", ";
-		$sql .= "informado=" . $aux->qstr($cEntidad->getInformado(), false) . ", ";
-		$sql .= "finalizado=" . $aux->qstr($cEntidad->getFinalizado(), false) . ", ";
+		$sql .= "informado=" . $aux->qstr(intval($cEntidad->getInformado()), false) . ", ";
+		$sql .= "finalizado=" . $aux->qstr(intval($cEntidad->getFinalizado()), false) . ", ";
 		$sql .= "fechaFinalizado=" . $aux->DBDate($cEntidad->getFechaFinalizado()) . ",";
 		$sql .= "fecMod=" . $aux->sysTimeStamp . ",";
 		$sql .= "usuMod=" . $aux->qstr($cEntidad->getUsuMod(), false) ;
@@ -691,7 +691,7 @@ class Candidatos_backDB
 		if ($cEntidad->getInformado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="informado>=" . $aux->qstr($cEntidad->getInformado(), false);
+			$sql .="informado>=" . $aux->qstr(intval($cEntidad->getInformado()), false);
 		}
 		if ($cEntidad->getInformadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -701,7 +701,7 @@ class Candidatos_backDB
 		if ($cEntidad->getFinalizado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="finalizado>=" . $aux->qstr($cEntidad->getFinalizado(), false);
+			$sql .="finalizado>=" . $aux->qstr(intval($cEntidad->getFinalizado()), false);
 		}
 		if ($cEntidad->getFinalizadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -940,7 +940,7 @@ class Candidatos_backDB
 		if ($cEntidad->getInformado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="informado>=" . $aux->qstr($cEntidad->getInformado(), false);
+			$sql .="informado>=" . $aux->qstr(intval($cEntidad->getInformado()), false);
 		}
 		if ($cEntidad->getInformadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -950,7 +950,7 @@ class Candidatos_backDB
 		if ($cEntidad->getFinalizado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="finalizado>=" . $aux->qstr($cEntidad->getFinalizado(), false);
+			$sql .="finalizado>=" . $aux->qstr(intval($cEntidad->getFinalizado()), false);
 		}
 		if ($cEntidad->getFinalizadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);

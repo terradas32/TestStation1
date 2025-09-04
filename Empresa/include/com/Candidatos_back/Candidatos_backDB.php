@@ -129,8 +129,8 @@ class Candidatos_backDB
 		$sql .= $aux->qstr($cEntidad->getTelefono(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getEstadoCivil(), false) . ",";
 		$sql .= $aux->qstr($cEntidad->getNacionalidad(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getInformado(), false) . ",";
-		$sql .= $aux->qstr($cEntidad->getFinalizado(), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getInformado()), false) . ",";
+		$sql .= $aux->qstr(intval($cEntidad->getFinalizado()), false) . ",";
 		$sql .= $aux->DBDate($cEntidad->getFechaFinalizado()) . ",";
 		$sql .= $aux->sysTimeStamp . ",";
 		$sql .= $aux->sysTimeStamp . ",";
@@ -247,8 +247,8 @@ class Candidatos_backDB
 		$sql .= "telefono=" . $aux->qstr($cEntidad->getTelefono(), false) . ", ";
 		$sql .= "estadoCivil=" . $aux->qstr($cEntidad->getEstadoCivil(), false) . ", ";
 		$sql .= "nacionalidad=" . $aux->qstr($cEntidad->getNacionalidad(), false) . ", ";
-		$sql .= "informado=" . $aux->qstr($cEntidad->getInformado(), false) . ", ";
-		$sql .= "finalizado=" . $aux->qstr($cEntidad->getFinalizado(), false) . ", ";
+		$sql .= "informado=" . $aux->qstr(intval($cEntidad->getInformado()), false) . ", ";
+		$sql .= "finalizado=" . $aux->qstr(intval($cEntidad->getFinalizado()), false) . ", ";
 		$sql .= "fechaFinalizado=" . $aux->DBDate($cEntidad->getFechaFinalizado()) . ",";
 		$sql .= "fecMod=" . $aux->sysTimeStamp . ",";
 		$sql .= "usuMod=" . $aux->qstr($cEntidad->getUsuMod(), false) ;
@@ -691,7 +691,7 @@ class Candidatos_backDB
 		if ($cEntidad->getInformado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="informado>=" . $aux->qstr($cEntidad->getInformado(), false);
+			$sql .="informado>=" . $aux->qstr(intval($cEntidad->getInformado()), false);
 		}
 		if ($cEntidad->getInformadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -701,7 +701,7 @@ class Candidatos_backDB
 		if ($cEntidad->getFinalizado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="finalizado>=" . $aux->qstr($cEntidad->getFinalizado(), false);
+			$sql .="finalizado>=" . $aux->qstr(intval($cEntidad->getFinalizado()), false);
 		}
 		if ($cEntidad->getFinalizadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -940,7 +940,7 @@ class Candidatos_backDB
 		if ($cEntidad->getInformado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="informado>=" . $aux->qstr($cEntidad->getInformado(), false);
+			$sql .="informado>=" . $aux->qstr(intval($cEntidad->getInformado()), false);
 		}
 		if ($cEntidad->getInformadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -950,7 +950,7 @@ class Candidatos_backDB
 		if ($cEntidad->getFinalizado() != ""){
 			$sql .= $this->getSQLWhere($and);
 			$and = true;
-			$sql .="finalizado>=" . $aux->qstr($cEntidad->getFinalizado(), false);
+			$sql .="finalizado>=" . $aux->qstr(intval($cEntidad->getFinalizado()), false);
 		}
 		if ($cEntidad->getFinalizadoHast() != ""){
 			$sql .= $this->getSQLWhere($and);
@@ -1148,14 +1148,35 @@ class Candidatos_backDB
 					$cEntidad->setUsuMod($cEntidadProceso->getIdEmpresa());
 
 					$bDuplicadosF = false;
+
+
 					if (!empty($bCabeceras)){
 						if ($row > 0) {
-					        $num = count($data);
-					        for ($c=0; $c < $num; $c++){
-					        	if (!empty($aCampos[$c])){
+							$num = count($data);
+							for ($c=0; $c < $num; $c++){
+								if (!empty($aCampos[$c])){
 					        		if ($aCampos[$c] == 'Mail'){
-					        			if ($cUtilidades->ValidaMail($data[$c])){
-					        				$iEmailValido++;
+										//David - Apaño hecho para DIAN
+										if($cEntidad->getIdEmpresa() != 5897){
+											if ($cUtilidades->ValidaMail($data[$c])){
+												$iEmailValido++;
+												if (in_array(strtolower($data[$c]), $aEmails)) {
+													$iDuplicadosF++;
+													$bDuplicadosF = true;
+												}else{
+													$aEmails[] = strtolower($data[$c]);
+													$iDistintosF++;
+													$bDuplicadosF = false;
+												}
+											}else{
+												$bDuplicadosF = true;
+												$iEmailNOValido++;
+											}
+											//echo "<script>console.log('Si es DIAN');</script>";
+										}
+										else{
+											//echo "<script>console.log('No es DIAN');</script>";
+											$iEmailValido++;
 											if (in_array(strtolower($data[$c]), $aEmails)) {
 												$iDuplicadosF++;
 												$bDuplicadosF = true;
@@ -1164,9 +1185,6 @@ class Candidatos_backDB
 												$iDistintosF++;
 												$bDuplicadosF = false;
 											}
-										}else{
-											$bDuplicadosF = true;
-											$iEmailNOValido++;
 										}
 									}
 					        		$funcionSet = "set" . $aCampos[$c];
@@ -1199,8 +1217,26 @@ class Candidatos_backDB
 				        for ($c=0; $c < $num; $c++){
 				        	if (!empty($aCampos[$c])){
 				        		if ($aCampos[$c] == 'Mail'){
-				        			if ($cUtilidades->ValidaMail($data[$c])){
-				        				$iEmailValido++;
+									//David - Apaño hecho para DIAN
+									if($cEntidad->getIdEmpresa() != 5897){
+										if ($cUtilidades->ValidaMail($data[$c])){
+											$iEmailValido++;
+											if (in_array(strtolower($data[$c]), $aEmails)) {
+												$iDuplicadosF++;
+												$bDuplicadosF = true;
+											}else{
+												$aEmails[] = strtolower($data[$c]);
+												$iDistintosF++;
+												$bDuplicadosF = false;
+											}
+										}else{
+											$bDuplicadosF = true;
+											$iEmailNOValido++;
+										}
+
+									}
+				        			else{
+										$iEmailValido++;
 										if (in_array(strtolower($data[$c]), $aEmails)) {
 											$iDuplicadosF++;
 											$bDuplicadosF = true;
@@ -1209,9 +1245,6 @@ class Candidatos_backDB
 											$iDistintosF++;
 											$bDuplicadosF = false;
 										}
-									}else{
-										$bDuplicadosF = true;
-										$iEmailNOValido++;
 									}
 								}
 				        		$funcionSet = "set" . $aCampos[$c];

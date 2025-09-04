@@ -28,7 +28,7 @@ ob_start();
 	require_once(constant("DIR_WS_COM") . "Idiomas/IdiomasDB.php");
 	require_once(constant("DIR_WS_COM") . "Idiomas/Idiomas.php");
 
-include_once ('include/conexion.php');
+	include_once ('include/conexion.php');
 
 	require_once(constant("DIR_WS_INCLUDE") . "SeguridadTemplate.php");
 
@@ -598,8 +598,6 @@ include_once ('include/conexion.php');
 						}
 						$lista=$pager->getRS();
 						include('Template/ProcesoPruebas/mntopciones_ejemplosl.php');
-
-
 					}else{
 						?><script language="javascript" type="text/javascript">alert("<?php echo constant("ERR_FORM_ERROR");?>\n<?php echo $cEntidadDB->ver_errores();?>","<?php echo constant("STR_NOTIFICACION");?>");</script><?php
 						$_POST['MODO']=constant("MNT_MODIFICAR");
@@ -843,7 +841,7 @@ include_once ('include/conexion.php');
 					break;
 				}
 				if(isset($_POST['fEjemplo']) && $_POST['fEjemplo']==1){
-					//echo "entra";
+
 					$cEjemplos = readListaEjemplos($cEjemplos);
 					if (isset($_POST["fReordenar"]) &&  !empty($_POST["fReordenar"])){
 						$bInit=true;

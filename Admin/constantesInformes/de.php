@@ -3,7 +3,11 @@
 define("STR_PIE_INFORMES" 												, "es una marca registrada por Psicólogos Empresariales. La reproducción total o parcial de este Informe por cualquier medio, infringe los derechos de Copyright.");
 define("STR_NOMBRE_APELLIDOS"											, "Nombre y Apellidos");
 define("STR_FECHA_INFORME"												, "Fecha del Informe");
+define("STR_FECHA_INFORME_DIAN"                 						, "Finish date");
+define("STR_IDENTIFICADOR"												, "Número de Cédula");
 define("STR_INTRODUCCION" 												, "Introducción");
+define("STR_FECHA_INFORME_DIAN", "Finish date");
+define("STR_IDENTIFICADOR", "Número de Cédula");
 define("STR_PUNTUACION_DIRECTA" 										, "Puntuación Directa");
 define("STR_PUNTUACION_PERCENTIL" 										, "Puntuación Percentil");
 define("STR_INDICE_RAPIDEZ" 											, "Índice de Rapidez");

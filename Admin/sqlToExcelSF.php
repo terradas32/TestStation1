@@ -538,7 +538,7 @@ include_once ('include/conexion.php');
 								$cItemsDB = new ItemsDB($conn);
 								$cItems = $cItemsDB->readEntidad($cItems);
 
-								$iPd += $cUtilidades->getValorCalculadoPRUEBAS($vRPI, $cItems, $conn);
+								$iPd += intval($cUtilidades->getValorCalculadoPRUEBAS($vRPI, $cItems, $conn));
 										
 								$listaEscalas_items->MoveNext();
 				        	}

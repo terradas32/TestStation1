@@ -1,5 +1,19 @@
 <?php
 
+if(!isset($counter) || $counter==0){
+	
+	if(isset($_POST['esZip']) && $_POST['esZip'] == true){
+		$dirGestor = constant("DIR_WS_GESTOR_HTTPS");
+		$documentRoot = constant("DIR_FS_DOCUMENT_ROOT_ADMIN");
+	}else{
+		$dirGestor = constant("DIR_WS_GESTOR");
+		$documentRoot = constant("DIR_FS_DOCUMENT_ROOT");
+	}
+
+	global $dirGestor;
+	global $documentRoot;
+}
+
 	$comboTIPOS_INFORMES	= new Combo($conn,"fIdTipoInforme","idTipoInforme","nombre","Descripcion","tipos_informes","",constant("SLC_OPCION"),"codIdiomaIso2=" . $conn->qstr($_POST['fCodIdiomaIso2'], false),"","fecMod");
 	$sDescInforme = $comboTIPOS_INFORMES->getDescripcionCombo($_POST['fIdTipoInforme']);
 
@@ -69,7 +83,7 @@
 	$sHtmlFin	= '';
 
 	$sDirImg="imgContratos";
-	$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+	$spath = (substr($documentRoot, -1, 1) != '/') ? $documentRoot . '/' : $documentRoot;
 
 	$sHtmlInicio='
 		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -108,7 +122,7 @@
     				</tr>
 					<tr>
     					<td width="80%" align="center">
-    						<img src="' . constant('DIR_WS_GESTOR') . str_replace(".jpg" , "Informe.jpg", $cPruebas->getLogoPrueba()).'" width="319" />
+    						<img src="' . $dirGestor . str_replace(".jpg" , "Informe.jpg", $cPruebas->getLogoPrueba()).'" width="319" />
     					</td>
     				</tr>
     				<tr>
@@ -168,7 +182,7 @@
 	{
 		$replace = array('@', '.');
 		$sDirImg="imgInformes/";
-		$spath = (substr(constant("DIR_FS_DOCUMENT_ROOT"), -1, 1) != '/') ? constant("DIR_FS_DOCUMENT_ROOT") . '/' : constant("DIR_FS_DOCUMENT_ROOT");
+		$spath = (substr($documentRoot, -1, 1) != '/') ? $documentRoot . '/' : $documentRoot;
 
 		$_fichero = $spath . $sDirImg . $sNombre . ".html";
 		//$cEntidad->chk_dir($spath . $sDirImg, 0777);
@@ -183,7 +197,7 @@
 		@define("OUTPUT_FILE_DIRECTORY", $spath . $sDirImg);
 		require_once(constant('HTML2PS_DIR') . 'config.inc.php');
 		require_once(constant('HTML2PS_DIR') . 'pipeline.factory.class.php');
-		$g_baseurl = constant('DIR_WS_GESTOR') . $sDirImg . $sNombre . '.html';
+		$g_baseurl = $dirGestor . $sDirImg . $sNombre . '.html';
 		$GLOBALS['g_config'] = array(
                              'compress'      => '',
                              'cssmedia'      => 'Screen',

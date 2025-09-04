@@ -44,6 +44,10 @@ class Empresas_usuarios
 		var $usuAltaHast;
 		var $usuMod;
 		var $usuModHast;
+		var $power_bi_token;
+		var $power_bi_active;
+		var $power_bi_token_fit;
+		var $power_bi_active_fit;
 	/**
 	* Constructor q inicializa los datos de la clase.
 	* @param $conn			Conexión
@@ -79,6 +83,10 @@ class Empresas_usuarios
 		$this->usuAltaHast			= "";
 		$this->usuMod			= "";
 		$this->usuModHast			= "";
+		$this->power_bi_token	= "";
+		$this->power_bi_active =  "";
+		$this->power_bi_token_fit	= "";
+		$this->power_bi_active_fit =  "";
 		$this->PKListaExcel		=	"idUsuario,idEmpresa,usuario,password,nombre,apellido1,apellido2,email,fecBaja,bajaLog,ultimoLogin,token,ultimaAcc,fecAlta,fecMod,usuAlta,usuMod";
 		$this->DESCListaExcel	=	"Id Usuario,Id Empresa,Usuario,Password,Nombre,Apellido1,Apellido2,Email,Fec. Baja,BajaLog,UltimoLogin,Token,UltimaAcc,Fec. Alta,Fec. Mod,Usu. Alta,Usu. Mod";
 	}
@@ -584,5 +592,70 @@ class Empresas_usuarios
 	function setDESCListaExcel($sCadena){
 		$this->DESCListaExcel = $sCadena;
 	}
+
+	/**
+	* Devuelve el contenido de la propiedad power_bi_token
+	* @return string(500)
+	*/
+	function getpower_bi_token(){
+		return $this->power_bi_token;
+	}
+	/**
+	* Fija el contenido de la propiedad power_bi_token
+	* @param power_bi_token
+	* @return void
+	*/
+	function setpower_bi_token($sCadena){
+		$this->power_bi_token = $sCadena;
+	}
+
+	/**
+	* Devuelve el contenido de la propiedad power_bi_active
+	* @return string(500)
+	*/
+	function getpower_bi_active(){
+		return $this->power_bi_active;
+	}
+	/**
+	* Fija el contenido de la propiedad power_bi_active
+	* @param power_bi_active
+	* @return void
+	*/
+	function setpower_bi_active($sCadena){
+		$this->power_bi_active = $sCadena;
+	}
+
+	/**
+	* Devuelve el contenido de la propiedad power_bi_token_fit
+	* @return string(500)
+	*/
+	function getpower_bi_token_fit(){
+		return $this->power_bi_token_fit;
+	}
+	/**
+	* Fija el contenido de la propiedad power_bi_token_fit
+	* @param power_bi_token_fit
+	* @return void
+	*/
+	function setpower_bi_token_fit($sCadena){
+		$this->power_bi_token_fit = $sCadena;
+	}
+
+	/**
+	* Devuelve el contenido de la propiedad power_bi_active_fit
+	* @return string(500)
+	*/
+	function getpower_bi_active_fit(){
+		return $this->power_bi_active_fit;
+	}
+	/**
+	* Fija el contenido de la propiedad power_bi_active_fit
+	* @param power_bi_active_fit
+	* @return void
+	*/
+	function setpower_bi_active_fit($sCadena){
+		$this->power_bi_active_fit = $sCadena;
+	}
+	
 }//Fin de la Clase Empresas_usuarios
 ?>

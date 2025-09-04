@@ -88,13 +88,20 @@
 	//Datos para la clase de envio de correo
 	define("MAILER","smtp"); //PUEDE SER mail O smtp
     //Host, nombre de servidor smtp
-    define("HOSTMAIL","mail.psicologosempresariales.es");
+    //define("HOSTMAIL","smtp.office365.com");
+    //define("PORTMAIL","587");    //25 o 587 normalmente
+    //define("MAIL_ENCRYPTION","tls");	//tls, ssl
+
+    define("HOSTMAIL","smtp.office365.com");
     define("PORTMAIL","587");    //25 o 587 normalmente
+    define("MAIL_ENCRYPTION","tls");	//tls, ssl
+	
     //usuario y password PARA EL ENVIO DE CORREO, TIENE Q SER UNA CUENTA VÁLIDA
-    define("MAILUSERNAME","PEASA@psicologosempresariales.es");
-    define("MAILPASSWORD","He1BdP34s4");
+    define("MAILUSERNAME","test-station@people-experts.com");
+    define("MAILPASSWORD","S!524012145210uw%");
+
 	//Email de contacto.
-	define("EMAIL_CONTACTO","PEASA@psicologosempresariales.es");
+	define("EMAIL_CONTACTO","test-station@people-experts.com");
 	define("PERSONA_CONTACTO","Contacta");
 
 	//Espacio de izquierda,contenido y derecha.
@@ -114,11 +121,27 @@
 	define("LENGUAJEDEFECTO", "es");
 
 
+
 	//Contantes de conexión a Base de Datos
 	define("DB_TYPE", "mysql");
-	define("DB_DATOS", "teststation");
-	define("DB_HOST", "localhost");
-	define("DB_USUARIO", "root");
-	define("DB_PASSWORD","");
+	define("DB_DATOS", "ts");
+	define("DB_HOST", "webcorporativa2-instance.cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
+	define("DB_USUARIO", "teststation");
+	define("DB_PASSWORD","nosferatu62");
 	//FIN Contantes de conexión a Base de Datos
+
+	//Contantes de conexión a Base de Datos
+	//define("DB_TYPE", "mysql");
+	//define("DB_DATOS", "ts");
+	//define("DB_HOST", "all-db-pre-instance-1.cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
+	//define("DB_USUARIO", "peopleAdmin");
+	//define("DB_PASSWORD","?t6]SQ&6p!J~ZBy");
+	//FIN Contantes de conexión a Base de Datos
+
+	// Claves de codificacion de consultas SQL
+	define('EXCEL_ENC_KEY', hex2bin('d69220cb1499967ab971662c230fc49f')); // 32 bytes
+	define('EXCEL_HMAC_KEY', hex2bin('95fc924fa035df821fbc3049f1a5d2e1')); // 32 bytes
+
+	// Ventana de validez del token (segundos)
+	define('EXCEL_TOKEN_TTL', 300); // 5 minutos
 ?>

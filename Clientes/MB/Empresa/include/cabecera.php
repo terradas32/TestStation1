@@ -91,7 +91,7 @@ if (empty($_POST["fHijos"]))
 			<div id="cabecera-logo">
            <h2><?php if ($_cEntidadUsuarioTK->getPathLogo() != ""){
 						 $altura = 85;
-           		$size = @getimagesize(constant("DIR_WS_GESTOR") . $_cEntidadUsuarioTK->getPathLogo());
+           		$size = list($anchura, $altura) = @getimagesize(constant("DIR_WS_GESTOR") . $_cEntidadUsuarioTK->getPathLogo());
 							if($size){
 							$anchura=$size[0];
 							$altura=$size[1];

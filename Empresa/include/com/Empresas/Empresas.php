@@ -64,6 +64,11 @@ class Empresas
 		var $umbral_aviso;
 		var $umbral_avisoHast;
 
+		var $power_bi_token;
+		var $power_bi_active;
+		var $power_bi_token_fit;
+		var $power_bi_active_fit;
+
 		var $nombreCan;
 		var $apellido1;
 		var $apellido2;
@@ -160,6 +165,12 @@ class Empresas
 
 		$this->umbral_aviso			= "";
 		$this->umbral_avisoHast			= "";
+
+		$this->power_bi_token	= "";
+		$this->power_bi_active =  "";
+		$this->power_bi_token_fit	= "";
+		$this->power_bi_active_fit =  "";
+
 
 		$this->nombreCan			= "";
 		$this->apellido1			= "";
@@ -903,6 +914,7 @@ class Empresas
 	function setUmbral_aviso($sCadena){
 		$this->umbral_aviso = $sCadena;
 	}
+
 	/**
 	* Devuelve el contenido de la propiedad umbral_avisoHast
 	* @return int(11)
@@ -918,6 +930,69 @@ class Empresas
 	function setUmbral_avisoHast($sCadena){
 		$this->umbral_avisoHast = $sCadena;
 	}
+	
+	/**
+	* Devuelve el contenido de la propiedad power_bi_token
+	* @return string(500)
+	*/
+	function getpower_bi_token(){
+		return $this->power_bi_token;
+	}
+	/**
+	* Fija el contenido de la propiedad power_bi_token
+	* @param power_bi_token
+	* @return void
+	*/
+	function setpower_bi_token($sCadena){
+		$this->power_bi_token = $sCadena;
+	}
+
+	/**
+	* Devuelve el contenido de la propiedad power_bi_active
+	* @return string(500)
+	*/
+	function getpower_bi_active(){
+		return $this->power_bi_active;
+	}
+	/**
+	* Fija el contenido de la propiedad power_bi_active
+	* @param power_bi_active
+	* @return void
+	*/
+	function setpower_bi_active($sCadena){
+		$this->power_bi_active = $sCadena;
+	}
+	/**
+	* Devuelve el contenido de la propiedad power_bi_token_fit
+	* @return string(500)
+	*/
+	function getpower_bi_token_fit(){
+		return $this->power_bi_token_fit;
+	}
+	/**
+	* Fija el contenido de la propiedad power_bi_token_fit
+	* @param power_bi_token_fit
+	* @return void
+	*/
+	function setpower_bi_token_fit($sCadena){
+		$this->power_bi_token_fit = $sCadena;
+	}
+	/**
+	* Devuelve el contenido de la propiedad power_bi_active_fit
+	* @return string(500)
+	*/
+	function getpower_bi_active_fit(){
+		return $this->power_bi_active_fit;
+	}
+	/**
+	* Fija el contenido de la propiedad power_bi_active_fit
+	* @param power_bi_active_fit
+	* @return void
+	*/
+	function setpower_bi_active_fit($sCadena){
+		$this->power_bi_active_fit = $sCadena;
+	}
+
 	function setNombreCan($sCadena){
 		$this->nombreCan= $sCadena;
 	}

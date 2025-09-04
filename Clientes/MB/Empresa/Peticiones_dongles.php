@@ -80,7 +80,7 @@ include_once ('include/conexion.php');
 			$cEntidad	= readEntidad($cEntidad);
 			$newId	= $cEntidadDB->insertar($cEntidad);
 			if (!empty($newId)){
-			?><script language="javascript" type="text/javascript">alert("Su solicitud ha sido tramitada correctamente.\nRecibirá un e-mail del administrador acerca del estado de la misma.\n<?php echo $cEntidadDB->ver_errores();?>");</script><?
+			?><script language="javascript" type="text/javascript">alert("Su solicitud ha sido tramitada correctamente.\nRecibirá un e-mail del administrador acerca del estado de la misma.\n<?php echo $cEntidadDB->ver_errores();?>");</script><?php
 				if ($_POST['ORIGEN'] == constant("MNT_LISTAR"))
 				{
 					$cEntidad = readLista($cEntidad);

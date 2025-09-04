@@ -5,9 +5,9 @@ define('ADODB_ASSOC_CASE', 2); # No cambiar las letras para ADODB_FETCH_ASSOC
 include(constant("DIR_ADODB") . 'adodb.inc.php');
 require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas/EmpresasDB.php");
 require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas/Empresas.php");
-require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_usuarios/Empresas_usuariosDB.php");
-require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_usuarios/Empresas_usuarios.php");
 require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "/Utilidades.php");
+require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Baremos_resultados/Baremos_resultadosDB.php");
+require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Baremos_resultados/Baremos_resultados.php");
 
 include_once ('../../Empresa/include/conexion.php');
 
@@ -17,8 +17,7 @@ include_once ('../../Empresa/include/conexionECases.php');
 $cUtilidades	= new Utilidades();
 $cEmpresasDB	= new EmpresasDB($conn);  // Entidad DB
 $cEmpresas	= new Empresas();  // Entidad
-$cEmpresas_usuariosDB	= new Empresas_usuariosDB($conn);  // Entidad DB
-$cEmpresas_usuarios	= new Empresas_usuarios();  // Entidad
+$cBaremos_resultadosDB = new Baremos_resultadosDB($conn);
 
 class WS_Service
 {
@@ -28,15 +27,13 @@ class WS_Service
     *
 	* @param string $usuario
 	* @param string $password
-	* @return string
+	* @return string $sesion
 	*/
 	public function login($usuario, $password)
 	{
 		global $cUtilidades;
 		global $cEmpresasDB;
 		global $cEmpresas;
-		global $cEmpresas_usuariosDB;
-		global $cEmpresas_usuarios;
 		global $conn;
 		$strMensaje="";
 		$token = "";
@@ -44,181 +41,120 @@ class WS_Service
 		{
 			$cEmpresas->setUsuario($usuario);
 			$cEmpresas->setPassword($password);
-			$cEmpresas_usuarios->setUsuario($usuario);
-			$cEmpresas_usuarios->setPassword($password);
+			$bEncontradoUsuario = $cUtilidades->chkChar($usuario);
+			$bEncontradoPassword = $cUtilidades->chkChar($password);
 
-	        $bEncontradoUsuario = $cUtilidades->chkChar($usuario);
-	        $bEncontradoPassword = $cUtilidades->chkChar($password);
+			if (!$bEncontradoPassword && !$bEncontradoUsuario)
+			{
+				require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_accesos/Empresas_accesosDB.php");
+				require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_accesos/Empresas_accesos.php");
+      			//Introducimos los intentos de acceso
+				$cEmpresas_accesos = new Empresas_accesos();
+				$cEmpresas_accesosDB = new Empresas_accesosDB($conn);
+				$cEmpresas_accesos->setIP($_SERVER['REMOTE_ADDR']);
+				$cEmpresas_accesos->setLogin($cEmpresas->getUsuario());
+				$sqlEmpresas_accesos = $cEmpresas_accesosDB->readLista($cEmpresas_accesos);
+				$aEmpresas_accesos = $conn->Execute($sqlEmpresas_accesos);
+				if ($aEmpresas_accesos->RecordCount() >= 5){
+					$strMensaje = "Superado número de intentos de acceso fallidos.";
+					throw new SoapFault("MaxAccess", "Login:: " . $strMensaje);
+				}
+				if (empty($strMensaje))
+				{
+					$cEmpresas_accesos->setUsuAlta("0");
+					$cEmpresas_accesos->setUsuMod("0");
 
-	        if (!$bEncontradoPassword && !$bEncontradoUsuario)
-	        {
-	        	require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_accesos/Empresas_accesosDB.php");
-            require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_accesos/Empresas_accesos.php");
-	        	//Introducimos los intentos de acceso
-						$cEmpresas_accesos = new Empresas_accesos();
-						$cEmpresas_accesosDB = new Empresas_accesosDB($conn);
+					$cEmpresas_accesosDB->insertar($cEmpresas_accesos);
+					$rowUser = $cEmpresasDB->Login($cEmpresas);
+					if (!empty($rowUser["usuario"]) && $rowUser["usuario"] == $usuario )
+					{
+						//Borramos los acceso erróneos anteriorres
+						$cEmpresas_accesos->setIP("");
+						$cEmpresas_accesosDB->borrarPorLogin($cEmpresas_accesos);
+						//Dejamos sólo este login
 						$cEmpresas_accesos->setIP($_SERVER['REMOTE_ADDR']);
 						$cEmpresas_accesos->setLogin($cEmpresas->getUsuario());
-	        	$sqlEmpresas_accesos = $cEmpresas_accesosDB->readLista($cEmpresas_accesos);
-	          $aEmpresas_accesos = $conn->Execute($sqlEmpresas_accesos);
-		        if ($aEmpresas_accesos->RecordCount() >= 5){
-		        	$strMensaje = constant("ERR_FORM_LOGIN");
-		        	throw new SoapFault("MaxAccess", "Login:: " . $strMensaje);
+						$cEmpresas_accesosDB->insertar($cEmpresas_accesos);
+
+						//Miramos si tiene perfiles asignados
+						require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_perfiles/Empresas_perfilesDB.php");
+						require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_perfiles/Empresas_perfiles.php");
+						$cEmpresasUPDB	= new Empresas_perfilesDB($conn);  // Entidad DB
+						$cEmpresasUP		= new Empresas_perfiles();  // Entidad
+						$cEmpresasUP->setIdEmpresa($rowUser["idEmpresa"]);
+						$sSQLUP = $cEmpresasUPDB->readLista($cEmpresasUP);
+						$listaUP = $conn->Execute($sSQLUP);
+						$i="0";
+						$sUP = "";
+						while ($arr = $listaUP->FetchRow()){
+							$sUP .= "," . $arr["idPerfil"];
+							$i++;
 						}
-	        	if (empty($strMensaje))
-	          {
-		    			$cEmpresas_accesos->setUsuAlta("0");
-		    			$cEmpresas_accesos->setUsuMod("0");
 
-	    				$cEmpresas_accesosDB->insertar($cEmpresas_accesos);
-
-	        		$rowUser = $cEmpresasDB->Login($cEmpresas);
-							$_usrEmpresa = true;
-							if (empty($rowUser["idEmpresa"])){
-								//Miramos si en un usuario de los nuevos en Entidad Empresas_usuarios
-								$rowUser = $cEmpresas_usuariosDB->Login($cEmpresas_usuarios);
-								$_usrEmpresa = false;
-	//        			echo "<br />NUEVO";
+      					if ($i > 0)
+						{
+    						$sUP = substr($sUP,1);
+							//Miramos las funcionalidades para el / los Perfiles.
+							require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_perfiles_funcionalidades/Empresas_perfiles_funcionalidadesDB.php");
+							require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_perfiles_funcionalidades/Empresas_perfiles_funcionalidades.php");
+							require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Combo.php");
+							$comboFUNCIONALIDADES	= new Combo($conn,"fIdFuncionalidad","idFuncionalidad","url","url","wi_funcionalidades","",constant("SLC_OPCION"),"");
+							$cEmpresasPFDB	= new Empresas_perfiles_funcionalidadesDB($conn);  // Entidad DB
+							$cEmpresasPF		= new Empresas_perfiles_funcionalidades();  // Entidad
+							$cEmpresasPF->setIdPerfil($sUP);
+							$cEmpresasPF->setOrderBy("idFuncionalidad, modificar, borrar ASC");
+							$sSQLPF = $cEmpresasPFDB->readLista($cEmpresasPF);
+							$listaPF = $conn->Execute($sSQLPF);
+							$i="0";
+							$sPF = "";
+							$aPF = array();
+							$aFAcceso = array();
+							$sIdFuncionalidad="";
+							while ($arr = $listaPF->FetchRow()){
+								$sPK = $comboFUNCIONALIDADES->getDescripcionCombo($arr["idFuncionalidad"]);
+								$aPF[$sPK]["idFuncionalidad"] = $arr["idFuncionalidad"];
+								$aPF[$sPK]["nombreFuncionalidad"] = $sPK;
+								$aPF[$sPK]["modificar"] =   $arr["modificar"];
+								$aPF[$sPK]["borrar"] =   $arr["borrar"];
+								$aFAcceso[$i] = $arr["idFuncionalidad"];
+								$i++;
 							}
-	        		if (!empty($rowUser["usuario"]) && $rowUser["usuario"] == $usuario )
-	        		{
-								//Borramos los acceso erroneos anteriorres
-		            $cEmpresas_accesos->setIP("");
-								$cEmpresas_accesosDB->borrarPorLogin($cEmpresas_accesos);
-								//Dejamos sólo este login
-								$cEmpresas_accesos->setIP($_SERVER['REMOTE_ADDR']);
-								$cEmpresas_accesos->setLogin($cEmpresas->getUsuario());
-								$cEmpresas_accesosDB->insertar($cEmpresas_accesos);
+							if ($i > 0 ){
+								$cEmpresas->setIdEmpresa($rowUser["idEmpresa"]);
+								$token =md5(uniqid('', true));
+								$cEmpresas->setToken($token);
+								$cEmpresasDB->ActualizaToken($cEmpresas);
 
-								if ($_usrEmpresa){
-			        			//Miramos si tiene perfiles asignados
-			        			require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_perfiles/Empresas_perfilesDB.php");
-			        			require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_perfiles/Empresas_perfiles.php");
-			        			$cEmpresasUPDB	= new Empresas_perfilesDB($conn);  // Entidad DB
-			        			$cEmpresasUP		= new Empresas_perfiles();  // Entidad
-			        			$cEmpresasUP->setIdEmpresa($rowUser["idEmpresa"]);
-			        			$sSQLUP = $cEmpresasUPDB->readLista($cEmpresasUP);
-			        			$listaUP = $conn->Execute($sSQLUP);
-			        			$i="0";
-			        			$sUP = "";
-			        			while ($arr = $listaUP->FetchRow()){
-			        				$sUP .= "," . $arr["idPerfil"];
-			        				$i++;
-			        			}
-								}else {
-									//Miramos los perfiles asignados al usuario empresa en Empresas_usuarios_perfiles
-	        				require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_usuarios_perfiles/Empresas_usuarios_perfilesDB.php");
-	        				require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_usuarios_perfiles/Empresas_usuarios_perfiles.php");
-	        				$cEntidadUPDB	= new Empresas_usuarios_perfilesDB($conn);  // Entidad DB
-	        				$cEntidadUP		= new Empresas_usuarios_perfiles();  // Entidad
-	        				$cEntidadUP->setIdEmpresa($rowUser["idEmpresa"]);
-	        				$cEntidadUP->setIdUsuario($rowUser["idUsuario"]);
-	        				$sSQLUP = $cEntidadUPDB->readLista($cEntidadUP);
-	        				$listaUP = $conn->Execute($sSQLUP);
-	        				$i="0";
-	        				$sUP = "";
-	        				while ($arr = $listaUP->FetchRow()){
-	        					$sUP .= "," . $arr["idPerfil"];
-	        					$i++;
-	        				}
+								//Actualizamos el último login
+								if ($cEmpresasDB->ultimoLogin($cEmpresas) == false)
+								{
+									throw new SoapFault("LastAccess", "Login:: " . constant("ERR"));
 								}
-
-	        			if ($i > 0){
-	        				$sUP = substr($sUP,1);
-	        				//Miramos las funcionalidades para el / los Perfiles.
-	        				require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_perfiles_funcionalidades/Empresas_perfiles_funcionalidadesDB.php");
-	        				require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas_perfiles_funcionalidades/Empresas_perfiles_funcionalidades.php");
-	        				require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Combo.php");
-	        				$comboFUNCIONALIDADES	= new Combo($conn,"fIdFuncionalidad","idFuncionalidad","url","url","wi_funcionalidades","",constant("SLC_OPCION"),"");
-	        				$cEmpresasPFDB	= new Empresas_perfiles_funcionalidadesDB($conn);  // Entidad DB
-	        				$cEmpresasPF		= new Empresas_perfiles_funcionalidades();  // Entidad
-	        				$cEmpresasPF->setIdPerfil($sUP);
-	        				$cEmpresasPF->setOrderBy("idFuncionalidad, modificar, borrar ASC");
-	        				$sSQLPF = $cEmpresasPFDB->readLista($cEmpresasPF);
-	        				$listaPF = $conn->Execute($sSQLPF);
-	        				$i="0";
-	        				$sPF = "";
-	        				$aPF = array();
-	        				$aFAcceso = array();
-	        				$sIdFuncionalidad="";
-	        				while ($arr = $listaPF->FetchRow()){
-	        					$sPK = $comboFUNCIONALIDADES->getDescripcionCombo($arr["idFuncionalidad"]);
-	        					$aPF[$sPK]["idFuncionalidad"] = $arr["idFuncionalidad"];
-	        					$aPF[$sPK]["nombreFuncionalidad"] = $sPK;
-	        					$aPF[$sPK]["modificar"] =   $arr["modificar"];
-	        					$aPF[$sPK]["borrar"] =   $arr["borrar"];
-	        					$aFAcceso[$i] = $arr["idFuncionalidad"];
-	        					$i++;
-	        				}
-	        				if ($i > 0 ){
-	        					$cEmpresas->setIdEmpresa($rowUser["idEmpresa"]);
-										if (!$_usrEmpresa){
-											$cEmpresas_usuarios->setIdEmpresa($rowUser["idEmpresa"]);
-											$cEmpresas_usuarios->setIdUsuario($rowUser["idUsuario"]);
-										}
-										if (empty($rowUser["token"]))
-										{
-												$token =md5(uniqid('', true));
-										}else{
-											if ($rowUser["idEmpresa"] == "5136"){	//Grupo Tragsa 5136
-	        							//Permitimos multisesión
-	        							$token =$rowUser["token"];
-	        						}else{
-			                  $token =md5(uniqid('', true));
-	        						}
-	        					}
-										$cEmpresas->setToken($token);
-	                  $cEmpresas_usuarios->setToken($token);
-
-	                  if ($_usrEmpresa){
-	                  	$cEmpresasDB->ActualizaToken($cEmpresas);
-	                  	//Actualizamos el último login
-	                  	if ($cEntidadDB->ultimoLogin($cEmpresas) == false)
-	                  	{
-	                  			throw new SoapFault("LastAccess", "Login:: " . constant("ERR"));
-	                  	}
-	                  }else{
-	                  	//Usuarios de una empresa NUEVO
-	                  	$cEmpresas_usuariosDB->ActualizaToken($cEmpresas_usuarios);
-	                  	//Actualizamos el último login
-	                  	if ($cEmpresas_usuariosDB->ultimoLogin($cEmpresas_usuarios) == false)
-	                  	{
-	                  			throw new SoapFault("LastAccess", "Login:: " . constant("ERR"));
-	                  	}
-	                  }
-
-	            		}else{
-	        					$strMensaje = '* ' . constant("ERR_NO_AUTORIZADO");
-	        					throw new SoapFault("AutAccess", "Login:: " . $strMensaje);
-	        				}
-	        			}else{
-	        				$strMensaje = constant("ERR_NO_AUTORIZADO");
-	        				throw new SoapFault("AutAccess", "Login:: " . $strMensaje);
-	        			}
-	        		}else {
-	        			$strMensaje = constant("ERR_FORM_LOGIN");
-	        			throw new SoapFault("MaxAccess", "Login:: " . $strMensaje);
-	        		}
-	    		}
-	        }else{
-	        	throw new SoapFault("ErrCaracter", "Login:: " . "Caracteres no permitidos en el login");
-	        }
+							}else{
+								$strMensaje =  constant("ERR_NO_AUTORIZADO");
+								throw new SoapFault("AutAccess", "Login:: " . $strMensaje);
+							}
+						}else{
+							$strMensaje = constant("ERR_NO_AUTORIZADO");
+							throw new SoapFault("AutAccess", "Login:: " . $strMensaje);
+						}
+					}else {
+								$strMensaje = constant("ERR_NO_AUTORIZADO");
+								throw new SoapFault("AutAccess", "Login:: " . $strMensaje);
+					}
+    			}
+			}else{
+				throw new SoapFault("ErrCaracter", "Login:: " . "Caracteres no permitidos en el login.");
+			}
 		}else{
-	  		throw new SoapFault("FaltanDatos", "Login:: " . "Faltan datos");
+	  		throw new SoapFault("FaltanDatos", "Login:: " . "Faltan datos Obligatorios.");
 	  }
-		// $oggetto = new stdClass();
-		// $oggetto->session = $token;
-		// return $oggetto;
-		//return new SoapVar('<session token="'.$token.'">'.$token.'</session>', XSD_ANYXML);
-		//return new SoapVar($token, XSD_STRING, null, null, null );
-		return new SoapVar($token, XSD_STRING);
-		//return new SoapVar($token, XSD_STRING, null, null, 'token', 'http://framework.zend.com');
-		//return $token;
+		return $token;
 	}
 
 	/**
-    * Metodo que devuelve las pruebas disponibles
-    *
+	* Metodo que devuelve las pruebas disponibles
+	*
 	* @param string $sesion
 	* @param string $idioma <optional>
 	* @return array
@@ -228,8 +164,6 @@ class WS_Service
 		global $cUtilidades;
 		global $cEmpresasDB;
 		global $cEmpresas;
-		global $cEmpresas_usuariosDB;
-		global $cEmpresas_usuarios;
 		global $conn;
 		$strMensaje="";
 		$retorno = array();
@@ -266,6 +200,7 @@ class WS_Service
 						$k++;
 						$rs->MoveNext();
 					}
+
 				}
 
 			}else{
@@ -289,8 +224,6 @@ class WS_Service
 		global $cUtilidades;
 		global $cEmpresasDB;
 		global $cEmpresas;
-		global $cEmpresas_usuariosDB;
-		global $cEmpresas_usuarios;
 		global $conn;
 		$strMensaje="";
 		$retorno = array();
@@ -325,7 +258,7 @@ class WS_Service
 							$cPruebas->setIdPruebaHast($rsPP->fields['idPrueba']);
 							$cPruebas->setBajaLog(0);
 							$cPruebas->setBajaLogHast(0);
-							$cPruebas->setCodIdiomaIso2($PPrs->fields['codIdiomaIso2']);
+							$cPruebas->setCodIdiomaIso2($rsPP->fields['codIdiomaIso2']);
 							$sSQL = $cPruebasDB->readLista($cPruebas);
 							$rsP = $conn->Execute($sSQL);
 							while (!$rsP->EOF)
@@ -363,8 +296,6 @@ class WS_Service
 		global $cUtilidades;
 		global $cEmpresasDB;
 		global $cEmpresas;
-		global $cEmpresas_usuariosDB;
-		global $cEmpresas_usuarios;
 		global $conn;
 		$strMensaje="";
 		$retorno = array();
@@ -430,8 +361,6 @@ class WS_Service
 		global $cUtilidades;
 		global $cEmpresasDB;
 		global $cEmpresas;
-		global $cEmpresas_usuariosDB;
-		global $cEmpresas_usuarios;
 		global $conn;
 		$strMensaje="";
 		$retorno = array();
@@ -671,8 +600,6 @@ class WS_Service
 		global $cUtilidades;
 		global $cEmpresasDB;
 		global $cEmpresas;
-		global $cEmpresas_usuariosDB;
-		global $cEmpresas_usuarios;
 		global $conn;
 		$strMensaje="";
 		$retorno = array();
@@ -845,8 +772,6 @@ class WS_Service
 		global $cUtilidades;
 		global $cEmpresasDB;
 		global $cEmpresas;
-		global $cEmpresas_usuariosDB;
-		global $cEmpresas_usuarios;
 		global $conn;
 		$strMensaje="";
 		$cEmpresas->setToken($sesion);
@@ -1061,8 +986,6 @@ class WS_Service
 		global $cUtilidades;
 		global $cEmpresasDB;
 		global $cEmpresas;
-		global $cEmpresas_usuariosDB;
-		global $cEmpresas_usuarios;
 		global $conn;
 		$strMensaje="";
 		$cEmpresas->setToken($sesion);
@@ -1200,8 +1123,6 @@ class WS_Service
 		global $cUtilidades;
 		global $cEmpresasDB;
 		global $cEmpresas;
-		global $cEmpresas_usuariosDB;
-		global $cEmpresas_usuarios;
 		global $conn;
 		$strMensaje="";
 		$cEmpresas->setToken($sesion);
@@ -1254,6 +1175,8 @@ class WS_Service
 						if (!empty($idTratamiento)){
 							$cCandidatos->setIdTratamiento($idTratamiento);
 						}
+						$cCandidatos->setInformado(0);
+						$cCandidatos->setFinalizado(0);
 						$retorno = $cCandidatosDB->insertar($cCandidatos);
 
 					}else{
@@ -1292,8 +1215,6 @@ class WS_Service
 		global $cUtilidades;
 		global $cEmpresasDB;
 		global $cEmpresas;
-		global $cEmpresas_usuariosDB;
-		global $cEmpresas_usuarios;
 		global $conn;
 		global $connECases;
 		$strMensaje="";
@@ -1542,8 +1463,6 @@ class WS_Service
 		global $cUtilidades;
 		global $cEmpresasDB;
 		global $cEmpresas;
-		global $cEmpresas_usuariosDB;
-		global $cEmpresas_usuarios;
 		global $conn;
 		$strMensaje="";
 		$cEmpresas->setToken($sesion);
@@ -1619,8 +1538,6 @@ class WS_Service
 		global $cUtilidades;
 		global $cEmpresasDB;
 		global $cEmpresas;
-		global $cEmpresas_usuariosDB;
-		global $cEmpresas_usuarios;
 		global $conn;
 		$strMensaje="";
 		$cEmpresas->setToken($sesion);
@@ -1797,7 +1714,7 @@ class WS_Service
 							$cInformes_pruebas = $cInformes_pruebasDB->readEntidad($cInformes_pruebas);
 		    			}
 
-		    			$iDonglesADescontarUnitario += $cInformes_pruebas->getTarifa();
+		    			$iDonglesADescontarUnitario += (int)$cInformes_pruebas->getTarifa();
 						$rsProceso_informes->MoveNext();
 					}
 
@@ -2111,10 +2028,10 @@ class WS_Service
 	    return $retorno;
 	}
 
-	private function enviaEmail(&$cEmpresa, &$cCandidato, &$cCorreos_proceso, $IdModoRealizacion){
-
+	private function enviaEmail($cEmpresa, $cCandidato, $cCorreos_proceso, $IdModoRealizacion)
+	{
 		global $conn;
-
+	
 		$sSubject=$cCorreos_proceso->getAsunto();
 		$sBody=$cCorreos_proceso->getCuerpo();
 		$sAltBody=strip_tags($cCorreos_proceso->getCuerpo());
@@ -2123,101 +2040,120 @@ class WS_Service
 			error_log($sTypeError . " ->\tSUBJECT::" . $sSubject . "\tBODY::" . $sBody . "\n", 3, constant("DIR_FS_PATH_NAME_CORREO"));
 			return false;
 		}
-		require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "/_Email/class.phpmailer.php");
 
+		require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . 'PHPMailer/Exception.php');
+		require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . 'PHPMailer/PHPMailer.php');
+		require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . 'PHPMailer/SMTP.php');
+	
 		//instanciamos un objeto de la clase phpmailer al que llamamos
 		//por ejemplo mail
-		$mail = new PHPMailer(true);  //PHPMailer instance with exceptions enabled
-$mail->CharSet = 'utf-8';
-$mail->Debugoutput = 'html';
-
-		//Con PluginDir le indicamos a la clase phpmailer donde se
-		//encuentra la clase smtp que como he comentado al principio de
-		//este ejemplo va a estar en el subdirectorio includes
-		$mail->PluginDir = constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "/_Email/";
-
-		//Con la propiedad Mailer le indicamos que vamos a usar un
-		//servidor smtp
-		$mail->Mailer = $mail->Mailer = constant("MAILER");;
-
-		//Asignamos a Host el nombre de nuestro servidor smtp
-		$mail->Host = constant("HOSTMAIL");
-
-		//Le indicamos que el servidor smtp requiere autenticaciÃ³n
-		$mail->SMTPAuth = true;
-
-		//Le decimos cual es nuestro nombre de usuario y password
-		$mail->Username = constant("MAILUSERNAME");
-		$mail->Password = constant("MAILPASSWORD");
-
-		//Indicamos cual es nuestra dirección de correo y el nombre que
-		//queremos que vea el usuario que lee nuestro correo
-		//$mail->From = $cEmpresa->getMail();
-		$mail->From = constant("MAILUSERNAME");
-		$mail->AddReplyTo($cEmpresa->getMail(), $cEmpresa->getNombre());
-		$mail->FromName = $cEmpresa->getNombre();
-
-		//Asignamos asunto y cuerpo del mensaje
-		//El cuerpo del mensaje lo ponemos en formato html, haciendo
-		//que se vea en negrita
-		$mail->Subject = $sSubject;
-		$mail->Body = $sBody;
-
-		//Definimos AltBody por si el destinatario del correo no admite
-		//email con formato html
-		$mail->AltBody = $sAltBody;
-
-		//el valor por defecto 10 de Timeout es un poco escaso dado que voy a usar
-		//una cuenta gratuita y voy a usar attachments, por tanto lo pongo a 120
-		$mail->Timeout=120;
-
-		//Indicamos el fichero a adjuntar si el usuario seleccionÃ³ uno en el formulario
-		$archivo="none";
-		if ($archivo !="none") {
-			$mail->AddAttachment($archivo,$archivo_name);
-		}
-		//Indicamos cuales son las direcciones de destino del correo
-		if ($IdModoRealizacion == "2"){	//Administrado SE ENVIAN A LA EMPRESA
-			$mail->AddAddress($cEmpresa->getMail(), $cEmpresa->getNombre());
-			if($cEmpresa->getMail2()!=""){
-				$mail->AddAddress($cEmpresa->getMail2(), $cEmpresa->getNombre());
+		$mail = new PHPMailer\PHPMailer\PHPMailer(true);  //PHPMailer instance with exceptions enabled
+		$mail->SMTPOptions = array(
+			'ssl' => array(
+				'verify_peer' => false,
+				'verify_peer_name' => false,
+				'allow_self_signed' => true
+			)
+		);
+		try {
+			//Server settings
+			//$mail->SMTPDebug = 2; 					                //Enable verbose debug output
+			$mail->isSMTP();                                        //Send using SMTP                  
+			$mail->Host = constant("HOSTMAIL");						//Set the SMTP server to send through
+			$mail->SMTPAuth   = true;                               //Enable SMTP authentication
+			$mail->Username = constant("MAILUSERNAME");             //SMTP username
+			$mail->Password = constant("MAILPASSWORD");             //SMTP password
+			$mail->SMTPSecure = constant("MAIL_ENCRYPTION");							    //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+			$mail->Port      = constant("PORTMAIL");                                //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+	
+			
+			$mail->CharSet = 'utf-8';
+			$mail->Debugoutput = 'html';
+	
+			//Con la propiedad Mailer le indicamos que vamos a usar un
+			//servidor smtp
+			$mail->Mailer = $mail->Mailer = constant("MAILER");
+	
+			//Asignamos a Host el nombre de nuestro servidor smtp
+			$mail->Host = constant("HOSTMAIL");
+	
+			//Le indicamos que el servidor smtp requiere autenticaciÃ³n
+			$mail->SMTPAuth = true;
+	
+			//Le decimos cual es nuestro nombre de usuario y password
+			$mail->Username = constant("MAILUSERNAME");
+			$mail->Password = constant("MAILPASSWORD");
+	
+			//Indicamos cual es nuestra dirección de correo y el nombre que
+			//queremos que vea el usuario que lee nuestro correo
+			//$mail->From = $cEmpresa->getMail();
+			$mail->From = constant("EMAIL_CONTACTO");
+			//$mail->AddReplyTo($cEmpresa->getMail(), $cEmpresa->getNombre());
+			$mail->FromName = $cEmpresa->getNombre();
+				$nomEmpresa = $cEmpresa->getNombre();
+	
+			//Asignamos asunto y cuerpo del mensaje
+			//El cuerpo del mensaje lo ponemos en formato html, haciendo
+			//que se vea en negrita
+			$mail->Subject = $nomEmpresa . " - " . $sSubject;
+			$mail->Body = $sBody;
+	
+			//Definimos AltBody por si el destinatario del correo no admite
+			//email con formato html
+			$mail->AltBody = $sAltBody;
+	
+			//el valor por defecto 10 de Timeout es un poco escaso dado que voy a usar
+			//una cuenta gratuita y voy a usar attachments, por tanto lo pongo a 120
+			$mail->Timeout=120;
+	
+			//Indicamos el fichero a adjuntar si el usuario seleccionÃ³ uno en el formulario
+			$archivo="none";
+			if ($archivo !="none") {
+				$mail->AddAttachment($archivo,$archivo_name);
 			}
-			if($cEmpresa->getMail3()!=""){
-				$mail->AddAddress($cEmpresa->getMail3(), $cEmpresa->getNombre());
+			//Indicamos cuales son las direcciones de destino del correo
+			if ($IdModoRealizacion == "2"){	//Administrado SE ENVIAN A LA EMPRESA
+				$mail->AddAddress($cEmpresa->getMail(), $cEmpresa->getNombre());
+				if($cEmpresa->getMail2()!=""){
+					$mail->AddAddress($cEmpresa->getMail2(), $cEmpresa->getNombre());
+				}
+				if($cEmpresa->getMail3()!=""){
+					$mail->AddAddress($cEmpresa->getMail3(), $cEmpresa->getNombre());
+				}
+			}else{
+				$mail->AddAddress($cCandidato->getMail(), $cCandidato->getNombre() . " " . $cCandidato->getApellido1() . " " . $cCandidato->getApellido2());
 			}
-		}else{
-			$mail->AddAddress($cCandidato->getMail(), $cCandidato->getNombre() . " " . $cCandidato->getApellido1() . " " . $cCandidato->getApellido2());
+			//se envia el mensaje, si no ha habido problemas la variable $success
+			//tendra el valor true
+			$exito=false;
+			//Si el mensaje no ha podido ser enviado se realizaran 2 intentos mas
+			//como mucho para intentar enviar el mensaje, cada intento se hara 2 s
+			//segundos despues del anterior, para ello se usa la funcion sleep
+			$intentos=1;
+			while((!$exito)&&($intentos<2)&&($mail->ErrorInfo!="SMTP Error: Data not accepted"))
+			{
+			sleep(rand(0, 2));
+				//echo $mail->ErrorInfo;
+				$exito = $mail->Send();
+				$intentos=$intentos+1;
+			}
+	
+			//La clase phpmailer tiene un pequeño bug y es que cuando envia un mail con
+			//attachment la variable ErrorInfo adquiere el valor Data not accepted, dicho
+			//valor no debe confundirnos ya que el mensaje ha sido enviado correctamente
+			if ($mail->ErrorInfo=="SMTP Error: Data not accepted") {
+				$exito=true;
+			}
+			// Borro las direcciones de destino establecidas anteriormente
+			$mail->ClearAddresses();
+		} catch (PHPMailer\PHPMailer\Exception $e) {
+			echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";exit;
 		}
-
-		//se envia el mensaje, si no ha habido problemas la variable $success
-		//tendra el valor true
-		$exito=false;
-		//Si el mensaje no ha podido ser enviado se realizaran 2 intentos mas
-		//como mucho para intentar enviar el mensaje, cada intento se hara 2 s
-		//segundos despues del anterior, para ello se usa la funcion sleep
-	 	$intentos=1;
-	   	while((!$exito)&&($intentos<2)&&($mail->ErrorInfo!="SMTP Error: Data not accepted"))
-	   	{
-		   sleep(rand(0, 2));
-	     	   //echo $mail->ErrorInfo;
-	     	   $exito = $mail->Send();
-	     	   $intentos=$intentos+1;
-	   	}
-
-		//La clase phpmailer tiene un pequeño bug y es que cuando envia un mail con
-		//attachment la variable ErrorInfo adquiere el valor Data not accepted, dicho
-		//valor no debe confundirnos ya que el mensaje ha sido enviado correctamente
-		if ($mail->ErrorInfo=="SMTP Error: Data not accepted") {
-			$exito=true;
-		}
-		// Borro las direcciones de destino establecidas anteriormente
-	    $mail->ClearAddresses();
-	    return $exito;
+		return $exito;
 	}
 
 
 
 
 }
-
 ?>

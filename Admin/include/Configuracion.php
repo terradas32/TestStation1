@@ -5,11 +5,12 @@
 	// Define the webserver and path parameters
 	// * DIR_FS_* Directorio físico (local/physical)
 	// * DIR_WS_* Directorio del servidor Web (virtual/URL)
-	define("HTTP_SERVER", "https://" . $_HTTP_HOST . "/Admin/");	//Siempre terminar en "/"
+	define("HTTP_SERVER", "http://" . $_HTTP_HOST . "/Admin/");	//Siempre terminar en "/"
 	define("HTTPS_SERVER", "https://" . $_HTTP_HOST . "/Admin/");	//Siempre terminar en "/"
-	define("HTTP_SERVER_FRONT", "https://" . $_HTTP_HOST . "/");	//Siempre terminar en "/"
-	define("DIR_WS_GESTOR", "https://" . $_HTTP_HOST . "/Admin/");
-	define("DIR_ADODB", $_DOCUMENT_ROOT . "/_adodb/");
+	define("HTTP_SERVER_FRONT", "http://" . $_HTTP_HOST . "/");	//Siempre terminar en "/"
+	define("DIR_WS_GESTOR", "http://" . $_HTTP_HOST . "/Admin/");
+	define("DIR_WS_GESTOR_HTTPS", "https://" . $_HTTP_HOST . "/Admin/");
+	define("DIR_ADODB", $_DOCUMENT_ROOT . "/adodb/");
 	define("DIR_WS_GRAF", "graf/");
 	define("DIR_WS_INCLUDE", "include/");
 	define("DIR_WS_COM", constant("DIR_WS_INCLUDE") . "com/");
@@ -25,6 +26,7 @@
 	//vendor html2pdf
 	define("VENDOR_DIR", $_DOCUMENT_ROOT . "/html2pdf/vendor/");
 	define("DOMPDF_DIR", $_DOCUMENT_ROOT . "/dompdf/");
+	define("DOMPDF_VENDOR_DIR", $_DOCUMENT_ROOT . "/vendor/");
 
 	//Formato de fecha de usuario
 	define("USR_FECHA", "d/m/Y");
@@ -41,7 +43,7 @@
 	//Ejecutable PHP
 	define("DIR_FS_PATH_PHP", 'C:\Datos\xampp\php\php.exe');
 
-	define("MB",			1024);	//Tamaño de 1 MB == 1024
+	define("MB",			2048);	//Tamaño de 1 MB == 1024
 	define("CHAR_SEPARA"	,"§");	//Carácter separador de varios valores para contruir arrays.
 
 	//Nombre del site
@@ -119,17 +121,33 @@
 	define("DEFAULT_FIRMA","Negocia Internet");
 
 	//Datos para la clase de envio de correo
-    define("MAILER","smtp"); //PUEDE SER mail O smtp
-  //Host, nombre de servidor smtp
-    define("HOSTMAIL","email-smtp.eu-west-3.amazonaws.com");
+	define("MAILER","smtp"); //PUEDE SER mail O smtp
+
+    //Host, nombre de servidor smtp
+    //define("HOSTMAIL","smtp.office365.com");
+    //define("PORTMAIL","587");    //25 o 587 normalmente
+    //define("MAIL_ENCRYPTION","tls");	//tls, ssl
+
+    //define("HOSTMAIL","smtp.office365.com");
+    //define("PORTMAIL","587");    //25 o 587 normalmente
+    //define("MAIL_ENCRYPTION","tls");	//tls, ssl
+
+    define("HOSTMAIL","smtp.office365.com");
     define("PORTMAIL","587");    //25 o 587 normalmente
     define("MAIL_ENCRYPTION","tls");	//tls, ssl
-  //usuario y password PARA EL ENVIO DE CORREO, TIENE Q SER UNA CUENTA VÁLIDA
-    define("MAILUSERNAME","AKIAZQYBBGX6FKUJR4ON");
-    define("MAILPASSWORD","BM7HU83cQOY6poPRQeVCyb0g3K8mb63ZSZRtThYofIgh");
+
+
+    //usuario y password PARA EL ENVIO DE CORREO, TIENE Q SER UNA CUENTA VÁLIDA
+	//define("MAILUSERNAME","test-station@people-experts.com");	//Clave de Acceso: AKIAZQYBBGX6BKAFN3H5
+	//define("MAILPASSWORD","S@171566425340ah"); //Clave de Acceso secreta
+
+    define("MAILUSERNAME","test-station@people-experts.com");
+    define("MAILPASSWORD","S!524012145210uw%");
+
 	//Email de contacto.
-  	define("EMAIL_CONTACTO","info@test-station.com");
-  	define("PERSONA_CONTACTO","Contacta");
+	//define("EMAIL_CONTACTO","test-station@people-experts.com");
+	define("EMAIL_CONTACTO","test-station@people-experts.com");
+	define("PERSONA_CONTACTO","Contacta");
 
 	//Espacio de izquierda,contenido y derecha.
 	define("SP_IZQUIERDA","26");
@@ -152,7 +170,7 @@
 	//Contantes de conexión a Base de Datos
 	define("DB_TYPE", "mysql");
 	define("DB_DATOS", "ts");
-	define("DB_HOST", "webcorporativa-2-cluster.cluster-cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
+	define("DB_HOST", "webcorporativa2-instance.cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
 	define("DB_USUARIO", "teststation");
 	define("DB_PASSWORD","nosferatu62");
 	//FIN Contantes de conexión a Base de Datos
@@ -161,14 +179,20 @@
 	define("DB_DATOS_MS", "expertosonline");
 	define("DB_HOST_MS", "snegocia1");
 	define("DB_USUARIO_MS", "sa");
-	define("DB_PASSWORD_MS","nosferatu62");
+	define("DB_PASSWORD_MS","?t6]SQ&6p!J~ZBy");
 	//FIN Contantes de conexión a Base de Datos MS SQLSERVER
 
 	//Contantes de conexión a Base de Datos MS SQLSERVER DESARROLLO
-//	define("DB_DATOS_MS", "expertosonline");
-//	define("DB_HOST_MS", "91.121.122.177");
-//	define("DB_USUARIO_MS", "expertosonline");
-//	define("DB_PASSWORD_MS","Lnx4Q97ra");
-
+	//define("DB_DATOS_MS", "expertosonline");
+	//define("DB_HOST_MS", "91.121.122.177");
+	//define("DB_USUARIO_MS", "expertosonline");
+	//define("DB_PASSWORD_MS","Lnx4Q97ra");
 	//FIN Contantes de conexión a Base de Datos MS SQLSERVER DESARROLLO
+
+	// Claves de codificacion de consultas SQL
+	define('EXCEL_ENC_KEY', hex2bin('d69220cb1499967ab971662c230fc49f')); // 32 bytes
+	define('EXCEL_HMAC_KEY', hex2bin('95fc924fa035df821fbc3049f1a5d2e1')); // 32 bytes
+
+	// Ventana de validez del token (segundos)
+	define('EXCEL_TOKEN_TTL', 300); // 5 minutos
 ?>

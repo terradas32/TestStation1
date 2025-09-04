@@ -172,3 +172,7 @@
 <?php $listItems->MoveNext();
 	}?>
 	</table>
+	
+<script>
+	MathJax.typeset();	
+</script>
