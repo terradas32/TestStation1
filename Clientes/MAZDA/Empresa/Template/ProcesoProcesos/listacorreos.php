@@ -48,14 +48,18 @@ if ("<?php echo $iListaCorreos;?>" > 0){
 	}
 	var t=setTimeout(function(){
 		if (eval("document.getElementById('fIdCorreo')") != null){
-			eval("document.getElementById('fIdCorreo').value = 115");  //Para MAzda el default
+			eval("document.getElementById('fIdCorreo').value = 1");
+
 		}
 	},1000);
-	if (t != -1){
-		t=setTimeout(function(){
-			cargaplantilla();
-		},1000);
-	}
+  setTimeout(function(){
+    if (t != -1){
+  		t=setTimeout(function(){
+  			cargaplantilla();
+  		},1000);
+  	}
+  }, 1000);
+
 	t=setInterval(function(){
 		if (eval("document.forms[0].fAccion") != null){
 			document.forms[0].fAccion.value=1;

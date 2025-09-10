@@ -16,14 +16,14 @@
 				if($i>0){
 					for($i=0 ; $i< sizeof($aIdiomas);$i++){
 						$aIdioma = explode("," , $aIdiomas[$i]);?>
-						<option value="<?php echo $aIdioma[0]?>" selected><?php echo $aIdioma[1]?></option>
+						<option value="<?php echo $aIdioma[0]?>"><?php echo $aIdioma[1]?></option>
 			<?php 		}
 				}
 			 ?>
 			</select>
 		</td>
 	</tr>
-<?php
+<?php 
 if (!$bPintaBaremo){
 ?>
 	<tr>
@@ -34,7 +34,7 @@ if (!$bPintaBaremo){
 			<input type="hidden" name="fPintaBaremo" value="<?php echo ($bPintaBaremo);?>" />
 		</td>
 	</tr>
-<?php
+<?php 
 }else{
 ?>
 	<tr>
@@ -46,8 +46,8 @@ if (!$bPintaBaremo){
 				<?php
 				if($listaBaremos->recordCount()>0){
 					while(!$listaBaremos->EOF){
-				?>
-						<option value="<?php echo $listaBaremos->fields['idBaremo']?>" selected><?php echo $listaBaremos->fields['nombre']?></option>
+				?>	
+						<option value="<?php echo $listaBaremos->fields['idBaremo']?>"><?php echo $listaBaremos->fields['nombre']?></option>
 			<?php 		$listaBaremos->MoveNext();
 					}
 				}
@@ -56,7 +56,7 @@ if (!$bPintaBaremo){
 			<input type="hidden" name="fPintaBaremo" value="<?php echo ($bPintaBaremo);?>" />
 		</td>
 	</tr>
-<?php
+<?php 
 }
 ?>
 	<tr>
@@ -79,7 +79,7 @@ if (!$bPintaBaremo){
 				if($ii>0){
 					for($i=0 ; $i< sizeof($aIdiomasInformes);$i++){
 						$aIdiomasInforme = explode("," , $aIdiomasInformes[$i]);?>
-						<option value="<?php echo $aIdiomasInforme[0]?>" selected ><?php echo $aIdiomasInforme[1]?></option>
+						<option value="<?php echo $aIdiomasInforme[0]?>"><?php echo $aIdiomasInforme[1]?></option>
 			<?php 		}
 				}
 			 ?>
@@ -105,10 +105,7 @@ if (!$bPintaBaremo){
 </script>
 <script language="javascript" type="text/javascript">
 	//<![CDATA[
-	function cambiaIdTipoInforme(){
+	function cambiaIdTipoInforme(){								
 	}
-  $(document).ready(function(){
-    cambiaIdiomaInforme();
-	});
 	//]]>
 </script>

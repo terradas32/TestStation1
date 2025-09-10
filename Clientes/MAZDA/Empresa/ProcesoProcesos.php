@@ -116,10 +116,7 @@ include_once ('include/conexion.php');
 	$comboBATERIAS	= new Combo($conn,"fIdBateria","idBateria","nombre","Descripcion","baterias","",constant("SLC_OPCION"), "cliente='MAZDA' AND visible=1","","","");
 	$comboEMK_CHARSETS	= new Combo($conn,"fCodificacion","codigo",$conn->Concat("codigo", "' - '", "descripcion"),"Descripcion","emk_charsets","",constant("SLC_OPCION"),"","","fecMod DESC");
 
-	/*
-	echo('modo:' . $_POST['MODO']);
-	die();
-	*/
+//echo('modo:' . $_POST['MODO']);
 
 	if (!isset($_POST['MODO'])){
 		session_start();

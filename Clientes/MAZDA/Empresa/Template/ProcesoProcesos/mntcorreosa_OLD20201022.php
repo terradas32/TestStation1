@@ -4,6 +4,20 @@
     }else{
     	require_once("include/SeguridadTemplate.php");
     }
+
+    require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas/EmpresasDB.php");
+    require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas/Empresas.php");
+    require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Candidatos/CandidatosDB.php");
+    require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Candidatos/Candidatos.php");
+    $cEmpresas = new Empresas();
+    $cEmpresasDB = new EmpresasDB($conn);
+    $cCiegosDB = new CandidatosDB($conn);
+
+    $_idEmpresa=(!empty($_POST["fIdEmpresa"])) ? $_POST["fIdEmpresa"] : $_POST["fIdEmpresaAsig"];
+    $_idProceso=(!empty($_POST["fIdProceso"])) ? $_POST["fIdProceso"] : $_POST["fIdProcesoAsig"];
+   	$cEmpresas->setIdEmpresa($_idEmpresa);
+   	$cEmpresas = $cEmpresasDB->readEntidad($cEmpresas);
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 	<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $sLang;?>" xml:lang="<?php echo $sLang;?>">
@@ -12,14 +26,15 @@
 
 <title><?php echo constant("NOMBRE_SITE");?></title>
 	<link rel="stylesheet" href="estilos/estilos.css" type="text/css" />
+	<link rel="stylesheet" href="estilos/jquery.alerts.css" type="text/css" />
 	<script language="javascript" type="text/javascript" src="codigo/common.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/codigo.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/comun.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/noback.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/jQuery1.4.2.js"></script>
-  <!-- <script src="https://cdn.tiny.cloud/1/19u4q91vla6r5niw2cs7kaymfs18v3j11oizctq52xltyrf4/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script> -->
-	<script language="javascript" type="text/javascript" src="codigo/tinymce/tinymce.min.js"></script>
-	
+	<script language="javascript" type="text/javascript" src="codigo/jquery.alert.js"></script>
+  <script src="https://cdn.tiny.cloud/1/19u4q91vla6r5niw2cs7kaymfs18v3j11oizctq52xltyrf4/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+
 <script language="javascript" type="text/javascript">
 //<![CDATA[
 <?php include_once(constant("DIR_WS_INCLUDE") . "msg_error_JS.php");?>
@@ -47,7 +62,7 @@ function validaForm(cuerpo)
 	msg +=vString("<?php echo constant("STR_ASUNTO");?>:",f.fAsuntoNew.value,255,true);
 	msg +=vString("<?php echo constant("STR_CUERPO");?>:",cuerpo,16777215,true);
 if (msg != "") {
-	alert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.");
+	jAlert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.","<?php echo constant("STR_NOTIFICACION");?>");
 	return false;
 }else return true;
 }
@@ -60,7 +75,7 @@ function validaFormSinTipo(cuerpo)
 	msg +=vString("<?php echo constant("STR_ASUNTO");?>:",f.fAsuntoNew.value,255,true);
 	msg +=vString("<?php echo constant("STR_CUERPO");?>:",cuerpo,16777215,true);
 if (msg != "") {
-	alert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.");
+	jAlert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.","<?php echo constant("STR_NOTIFICACION");?>");
 	return false;
 }else return true;
 }
@@ -119,7 +134,7 @@ function cargaplantilla()
 	var paginacargada = "ProcesoProcesos.php";
 
 	if(f.fIdCorreo.value!=""){
-		$("div#muestracorreo").hide().load(paginacargada,{fConsulta:"1",fIdTipoCorreo:f.fIdTipoCorreo.value,fIdCorreo:f.fIdCorreo.value,MODO:"<?php echo constant('MNT_NUEVOCORREO')?>", fLang:"<?php echo $sLang;?>", sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>" }).fadeIn("slow");
+		$("div#muestracorreo").hide().load(paginacargada,{fConsulta:"1",fIdTipoCorreo:f.fIdTipoCorreo.value,fIdCorreo:f.fIdCorreo.value,fIdEmpresa:f.fIdEmpresa.value,fIdProceso:f.fIdProceso.value,MODO:"<?php echo constant('MNT_NUEVOCORREO')?>", fLang:"<?php echo $sLang;?>", sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>" }).fadeIn("slow");
 	}else{
 		$("div#muestracorreo").empty();
 	}
@@ -189,7 +204,6 @@ function guardaplantilla(){
 
   var myf = $('#fCuerpoNew_ifr');
   var editorContent = $('#tinymce[data-id="fCuerpoNew"]', myf.contents()).html();
-  var editorContent = document.getElementById('divCuerpoNew').innerHTML;
 	//alert(editorContent);
 
 	var paginacargada = "ProcesoProcesos.php";
@@ -250,13 +264,154 @@ function guardaplantilla(){
 		}
 	}
 }
+function programarEnvio(){
+	var f = document.forms[0];
+	var myf  = "";
 
+	if (f.fIListaCorreos.value > "0"){
+		//Ya tiene un correo asignado, mostramos la capa de tiempo programado
+		$("div#programarEnvio").show(1000);
+	}else{
+		myf = document.getElementById("fCuerpoNew");
+		var paginacargada = "ProcesoProcesos.php";
+		if(f.fIdTipoCorreoNew != null){
+			if (f.fIListaCorreos.value == 0){
+				if(validaForm(editorContent)){
+					$("div#listacorreos").hide().load(paginacargada,
+						{
+							fAccion:f.fAccion.value,
+							fIdProceso: f.fIdProceso.value,
+							fIdEmpresa: f.fIdEmpresa.value,
+							fIdTipoCorreo: f.fIdTipoCorreoNew.value,
+							fIdCorreo: f.fIdCorreo.value,
+							fAsuntoNew: f.fAsuntoNew.value,
+							fNombreNew: f.fNombreNew.value,
+							fDescripcionNew: f.fDescripcionNew.value,
+							fCuerpoNew: editorContent,
+							MODO:"<?php echo constant('MNT_LISTACORREOS')?>",
+							fLang:"<?php echo $sLang;?>",
+							sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>"
+						}
+					).fadeIn("slow",function(){	$("div#programarEnvio").show(1000);	});
+				}
+			}
+		}else{
+			if(validaFormSinTipo(editorContent)){
+				$("div#listacorreos").hide().load(paginacargada,
+					{
+						fAccion:f.fAccion.value,
+						fIdProceso: f.fIdProceso.value,
+						fIdEmpresa: f.fIdEmpresa.value,
+						fIdTipoCorreo: f.fIdTipoCorreo.value,
+						fIdCorreo: f.fIdCorreo.value,
+						fAsuntoNew: f.fAsuntoNew.value,
+						fNombreNew: f.fNombreNew.value,
+						fDescripcionNew: f.fDescripcionNew.value,
+						fCuerpoNew: editorContent,
+						MODO:"<?php echo constant('MNT_LISTACORREOS')?>",
+						fLang:"<?php echo $sLang;?>",
+						sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>"
+					}
+				).fadeIn("slow",function(){	$("div#programarEnvio").show(1000);	});
+			}
+		}
+	}
+}
+function guardaProgramarEnvio(modo){
+	var f = document.forms[0];
+	var paginacargada = "ProcesoProcesos.php";
+	var	hora="";
+	var msg="";
+	<?php
+		$sHoraInicio= "";
+		$aInicio=explode(" ", $cEntidad->getFechaInicio());
+		$sHoraInicio= substr($aInicio[1], 0, 5);  // HH:MM
+		$aHoraInicio= explode(":", $sHoraInicio);
+	?>
+	var fechaI = "<?php echo $conn->UserDate($cEntidad->getFechaInicio(),constant("USR_FECHA"),false);?>";	var horaI="<?php echo $aHoraInicio[0];?>";	var minI="<?php echo $aHoraInicio[1];?>";
+	<?php
+		$sHoraFin= "";
+		$aFin=explode(" ", $cEntidad->getFechaFin());
+		$sHoraFin= substr($aFin[1], 0, 5);  // HH:MM
+		$aHoraFin= explode(":", $sHoraFin);
+	?>
+	var fechaF = "<?php echo $conn->UserDate($cEntidad->getFechaFin(),constant("USR_FECHA"),false);?>";	var horaF="<?php echo $aHoraFin[0];?>";	var minF="<?php echo $aHoraFin[1];?>";
+	<?php	$sFecha = date("d/m/Y");	$sHoraJS = date("G");	$sMin = date("i");
+
+ 	$dt=new datetime("now",new datetimezone($cEmpresas->getTimezone()));
+	$fecActual = gmdate("Y-m-d H:i:s",(time()+$dt->getOffset()));	//Fecha actual de la Zona horaria
+	$aFEC = explode(" ", $fecActual);
+	$aHOR = explode(":", $aFEC[1]);
+	$sFecha = $conn->UserDate($aFEC[0],constant("USR_FECHA"),false);
+	$sHoraJS = intval($aHOR[0], 10);
+	$sMin = $aHOR[1];
+	?>
+	var fSistema = toJSDate("<?php echo $sFecha?>","dd/mm/yyyy", <?php echo $sHoraJS?>, <?php echo $sMin?>);
+
+	msg +=vDate("<?php echo constant("STR_FECHA");?>:",f.fFecEnvioProgramado.value,10,true);
+	msg +=vString("<?php echo constant("STR_HORA_DE_INICIO");?>:",f.fHoraInicioProgramado.value,5,true);
+	hora = f.fHoraInicioProgramado.value;
+	a=hora.charAt(0);
+	b=hora.charAt(1);
+	c=hora.charAt(2);
+	d=hora.charAt(3);
+	if (a>=2 && b>3){
+		msg +="\nHora programada incorrecta.";
+	}
+	if(hora.length!=5 || c!= ":"){
+		msg +="\n<?php echo constant("ERR_HORA_PROGRAMADA_FORMATO");?>";
+	}
+	if (d>5) {
+		msg +="\n<?php echo constant("ERR_MINUTOS_PROGRAMADA_MAXIMO");?>";
+	}
+	if (msg != "") {
+		jAlert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.","<?php echo constant("STR_NOTIFICACION");?>");
+	}else{
+		var dFI = toJSDate(fechaI,"dd/mm/yyyy", horaI, minI);	var dFF = toJSDate(fechaF,"dd/mm/yyyy", horaF, minF);
+		var fDesde   = dFI;	var fHasta   = dFF;	var HP= f.fHoraInicioProgramado.value;
+		var aIP=HP.charAt(0);	var bIP=HP.charAt(1);	var cIP=HP.charAt(2);	var dIP=HP.charAt(3);	var eIP=HP.charAt(4);
+		var horaIP = aIP + bIP;	var minIP = dIP + eIP;
+		var fProgramada = toJSDate(f.fFecEnvioProgramado.value,"dd/mm/yyyy", horaIP, minIP);
+		var bOk = false;
+		if((fProgramada >= fDesde) && (fProgramada <= fHasta)){	bOk=true;	}
+		if (bOk){	if (fProgramada < fSistema){	bOk = false;	}}
+		if (bOk){
+			var sFecEnvioProgramado = cFechaFormat(f.fFecEnvioProgramado.value);
+			f.fBtnOkGuardaProgramarEnvio.disabled=true;
+			$("div#programarEnvioOK").hide().load(paginacargada,
+			{
+				fIdProceso: f.fIdProceso.value,
+				fIdEmpresa: f.fIdEmpresa.value,
+				fFecEnvioProgramado: sFecEnvioProgramado,
+				fHoraInicioProgramado: f.fHoraInicioProgramado.value,
+				MODO:modo,
+				fLang:"<?php echo $sLang;?>",
+				sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>"
+			},function( response, status, xhr )
+			{
+				if ( response == "OK" ) {
+					$( "div#programarEnvioOK" ).html("");
+					document.forms[0].fBtnOkGuardaProgramarEnvio.disabled=false;
+					jAlert("<?php echo constant("STR_ENVIO_PROGRAMADO");?>","<?php echo constant("STR_NOTIFICACION");?>");
+          if (document.forms[0].fIListaCorreos.value > "0"){
+            document.forms[0].action='EnviarCorreos.php';
+            document.forms[0].MODO.value=<?php echo constant('MNT_LISTAR');?>;
+            block('4');
+            document.forms[0]._clicado.value=29;
+            document.forms[0].submit();
+          }
+				}
+			}).fadeIn("slow");
+		}else{
+			jAlert("<?php echo constant("ERR_FECHA_PROGRAMADA_RANGO");?>");
+		}
+	}
+}
 function guardaasignados(){
 	var f = document.forms[0];
 
   var myf = $('#fCuerpoNew_ifr');
   var editorContent = $('#tinymce[data-id="fCuerpoNew"]', myf.contents()).html();
-  var editorContent = document.getElementById('divCuerpoNew').innerHTML;
   //alert(editorContent);
 
 	var paginacargada = "ProcesoProcesos.php";
@@ -301,7 +456,7 @@ function _body_onunload(){	lon();	}
 //]]>
 </script>
 </head>
-<body onload="_body_onload();listacorreos();block('<?php echo ($_POST["_block"] != "") ? $_POST["_block"] : "-1";?>');setClicado('<?php echo $_POST["_clicado"];?>');"  onunload="_body_onunload();">
+<body onload="_body_onload();listacorreos();cambiacorreos('combocorreos');block('<?php echo ($_POST["_block"] != "") ? $_POST["_block"] : "-1";?>');setClicado('<?php echo $_POST["_clicado"];?>');"  onunload="_body_onunload();">
 <table border="0" cellspacing="0" cellpadding="0" id="loaderContainer" onclick="return false;"><tr><td id="loaderContainerWH"><div id="loader"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><p><img src="estilos/icons/loading.gif" height="32" width="32" border="0"  title="<?php echo constant("MSG_POR_FAVOR_ESPERE_CARGANDO");?>" alt="<?php echo constant("MSG_POR_FAVOR_ESPERE_CARGANDO");?>" /><strong><?php echo constant("MSG_POR_FAVOR_ESPERE_CARGANDO");?></strong></p></td></tr></table></div></td></tr></table>
 
 		<form name="form" id="form" method="post" enctype="multipart/form-data" action="<?php echo $_SERVER["PHP_SELF"];?>" onsubmit="return enviar('<?php echo $_POST["MODO"];?>');">
@@ -329,7 +484,7 @@ else	$HELP="xx";
 							<li class="mArrow">&nbsp;</li>
 							<li><span><img src="./graf/iconsMenu/User.png" title="Candidatos" alt="Candidatos" /></span><?php echo constant("STR_CANDIDATOS");?></li>
 							<li class="mArrow">&nbsp;</li>
-							<li class="mActivo"><span><img src="./graf/iconsMenu/mail.png" title="Comunicación" alt="Comunicación" /></span><b style="color:#0086d3"><?php echo constant("STR_COMUNICACION");?></b></li>
+							<li class="mActivo"><span><img src="./graf/iconsMenu/mail.png" title="Comunicación" alt="Comunicación" /></span><b style="color:#FFB200"><?php echo constant("STR_COMUNICACION");?></b></li>
 						</ul>
 					</td>
 				</tr>
@@ -368,6 +523,71 @@ else	$HELP="xx";
 									<div id="muestracorreo"></div>
 								</td>
 							</tr>
+							<tr>
+								<td>
+									<table cellspacing="0" cellpadding="0" border="0">
+										<tr>
+											<td>
+												<ul>
+													<?php
+													require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas/EmpresasDB.php");
+													require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Empresas/Empresas.php");
+													require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Candidatos/CandidatosDB.php");
+													require_once(constant("DIR_FS_DOCUMENT_ROOT") . constant("DIR_WS_COM") . "Candidatos/Candidatos.php");
+													$cEmpresas = new Empresas();
+													$cEmpresasDB = new EmpresasDB($conn);
+													$cCiegosDB = new CandidatosDB($conn);
+
+													$_idEmpresa=(!empty($_POST["fIdEmpresa"])) ? $_POST["fIdEmpresa"] : $_POST["fIdEmpresaAsig"];
+													$_idProceso=(!empty($_POST["fIdProceso"])) ? $_POST["fIdProceso"] : $_POST["fIdProcesoAsig"];
+													if (!empty($_idEmpresa) && !empty($_idProceso))
+													{
+														$cCiegos = new Candidatos();
+														$cCiegos->setIdEmpresa($_idEmpresa);
+														$cCiegos->setIdProceso($_idProceso);
+														$sqlCCiegos = $cCiegosDB->readLista($cCiegos);
+														$rsCCiegos = $conn->Execute($sqlCCiegos);
+														$sCCiega="";
+														while (!$rsCCiegos->EOF)
+														{
+															if (empty($rsCCiegos->fields['mail'])){
+																$sCCiega="Sí";
+															}
+															$rsCCiegos->MoveNext();
+														}
+														$cEmpresas->setIdEmpresa($_idEmpresa);
+														$cEmpresas = $cEmpresasDB->readEntidad($cEmpresas);
+														$sCiega = $cEmpresas->getAltaCiega();
+                            $sPrecargada = $cEmpresas->getAltaPrecargada();
+														$iCiega = $cEmpresas->getDongles();
+
+														$sDescuentaMatriz = $cEmpresas->getDescuentaMatriz();
+														$cMatrizDng = new Empresas();
+														if (!empty($sDescuentaMatriz)){
+															$cMatrizDng->setIdEmpresa($sDescuentaMatriz);
+															$cMatrizDng = $cEmpresasDB->readEntidad($cMatrizDng);
+															$iCiega = $cMatrizDng->getDongles();
+														}else{
+															$iCiega = $cEmpresas->getDongles();
+														}
+														if (!empty($sCiega) && !empty($sCCiega) && !empty($iCiega)){
+													?>
+														<li style="list-style:lower-roman;"><strong class="naranja"><?php echo constant("STR_ALTAS_ANONIMAS");?></strong>:&nbsp;<?php echo constant("HTTP_SERVER_FRONT") . "Candidato/blind.php?h=" . str_replace("=","", base64_encode($_idEmpresa . constant("CHAR_SEPARA") .  $_idProceso));?></li>
+													<?php
+														}
+                            if (!empty($sPrecargada) && !empty($iCiega)){
+                          ?>
+                            <li style="list-style:lower-roman;"><strong class="naranja"><?php echo "Altas precargadas";?></strong>:&nbsp;<?php echo constant("HTTP_SERVER_FRONT") . "Candidato/verify.php?h=" . str_replace("=","", base64_encode($_idEmpresa . constant("CHAR_SEPARA") .  $_idProceso));?></li>
+                          <?php
+                            }
+													}
+													?>
+													</ul>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
 							<tr><td colspan="2" width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
 							<tr><td colspan="2"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="1" border="0" alt="" /></td></tr>
 							<tr><td colspan="2" width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
@@ -380,6 +600,52 @@ else	$HELP="xx";
 							<td> <input type="button" class="botonesgrandes" <?php echo ($_bModificar) ? '' : 'disabled="disabled"';?> name="fBtnEnviarCorreos" value="<?php echo constant("STR_ENVIAR_CORREOS");?>" onclick="javascript:validaEnvioCorreo();"/></td>
 <!--							<td> <input type="button" class="botonesgrandes" <?php echo ($_bModificar) ? '' : 'disabled="disabled"';?> name="fBtnOk" value="<?php echo constant("STR_ENVIAR_MAS_TARDE");?>" onclick="javascript:guardaplantilla();javascript:enviarNuevo(<?php echo constant('MNT_LISTAR')?>);"/></td>-->
 							<td> <input type="button" class="botonesgrandes" <?php echo ($_bModificar) ? '' : 'disabled="disabled"';?> name="fBtnOk" value="<?php echo constant("STR_ENVIAR_MAS_TARDE");?>" onclick="javascript:enviarNuevo(<?php echo constant('MNT_LISTAR')?>);"/></td>
+							<td> <input type="button" class="botonesgrandes" <?php echo ($_bModificar) ? '' : 'disabled="disabled"';?> name="fBtnProgramarEnvio" value="<?php echo constant("STR_PROGRAMAR_ENVIO");?>" onclick="javascript:programarEnvio();"/></td>
+							<td>
+								<div id="programarEnvio">
+									<table >
+										<tr>
+											<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
+											<td nowrap="nowrap" width="80" class="negrob" valign="top"><?php echo constant("STR_FECHA");?>&nbsp;</td>
+											<?php
+											$sHoraInicioProgramado= "23:59";
+											if ($cEntidad->getFecEnvioProgramado() != "" && $cEntidad->getFecEnvioProgramado() != "0000-00-00" && $cEntidad->getFecEnvioProgramado() != "0000-00-00 00:00:00"){
+												$aInicio=explode(" ", $cEntidad->getFecEnvioProgramado());
+												$sHoraInicioProgramado= substr($aInicio[1], 0, 5);  // HH:MM
+												$cEntidad->setFecEnvioProgramado($conn->UserDate($cEntidad->getFecEnvioProgramado(),constant("USR_FECHA"),false));
+											}
+											?>
+											<td>
+												<?php
+												if($_POST['MODO'] == constant('MNT_MODIFICAR')){
+													if($listaInformados->recordCount()>0){?>
+														<img src="<?php echo constant('DIR_WS_GRAF');?>icon_calendario.gif" width="22" height="18" border="0" alt="<?php echo constant('STR_CALENDARIO');?>" align="bottom" />&nbsp;<input type="text" readonly="readonly" name="fFecEnvioProgramado" value="<?php echo $cEntidad->getFecEnvioProgramado();?>" class="obliga" style="width:75px;" onchange="javascript:trim(this);" />&nbsp;<input type="text" readonly="readonly" name="fHoraInicioProgramado" value="<?php echo $sHoraInicioProgramado;?>" class="obliga" style="width:40px;" onchange="javascript:trim(this);" />
+												<?php
+													}else{?>
+														<a href="#" onclick="javascript:abrirCalendario('calendario.php?openerNombre=fFecEnvioProgramado','<?php echo constant("STR_CALENDARIO");?>');"><img src="<?php echo constant('DIR_WS_GRAF');?>icon_calendario.gif" width="22" height="18" border="0" alt="<?php echo constant('STR_CALENDARIO');?>" align="bottom" /></a>&nbsp;<input type="text" name="fFecEnvioProgramado" value="<?php echo $cEntidad->getFecEnvioProgramado();?>" class="obliga" style="width:75px;" onchange="javascript:trim(this);" />&nbsp;<input type="text" name="fHoraInicioProgramado" value="<?php echo $sHoraInicioProgramado;?>" class="obliga" style="width:40px;" onchange="javascript:trim(this);" />
+												<?php
+													}
+												}else{?>
+													<a href="#" onclick="javascript:abrirCalendario('calendario.php?openerNombre=fFecEnvioProgramado','<?php echo constant("STR_CALENDARIO");?>');"><img src="<?php echo constant('DIR_WS_GRAF');?>icon_calendario.gif" width="22" height="18" border="0" alt="<?php echo constant('STR_CALENDARIO');?>" align="bottom" /></a>&nbsp;<input type="text" name="fFecEnvioProgramado" value="<?php echo $cEntidad->getFecEnvioProgramado();?>" class="obliga" style="width:75px;" onchange="javascript:trim(this);" />&nbsp;<input type="text" name="fHoraInicioProgramado" value="<?php echo $sHoraInicioProgramado;?>" class="obliga" style="width:40px;" onchange="javascript:trim(this);" />
+
+												<?php
+												}?>
+											</td>
+											<td>
+												<div id="timezone" ><?php echo ($cEmpresas->getTimezone() != "") ? '<span style="color:green;margin-left: 10px;">' . constant("STR_ZONA_HORARIA") . ': ' . $cEmpresas->getTimezone() . '</span>' :  '<span style="color:red;">' . constant("STR_ZONA_HORARIA") . ': ' . constant("STR_NO_DEFINIDA") . '</span>'; ?></div>
+											</td>
+											<td >
+												<input type="button" <?php echo ($_bModificar) ? "" : "disabled";?>  class="botones" id="bid-ok" name="fBtnOkGuardaProgramarEnvio" value="<?php echo constant("STR_GUARDAR");?>" onclick="guardaProgramarEnvio(<?php echo constant('MNT_PROGRAMAR_ENVIO')?>);" />
+												<div id="programarEnvioOK"></div>
+											</td>
+										</tr>
+										<tr>
+											<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
+											<td colspan="4"><?php echo constant("MSG_ENVIO_PROGRAMADO_EJECUCION");?></td>
+										</tr>
+									</table>
+								</div>
+							</td>
 						</tr>
 					</table>
 				</td>
@@ -425,7 +691,15 @@ else	$HELP="xx";
 <script type="text/javascript" charset="utf-8">
   $(document).ready(function(){
       tinymce.init({
-        selector: '.tinymce'
+        selector: '.tinymce',
+        plugins: [
+          'advlist autolink lists link image charmap print preview anchor',
+          'searchreplace visualblocks code fullscreen',
+          'insertdatetime media table paste imagetools wordcount'
+        ],
+        toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+        });
       });
 
   });

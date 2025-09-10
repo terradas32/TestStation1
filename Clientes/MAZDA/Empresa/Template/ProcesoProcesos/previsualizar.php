@@ -11,7 +11,7 @@
 			<td class="subtitulo"><?php echo constant("STR_CONFIGURACION_DEL_FICHERO")?></td>
 		</tr>
 		<tr><td><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="10" height="1" border="0" alt="" /></td>
-			<td bgcolor="#036"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="1" border="0" alt="" /></td>
+			<td bgcolor="#FF8F19"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="1" border="0" alt="" /></td>
 		</tr>
 		<tr><td colspan="2"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
 		<tr>
@@ -84,7 +84,7 @@ if (empty($_POST["fCabecerasSel"])){
 			<td nowrap="nowrap" class="subtitulo" valign="bottom"><?php echo constant("STR_PREVISUALIZACION_DE_DATOS_A_INSERTAR")?>&nbsp;</td>
 		</tr>
 		<tr><td><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="10" height="1" border="0" alt="" /></td>
-			<td bgcolor="#036"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="1" border="0" alt="" /></td>
+			<td bgcolor="#FF8F19"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="1" border="0" alt="" /></td>
 		</tr>
 		<tr><td colspan="2"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
 	</table>

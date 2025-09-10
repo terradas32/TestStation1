@@ -5,10 +5,10 @@
     	require_once("include/SeguridadTemplate.php");
     }
 
-	$clave = obtenerClavePlantilla();
+	// Mejoramos la seguridad
 	$payload = [
 		'sql'   => $sql,
-		'nombre'=> $clave,
+		'nombre'=> 'procesos',
 		'ts'    => time(),
 		'nonce' => bin2hex(random_bytes(8)),
 	];
@@ -21,15 +21,17 @@
 	<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $sLang;?>" xml:lang="<?php echo $sLang;?>">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<meta name="generator" content="WIZARD, Wi2.2 www.azulpomodoro.com" />
+		<meta name="generator" content="WIZARD, Wi2.2 www.negociainternet.com" />
 		
 <title><?php echo constant("NOMBRE_SITE");?></title>
 	<link rel="stylesheet" href="estilos/estilos.css" type="text/css" />
+	<link rel="stylesheet" href="estilos/jquery.alerts.css" type="text/css" />
 	<script language="javascript" type="text/javascript" src="codigo/common.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/codigo.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/comun.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/noback.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/jQuery1.4.2.js"></script>
+	<script language="javascript" type="text/javascript" src="codigo/jquery.alert.js"></script>
 <script language="javascript" type="text/javascript">
 //<![CDATA[
 <?php include_once(constant("DIR_WS_INCLUDE") . "msg_error_JS.php");?>
@@ -54,8 +56,11 @@ function setPK(idProceso,idEmpresa)
 }
 function confBorrar(Modo,sMsg)
 {
-	if (confirm(sMsg))
+	jConfirm(sMsg, "<?php echo constant("STR_CONFIRMACION");?>", function(r) {  
+		    if(r) {  
 		enviar(Modo);
+				    }  
+		}); 
 }
 function abrirVentana(bImg, file){
 	preurl = "view.php?bImg=" + bImg + "&File=" + file;
@@ -306,15 +311,14 @@ $aBuscador= $cEntidad->getBusqueda();
 		</tr>
 		<tr><td colspan="4"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="10" height="1" border="0" alt="" /></td></tr>
 		<tr><td><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="10" height="1" border="0" alt="" /></td>
-			<td colspan="3" bgcolor="#036"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="1" border="0" alt="" /></td>
+			<td colspan="3" bgcolor="#FF8F19"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="1" border="0" alt="" /></td>
 		</tr>
 		<tr><td colspan="4"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
 	</table>
 	<table cellspacing="0" cellpadding="0" border="0" width="100%">
 		<tr>
 			<td width="10"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="10" height="1" border="0" alt="" /></td>
-			<td width="100%" colspan="2" class="naranjab"><?php echo sprintf(constant("STR_LISTA_DE_"),str_replace('_', ' ', constant("STR_PROCESOS")));?>
-			<a href="<?php echo($urlExcel); ?>"><img src="<?php echo constant('DIR_WS_GRAF');?>excel.gif" width="34" height="35" align="right" border="0" alt="<?php echo constant("STR_EXPORTAR_A_EXCEL");?>" /></a></td>
+			<td width="100%" colspan="2" class="naranjab"><?php echo sprintf(constant("STR_LISTA_DE_"),str_replace('_', ' ', constant("STR_PROCESOS")));?><a href="<?php echo($urlExcel); ?>"><img src="<?php echo constant('DIR_WS_GRAF');?>excel.gif" width="34" height="35" align="right" border="0" alt="<?php echo constant("STR_EXPORTAR_A_EXCEL");?>" /></a></td>
 		</tr>
 		<tr>
 			<td width="10"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="10" height="1" border="0" alt="" /></td>
