@@ -9,17 +9,15 @@
 	<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $sLang;?>" xml:lang="<?php echo $sLang;?>">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<meta name="generator" content="WIZARD, Wi2.22 www.negociainternet.com" />
+		<meta name="generator" content="WIZARD, Wi2.22 www.azulpomodoro.com" />
 		
 <title><?php echo constant("NOMBRE_SITE");?></title>
 	<link rel="stylesheet" href="estilos/estilos.css" type="text/css" />
-	<link rel="stylesheet" href="estilos/jquery.alerts.css" type="text/css" />
 	<script language="javascript" type="text/javascript" src="codigo/common.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/codigo.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/comun.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/noback.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/jQuery1.4.2.js"></script>
-	<script language="javascript" type="text/javascript" src="codigo/jquery.alert.js"></script>
 <script language="javascript" type="text/javascript">
 //<![CDATA[
 <?php include_once(constant("DIR_WS_INCLUDE") . "msg_error_JS.php");?>
@@ -45,7 +43,7 @@ function validaForm()
 	msg +=vDate("<?php echo constant("STR_FECHA_DE_FIN");?>:",f.fFechaFin.value,10,true);
 	msg +=vNumber("<?php echo constant("STR_MODO_REALIZACION");?>:",f.fIdModoRealizacion.value,11,true);
 if (msg != "") {
-	jAlert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.","<?php echo constant("STR_NOTIFICACION");?>");
+	alert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.");
 	return false;
 }else return true;
 }

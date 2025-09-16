@@ -47,4 +47,9 @@
 
 	$_bModificar	=	(!empty($hDatos->fields["modificar"]) && $hDatos->fields["modificar"] == "on") ? true : false;
 	$_bBorrar		=	(!empty($hDatos->fields["borrar"]) && $hDatos->fields["borrar"] == "on") ? true : false;
+
+
+	// Añadimos cabeceras para evitar el XSS (Cross-site Scripting)
+	//header("Content-Security-Policy: script-src 'self';");
+	header("Content-Security-Policy-Report-Only: script-src 'self' https://app.powerbi.com;");
 ?>

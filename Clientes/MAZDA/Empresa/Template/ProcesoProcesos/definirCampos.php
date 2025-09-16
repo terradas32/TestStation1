@@ -37,7 +37,7 @@ function validaForm()
 	var msg="";
 	if (!bEncontrado) {
 		msg += MSG_INDIQUE_CAMPO_EMAIL_PARA_IMPORTAR;
-		jAlert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.","<?php echo constant("STR_NOTIFICACION");?>");
+		alert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.");
 	}
 	return bEncontrado;
 }
@@ -50,7 +50,7 @@ function validaForm()
 						<td class="subtitulo"><?php echo constant("STR_SELECCION_DE_CAMPOS")?></td>
 					</tr>
 					<tr><td><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="10" height="1" border="0" alt="" /></td>
-						<td bgcolor="#FF8F19"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="1" border="0" alt="" /></td>
+						<td bgcolor="#036"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="1" border="0" alt="" /></td>
 					</tr>
 					<tr><td colspan="2"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
 					<tr>

@@ -2,6 +2,14 @@
 	$_HTTP_HOST = (empty($_SERVER["HTTP_HOST"])) ? "test-station.com" : $_SERVER["HTTP_HOST"];
 	$_DOCUMENT_ROOT = (empty($_SERVER["DOCUMENT_ROOT"])) ? "/var/www/html" : $_SERVER["DOCUMENT_ROOT"];
 
+	// === Detección de entorno ===
+    $host = strtolower($_HTTP_HOST ?? '');
+	if ($host === 'dev.test-station.com' || str_starts_with($host, 'dev.')) {
+		$_ENTORNO = 'dev';
+	} else {
+		$_ENTORNO = 'pro';
+	}
+
 	define("HTTP_LINK_ACCESO", "http://mb.test-station.com");
 	// Define the webserver and path parameters
 	// * DIR_FS_* Directorio físico (local/physical)
@@ -151,21 +159,25 @@
 
 	define("EMPRESA_PE", "3788");	//Código de la empresa Psicólogos Empresariales
 
-	//Contantes de conexión a Base de Datos
-	define("DB_TYPE", "mysql");
-	define("DB_DATOS", "ts");
-	define("DB_HOST", "webcorporativa2-instance.cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
-	define("DB_USUARIO", "teststation");
-	define("DB_PASSWORD","nosferatu62");
-	//FIN Contantes de conexión a Base de Datos
+	if ($_ENTORNO == 'pro') {
+		//Contantes de conexión a Base de Datos
+		define("DB_TYPE", "mysql");
+		define("DB_DATOS", "ts");
+		define("DB_HOST", "webcorporativa2-instance.cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
+		define("DB_USUARIO", "teststation");
+		define("DB_PASSWORD","nosferatu62");
+		//FIN Contantes de conexión a Base de Datos
+	}
 
-	//Contantes de conexión a Base de Datos Desarrollo
-	//define("DB_TYPE", "mysql");
-	//define("DB_DATOS", "ts");
-	//define("DB_HOST", "all-db-pre-instance-1.cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
-	//define("DB_USUARIO", "peopleAdmin");
-	//define("DB_PASSWORD","?t6]SQ&6p!J~ZBy");
-	//FIN Contantes de conexión a Base de Datos
+	if ($_ENTORNO == 'dev') {
+		//Contantes de conexión a Base de Datos DESARROLLO
+		define("DB_TYPE", "mysql");
+		define("DB_DATOS", "ts");
+		define("DB_HOST", "all-db-pre-instance-1.cbvlbud7zscu.eu-west-3.rds.amazonaws.com");
+		define("DB_USUARIO", "peopleAdmin");
+		define("DB_PASSWORD","?t6]SQ&6p!J~ZBy");
+		//FIN Contantes de conexión a Base de Datos DESARROLLO
+	}
 
 	//Contantes de conexión a Base de Datos MS SQLSERVER
 	define("DB_DATOS_MS", "expertosonline");

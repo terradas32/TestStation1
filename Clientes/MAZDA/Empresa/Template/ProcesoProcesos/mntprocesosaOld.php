@@ -12,14 +12,13 @@
 		
 <title><?php echo constant("NOMBRE_SITE");?></title>
 	<link rel="stylesheet" href="estilos/estilos.css" type="text/css" />
-	<link rel="stylesheet" href="estilos/jquery.alerts.css" type="text/css" />
 	<script language="javascript" type="text/javascript" src="codigo/common.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/codigo.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/comun.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/noback.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/jQuery1.4.2.js"></script>
-	<script language="javascript" type="text/javascript" src="codigo/jquery.alert.js"></script>
-	<script src="https://cdn.tiny.cloud/1/19u4q91vla6r5niw2cs7kaymfs18v3j11oizctq52xltyrf4/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script><script>tinymce.init({ selector:'.tinymce' });</script>
+	<!-- <script src="https://cdn.tiny.cloud/1/19u4q91vla6r5niw2cs7kaymfs18v3j11oizctq52xltyrf4/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script> -->
+	<script language="javascript" type="text/javascript" src="codigo/tinymce/tinymce.min.js"></script><script>tinymce.init({ selector:'.tinymce' });</script>
 
 <script language="javascript" type="text/javascript">
 //<![CDATA[
@@ -31,7 +30,7 @@ function enviar()
 				
 		var	hora = f.fHoraInicio.value;
 		if(hora.length!=5){
-			jAlert("Formato de Hora INICIO incorrecto, el formato debe ser: HH:MM");
+			alert("Formato de Hora INICIO incorrecto, el formato debe ser: HH:MM");
 			return false;
 		}
 
@@ -40,21 +39,21 @@ function enviar()
 		c=hora.charAt(2);
 		d=hora.charAt(3);
 		if (a>=2 && b>3) {
-			jAlert("hora INICIO incorrecta");
+			alert("hora INICIO incorrecta");
 			return false;
 		}
 		if(c!= ":"){
-			jAlert("El formato hora INICIO debe ser HH:MM");
+			alert("El formato hora INICIO debe ser HH:MM");
 			return false;	
 		}
 		if (d>5) {
-			jAlert("minutos hora INICIO incorrectos");
+			alert("minutos hora INICIO incorrectos");
 			return false;
 		}
 
 		var	horaF = f.fHoraFin.value;
 		if(horaF.length!=5){
-			jAlert("Formato de Hora FIN incorrecto, el formato debe ser: HH:MM");
+			alert("Formato de Hora FIN incorrecto, el formato debe ser: HH:MM");
 			return false;
 		}
 
@@ -63,15 +62,15 @@ function enviar()
 		cF=horaF.charAt(2);
 		dF=horaF.charAt(3);
 		if (aF>=2 && bF>3) {
-			jAlert("hora FIN incorrecta");
+			alert("hora FIN incorrecta");
 			return false;
 		}
 		if(cF!= ":"){
-			jAlert("El formato hora FIN debe ser HH:MM");
+			alert("El formato hora FIN debe ser HH:MM");
 			return false;	
 		}
 		if (dF>5) {
-			jAlert("minutos hora FIN incorrectos");
+			alert("minutos hora FIN incorrectos");
 			return false;
 		}
 //		if (!CheckTime(hora)){
@@ -169,7 +168,7 @@ if (msg == ""){
 	}
 }
 if (msg != "") {
-	jAlert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.","<?php echo constant("STR_NOTIFICACION");?>");
+	alert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.");
 	return false;
 }else return true;
 }
@@ -237,7 +236,7 @@ else	$HELP="xx";
 			<table cellspacing="3" cellpadding="0" width="100%" border="0">
 				<tr>
 					<td colspan="2" width="100%" style="border-bottom: 1px solid #000000; height:35px">
-						<b style="color:#FFB200">1. Datos del proceso</b> ---> 2. Asignación de pruebas y baremos ---> 3. Candidatos ---> 4. Asignación de correos
+						<b style="color:#0086d3">1. Datos del proceso</b> ---> 2. Asignación de pruebas y baremos ---> 3. Candidatos ---> 4. Asignación de correos
 					</td>
 				</tr>
 				<tr>

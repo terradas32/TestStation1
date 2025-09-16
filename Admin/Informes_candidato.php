@@ -589,6 +589,7 @@ include_once ('include/conexion.php');
 						}
 					}
 				}
+
 				$bPDFGenerado = false;	//Indica si el fichero fue generado previamente
 				if($bDescargar)
 				{
@@ -607,6 +608,8 @@ include_once ('include/conexion.php');
 					}else{
 						$bPDFGenerado = false;
 					}
+					
+					$bPDFGenerado = false;
 					if (!$bPDFGenerado)
 					{
 						$cRespuestasPruebasItemsDB = new Respuestas_pruebas_itemsDB($conn);
@@ -710,6 +713,7 @@ include_once ('include/conexion.php');
 							$listaBaremosResultados = $conn->Execute($sqlBaremosResultados);
 							$ipMin=0;
 							$ipMax=0;
+
 							// Recorremos la lista de los valores del baremo seleccionado para mirar el percentil que
 							// corresponde con la puntuación directa obtenida.
 							if($listaBaremosResultados->recordCount()>0){
@@ -726,7 +730,6 @@ include_once ('include/conexion.php');
 
 // 							echo "pDirecta: " . $iPDirecta . "<br />";
 // 							echo "pPercentil: " . $iPercentil . "<br />";
-
 
 							include('constantesInformes/' .	$_POST['fCodIdiomaIso2'] .'.php');
 
@@ -892,6 +895,13 @@ include_once ('include/conexion.php');
 									}
 									break;
 								default:
+
+								echo("<pre>");
+								var_dump($cPruebas->getIdTipoPrueba());
+								var_dump($iPDirecta);
+								var_dump($_POST['fIdPrueba']);
+								echo("</pre>");
+
 									//Poner switch por prueba PEDRO
 									switch ($_POST['fIdPrueba'])
 									{

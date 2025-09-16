@@ -5,22 +5,29 @@
     	require_once("include/SeguridadTemplate.php");
     }
 ?>
-<script src="https://cdn.tiny.cloud/1/19u4q91vla6r5niw2cs7kaymfs18v3j11oizctq52xltyrf4/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<!-- <script src="https://cdn.tiny.cloud/1/19u4q91vla6r5niw2cs7kaymfs18v3j11oizctq52xltyrf4/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script> -->
+	<script language="javascript" type="text/javascript" src="codigo/tinymce/tinymce.min.js"></script>
+<script>
+  tinymce.init({
+    selector: '.tinymce'
+  });
+</script>
+
 
 
 <table cellspacing="2" cellpadding="0" width="100%" border="0">
-<!--  2::cambiado por nacho para que no se vea ni se pueda cambiar el nombre de la plantilla seleccionada -->
+<!--  cambiado por nacho para que no se vea ni se pueda cambiar el nombre de la plantilla seleccionada -->
 	<tr style="display:none">
 		<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
 		<td nowrap="nowrap" class="negrob" valign="top"><?php echo constant("STR_NOMBRE");?>&nbsp;</td>
 		<td><input type="text" name="fNombreNew" value="<?php echo $cCorreos->getNombre()?>" class="obliga"  onchange="javascript:trim(this);" /></td>
 	</tr>
-	<tr>
+	<tr style="display:none">
 		<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
 		<td nowrap="nowrap" class="negrob" valign="top"><?php echo constant("STR_ASUNTO");?>&nbsp;</td>
 		<td><input type="text" name="fAsuntoNew" value="<?php echo $cCorreos->getAsunto();?>" class="obliga"  onchange="javascript:trim(this);" /></td>
 	</tr>
-	<tr>
+	<tr style="display:none">
 		<td width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="5" height="20" border="0" alt="" /></td>
 		<td nowrap="nowrap" class="negrob" valign="top"><?php echo constant("STR_CUERPO");?>&nbsp;</td>
 		<td><textarea cols="1" id="fCuerpoNew" data-id="fCuerpoNew" name="fCuerpoNew" rows="6" class="tinymce obliga"  onchange="javascript:trim(this);"><?php echo $cCorreos->getCuerpo()?></textarea></td>
@@ -34,8 +41,8 @@
 -->
 <input type="hidden" name="fDescripcionNew" value="<?php echo $cCorreos->getDescripcion()?>" class="cajatexto"  onchange="javascript:trim(this);" />
 
-	<tr><td colspan="3" width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
-	<tr>
+	<tr style="display:none"><td colspan="3" width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
+	<tr style="display:none">
 		<td colspan="3" ><a href="#_" onclick="document.getElementById('litCorr').style.display='block';" ><img alt="<?php echo constant("STR_AYUDA");?>" title="<?php echo constant("STR_AYUDA");?>" src="<?php echo constant('DIR_WS_GRAF');?>help.gif" ></a>
 			<div id="litCorr" style="display:none" >
 				<table cellspacing="2" cellpadding="0" width="100%" border="0">
@@ -84,22 +91,7 @@
 		</td>
 	</tr>
 -->
-	<tr><td colspan="3" width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
-	<tr><td colspan="3" bgcolor="#000000" style="height:1px;"></td></tr>
-	<tr><td colspan="3" width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
+	<tr style="display:none"><td colspan="3" width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
+	<tr style="display:none"><td colspan="3" bgcolor="#000000" style="height:1px;"></td></tr>
+	<tr style="display:none"><td colspan="3" width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
 </table>
-<script type="text/javascript" charset="utf-8">
-  $(document).ready(function(){
-      tinymce.init({
-        selector: '.tinymce',
-        plugins: [
-          'advlist autolink lists link image charmap print preview anchor',
-          'searchreplace visualblocks code fullscreen',
-          'insertdatetime media table paste imagetools wordcount'
-        ],
-        toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
-        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-      });
-
-  });
-</script>

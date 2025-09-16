@@ -52,10 +52,22 @@ Thumbs.db
 *.csv
 *.xlsx
 
+
+/Admin/imgEjemplos
+/Admin/imgEjemplos_ayudas
+/Admin/imgEmpresas
+/Admin/imgFicheros_carga
+/Admin/imgImp_pruebas_papel
 /Admin/imgInformes
+/Admin/imgItems
+/Admin/imgOpciones
+/Admin/imgOpciones_ejemplos
+/Admin/imgPruebas
+
 localdocs/
 new_TS.php
 SOAP/TS
+
 
 # Archivos de configuracion de conexión a la BBDD
 /Admin/include/Configuracion.php

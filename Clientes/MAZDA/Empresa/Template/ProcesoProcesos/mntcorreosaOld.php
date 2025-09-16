@@ -9,16 +9,14 @@
 	<html xmlns="http://www.w3.org/1999/xhtml" lang="<?php echo $sLang;?>" xml:lang="<?php echo $sLang;?>">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
+		
 <title><?php echo constant("NOMBRE_SITE");?></title>
 	<link rel="stylesheet" href="estilos/estilos.css" type="text/css" />
-	<link rel="stylesheet" href="estilos/jquery.alerts.css" type="text/css" />
 	<script language="javascript" type="text/javascript" src="codigo/common.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/codigo.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/comun.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/noback.js"></script>
 	<script language="javascript" type="text/javascript" src="codigo/jQuery1.4.2.js"></script>
-	<script language="javascript" type="text/javascript" src="codigo/jquery.alert.js"></script>
 <script language="javascript" type="text/javascript">
 //<![CDATA[
 <?php include_once(constant("DIR_WS_INCLUDE") . "msg_error_JS.php");?>
@@ -46,7 +44,7 @@ function validaForm(cuerpo)
 	msg +=vString("<?php echo constant("STR_ASUNTO");?>:",f.fAsuntoNew.value,255,true);
 	msg +=vString("<?php echo constant("STR_CUERPO");?>:",cuerpo,16777215,true);
 if (msg != "") {
-	jAlert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.","<?php echo constant("STR_NOTIFICACION");?>");
+	alert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.");
 	return false;
 }else return true;
 }
@@ -59,7 +57,7 @@ function validaFormSinTipo(cuerpo)
 	msg +=vString("<?php echo constant("STR_ASUNTO");?>:",f.fAsuntoNew.value,255,true);
 	msg +=vString("<?php echo constant("STR_CUERPO");?>:",cuerpo,16777215,true);
 if (msg != "") {
-	jAlert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.","<?php echo constant("STR_NOTIFICACION");?>");
+	alert("<?php echo constant("ERR_FORM");?>:\n\n"+msg+"\n\n<?php echo constant("ERR_FORM_CORRIJA");?>.\n\n\t<?php echo constant("STR_MUCHAS_GRACIAS");?>.");
 	return false;
 }else return true;
 }
@@ -94,7 +92,7 @@ function cambiacorreos(pag)
 {
 	var f = document.forms[0];
 	f.sPG.value = pag;
-
+	
 	var paginacargada = "jQuery.php";
 	f.MODO.value="<?php echo constant('MNT_CARGACANDIDATOS');?>";
 	$("div#muestracorreo").empty();
@@ -134,13 +132,13 @@ function consultacorreoproceso(idEmpresa,idProceso,idTipoCorreo,idCorreo){
 		fIdProcesoAsig:idProceso,
 		fIdTipoCorreoAsig:idTipoCorreo,
 		fIdCorreoAsig:idCorreo,
-		MODO:"<?php echo constant('MNT_NUEVOCORREO')?>",
-		fLang:"<?php echo $sLang;?>", sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>"
+		MODO:"<?php echo constant('MNT_NUEVOCORREO')?>", 
+		fLang:"<?php echo $sLang;?>", sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>" 
 	}).fadeIn("slow");
-
+	
 }
 function borraasignados(idEmpresa,idProceso,idTipoCorreo,idCorreo){
-
+	
 	var f = document.forms[0];
 	var paginacargada = "ProcesoProcesos.php";
 	$("div#listacorreos").hide().load(paginacargada,
@@ -150,8 +148,8 @@ function borraasignados(idEmpresa,idProceso,idTipoCorreo,idCorreo){
 		fIdProcesoAsig:idProceso,
 		fIdTipoCorreoAsig:idTipoCorreo,
 		fIdCorreoAsig:idCorreo,
-		MODO:"<?php echo constant('MNT_LISTACORREOS')?>",
-		fLang:"<?php echo $sLang;?>", sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>"
+		MODO:"<?php echo constant('MNT_LISTACORREOS')?>", 
+		fLang:"<?php echo $sLang;?>", sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>" 
 	}).fadeIn("slow");
 }
 function listacorreos()
@@ -161,20 +159,22 @@ function listacorreos()
 	$("div#listacorreos").hide().load(paginacargada,
 			{fIdProceso: f.fIdProceso.value,
 			fIdEmpresa: f.fIdEmpresa.value,
-			MODO:"<?php echo constant('MNT_LISTACORREOS')?>",
+			MODO:"<?php echo constant('MNT_LISTACORREOS')?>", 
 			fLang:"<?php echo $sLang;?>", sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>" }
 	).fadeIn("slow");
 }
 function guardaplantilla(){
 	var f = document.forms[0];
 
-  var myf = $('#fCuerpoNew_ifr');
-  var editorContent = $('#tinymce[data-id="fCuerpoNew"]', myf.contents()).html();
-	//alert(editorContent);
+	var myf = document.getElementById("fCuerpoNew___Frame");
+	myf = myf.contentWindow.document || myf.contentDocument;
+	var myf2=myf.getElementById('xEditingArea').getElementsByTagName('iframe')[0].contentWindow.document || myf.getElementById('xEditingArea').getElementsByTagName('iframe')[0].contentDocument;
+
+	//alert(myf2.body.innerHTML);  
 
 	var paginacargada = "ProcesoProcesos.php";
 	if(f.fIdTipoCorreoNew != null){
-		if(validaForm(editorContent)){
+		if(validaForm(myf2.body.innerHTML)){
 			$("div#listacorreos").hide().load(paginacargada,
 				{
 					fAccion:f.fAccion.value,
@@ -185,15 +185,15 @@ function guardaplantilla(){
 					fAsuntoNew: f.fAsuntoNew.value,
 					fNombreNew: f.fNombreNew.value,
 					fDescripcionNew: f.fDescripcionNew.value,
-					fCuerpoNew: editorContent,
-					MODO:"<?php echo constant('MNT_LISTACORREOS')?>",
-					fLang:"<?php echo $sLang;?>", sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>"
+					fCuerpoNew: myf2.body.innerHTML,
+					MODO:"<?php echo constant('MNT_LISTACORREOS')?>", 
+					fLang:"<?php echo $sLang;?>", sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>" 
 				}
 			).fadeIn("slow");
 		}
 
 	}else{
-		if(validaFormSinTipo(editorContent)){
+		if(validaFormSinTipo(myf2.body.innerHTML)){
 			$("div#listacorreos").hide().load(paginacargada,
 				{
 					fAccion:f.fAccion.value,
@@ -204,9 +204,9 @@ function guardaplantilla(){
 					fAsuntoNew: f.fAsuntoNew.value,
 					fNombreNew: f.fNombreNew.value,
 					fDescripcionNew: f.fDescripcionNew.value,
-					fCuerpoNew: editorContent,
-					MODO:"<?php echo constant('MNT_LISTACORREOS')?>",
-					fLang:"<?php echo $sLang;?>", sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>"
+					fCuerpoNew: myf2.body.innerHTML,
+					MODO:"<?php echo constant('MNT_LISTACORREOS')?>", 
+					fLang:"<?php echo $sLang;?>", sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>" 
 				}
 			).fadeIn("slow");
 		}
@@ -215,13 +215,15 @@ function guardaplantilla(){
 function guardaasignados(){
 	var f = document.forms[0];
 
-  var myf = $('#fCuerpoNew_ifr');
-  var editorContent = $('#tinymce[data-id="fCuerpoNew"]', myf.contents()).html();
-	//alert(editorContent);
+	var myf = document.getElementById("fCuerpoNew___Frame");
+	myf = myf.contentWindow.document || myf.contentDocument;
+	var myf2=myf.getElementById('xEditingArea').getElementsByTagName('iframe')[0].contentWindow.document || myf.getElementById('xEditingArea').getElementsByTagName('iframe')[0].contentDocument;
+
+	//alert(myf2.body.innerHTML);  
 
 	var paginacargada = "ProcesoProcesos.php";
 
-		if(validaForm(editorContent)){
+		if(validaForm(myf2.body.innerHTML)){
 			$("div#listacorreos").hide().load(paginacargada,
 				{
 					fAccion:f.fAccion.value,
@@ -232,9 +234,9 @@ function guardaasignados(){
 					fAsuntoNew: f.fAsuntoNew.value,
 					fNombreNew: f.fNombreNew.value,
 					fDescripcionNew: f.fDescripcionNew.value,
-					fCuerpoNew: editorContent,
-					MODO:"<?php echo constant('MNT_LISTACORREOS')?>",
-					fLang:"<?php echo $sLang;?>", sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>"
+					fCuerpoNew: myf2.body.innerHTML,
+					MODO:"<?php echo constant('MNT_LISTACORREOS')?>", 
+					fLang:"<?php echo $sLang;?>", sTK:"<?php echo $_cEntidadUsuarioTK->getToken()?>" 
 				}
 			).fadeIn("slow");
 		}
@@ -262,7 +264,7 @@ function _body_onunload(){	lon();	}
 </head>
 <body onload="_body_onload();listacorreos();cambiacorreos('combocorreos');block('<?php echo ($_POST["_block"] != "") ? $_POST["_block"] : "-1";?>');setClicado('<?php echo $_POST["_clicado"];?>');"  onunload="_body_onunload();">
 <table border="0" cellspacing="0" cellpadding="0" id="loaderContainer" onclick="return false;"><tr><td id="loaderContainerWH"><div id="loader"><table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><p><img src="estilos/icons/loading.gif" height="32" width="32" border="0"  title="<?php echo constant("MSG_POR_FAVOR_ESPERE_CARGANDO");?>" alt="<?php echo constant("MSG_POR_FAVOR_ESPERE_CARGANDO");?>" /><strong><?php echo constant("MSG_POR_FAVOR_ESPERE_CARGANDO");?></strong></p></td></tr></table></div></td></tr></table>
-
+	
 		<form name="form" id="form" method="post" enctype="multipart/form-data" action="<?php echo $_SERVER["PHP_SELF"];?>" onsubmit="return enviar('<?php echo $_POST["MODO"];?>');">
 <?
 if ($_POST['MODO'] == constant("MNT_ALTA"))	$HELP="xx";
@@ -276,7 +278,7 @@ else	$HELP="xx";
 			<table cellspacing="3" cellpadding="0" width="100%" border="0">
 				<tr>
 					<td colspan="2" width="100%" style="border-bottom: 1px solid #000000; height:35px">
-						1. Datos del proceso ---> 2. Asignación de pruebas y baremos ---> 3. Candidatos ---> <b style="color:#FFB200">4. Asignación de correos</b>
+						1. Datos del proceso ---> 2. Asignación de pruebas y baremos ---> 3. Candidatos ---> <b style="color:#0086d3">4. Asignación de correos</b>
 					</td>
 				</tr>
 				<tr>
@@ -314,7 +316,7 @@ else	$HELP="xx";
 								<td colspan="2">
 									<div id="muestracorreo"></div>
 								</td>
-							</tr>
+							</tr>									
 							<tr><td colspan="2" width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
 							<tr><td colspan="2"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="1" border="0" alt="" /></td></tr>
 							<tr><td colspan="2" width="5"><img src="<?php echo constant('DIR_WS_GRAF');?>sp.gif" width="1" height="10" border="0" alt="" /></td></tr>
@@ -332,7 +334,7 @@ else	$HELP="xx";
 	</div>
 </div>
 	<input type="hidden" name="ORIGEN" value="<?php echo (!empty($_POST['ORIGEN'])) ? $_POST['ORIGEN'] : '';?>" />
-
+	
 	<input type="hidden" name="fBorra" value="" />
 	<input type="hidden" name="fConsulta" value="" />
 	<input type="hidden" name="fNuevo" value="" />
